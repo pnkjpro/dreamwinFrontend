@@ -1,0 +1,69 @@
+{
+  "examName": "SSC CGL Tier II: Mega Live Test",
+  "examDuration": 5, 
+  "examType": "Online",
+  "examDate": "24th November, 2024",
+  "examTime": "10:00 AM",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the capital of France?",
+      "options": [
+        { "id": 1, "text": "Paris" },
+        { "id": 2, "text": "London" },
+        { "id": 3, "text": "Rome" },
+        { "id": 4, "text": "Berlin" }
+      ],
+      "correctAnswerId": 1,
+      "difficulty": "medium"
+    },
+    {
+      "id": 2,
+      "question": "Which of the following is a JavaScript framework?",
+      "options": [
+        { "id": 1, "text": "Laravel" },
+        { "id": 2, "text": "Vue.js" },
+        { "id": 3, "text": "Django" },
+        { "id": 4, "text": "Flask" }
+      ],
+      "correctAnswerId": 2,
+      "difficulty": "hard"
+    },
+    {
+      "id": 3,
+      "question": "What is the chemical symbol for water?",
+      "options": [
+        { "id": 1, "text": "O2" },
+        { "id": 2, "text": "H2O" },
+        { "id": 3, "text": "CO2" },
+        { "id": 4, "text": "NaCl" }
+      ],
+      "correctAnswerId": 2,
+      "difficulty": "easy"
+    },
+    {
+      "id": 4,
+      "question": "Which planet is known as the Red Planet?",
+      "options": [
+        { "id": 1, "text": "Earth" },
+        { "id": 2, "text": "Mars" },
+        { "id": 3, "text": "Jupiter" },
+        { "id": 4, "text": "Saturn" }
+      ],
+      "correctAnswerId": 2,
+      "difficulty": "medium"
+    },
+    {
+      "id": 5,
+      "question": "Who wrote 'To Kill a Mockingbird'?",
+      "options": [
+        { "id": 1, "text": "Harper Lee" },
+        { "id": 2, "text": "J.K. Rowling" },
+        { "id": 3, "text": "Ernest Hemingway" },
+        { "id": 4, "text": "F. Scott Fitzgerald" }
+      ],
+      "correctAnswerId": 1,
+      "difficulty": "medium"
+    }
+  ]
+}
