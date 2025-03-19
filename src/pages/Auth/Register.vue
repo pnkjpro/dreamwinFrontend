@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gradient-to-b from-gray-100 to-gray-800 flex flex-col items-center relative overflow-hidden">
     <!-- Background pattern -->
-    <div class="absolute inset-0 opacity-10">
+    <div class="relative inset-0 opacity-10">
       <div v-for="i in 20" :key="i" class="absolute" :style="{
         left: `${Math.random() * 100}%`,
         top: `${Math.random() * 100}%`,
@@ -28,30 +28,33 @@
       <h1 class="text-4xl font-bold text-center text-gray-800 mb-2">Welcome Back!</h1>
       <p class="text-xl text-center text-gray-700 mb-8">Please log in with your details</p>
       
-      <form @submit.prevent="handleLogin">
+      <form @submit.prevent="handleRegistration">
         <div class="mb-4 relative">
           <input 
             type="text" 
             placeholder="Name" 
             class="w-full bg-gray-200 py-4 px-6 rounded-xl text-gray-700"
-            v-model="user.name"
+            v-model="form.name"
           />
+          <p v-if="errors.name" class="text-red-500 text-sm mt-1">{{ errors.name }}</p>
         </div>
         <div class="mb-4 relative">
           <input 
             type="number" 
             placeholder="Contact Number" 
             class="w-full bg-gray-200 py-4 px-6 rounded-xl text-gray-700"
-            v-model="user.mobile"
+            v-model="form.mobile"
           />
+          <p v-if="errors.mobile" class="text-red-500 text-sm mt-1">{{ errors.mobile }}</p>
         </div>
         <div class="mb-4 relative">
           <input 
             type="text" 
             placeholder="Email" 
             class="w-full bg-gray-200 py-4 px-6 rounded-xl text-gray-700"
-            v-model="user.email"
+            v-model="form.email"
           />
+          <p v-if="errors.mobile" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
         </div>
         
         <div class="mb-4 relative">
@@ -59,8 +62,9 @@
             :type="showPassword ? 'text' : 'password'" 
             placeholder="Password" 
             class="w-full bg-gray-200 py-4 px-6 rounded-xl text-gray-700"
-            v-model="user.password"
+            v-model="form.password"
           />
+          <p v-if="errors.mobile" class="text-red-500 text-sm mt-1">{{ errors.password }}</p>
           <button 
             type="button" 
             @click="togglePassword" 
@@ -74,8 +78,9 @@
             :type="showPassword ? 'text' : 'password'" 
             placeholder="Confirm Password" 
             class="w-full bg-gray-200 py-4 px-6 rounded-xl text-gray-700"
-            v-model="user.confirm_password"
+            v-model="form.password_confirmation"
           />
+          <p v-if="errors.mobile" class="text-red-500 text-sm mt-1">{{ errors.password_confirmation }}</p>
           <button 
             type="button" 
             @click="togglePassword" 
@@ -109,7 +114,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch, computed, reactive, onMounted } from 'vue';
+import { useRouter } from "vue-router";
+import { useAuthStore } from '@/stores/authStore';
+import { storeToRefs } from 'pinia';
+import * as yup from "yup";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -118,13 +127,74 @@ import { faGoogle, faFacebook } from '@fortawesome/free-brands-svg-icons';
 // Add icons to the library
 library.add(faEye, faEyeSlash, faGoogle, faFacebook);
 
+const router = useRouter();
+const authStore = useAuthStore();
+const { user } = storeToRefs(authStore);
+
+const errors = ref({});
+
+// Validation Schema using Yup
+const schema = yup.object().shape({
+  name: yup.string().required("Name is required"),
+  mobile: yup
+    .string()
+    .matches(/^\d{10}$/, "Mobile number must be 10 digits")
+    .required("Mobile number is required"),
+  email: yup.string().email("Invalid email format").required("Email is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+    password_confirmation: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .required("Confirm password is required"),
+});
+
+// Validate Form before Submission
+const validateForm = async () => {
+  try {
+    await schema.validate(form.value, { abortEarly: false });
+    errors.value = {}; // Clear errors if validation passes
+    return true;
+  } catch (validationErrors) {
+    const formattedErrors = {};
+    validationErrors.inner.forEach((err) => {
+      formattedErrors[err.path] = err.message;
+    });
+    errors.value = formattedErrors;
+    return false;
+  }
+};
+
+
 // Reactive state
-const user = ref({
+const form = ref({
   name: "",
   mobile: null,
   email: "",
   password: "",
+  password_confirmation: ""
 })
+
+const handleRegistration = async () => {
+  console.log("clicked",form.value);
+  const isValid = await validateForm();
+  if (!isValid) return;
+    try {
+      await authStore.register(form);
+      navigateToHome();
+    } catch (error) {
+      // Handle login errors
+      console.error("Login failed", error);
+    }
+};
+
+const navigateToHome = () => {
+  console.log("Home clicked");
+  router.push("/home");
+}
+
 const showPassword = ref(false);
 const stayLoggedIn = ref(false);
 
@@ -133,8 +203,5 @@ const togglePassword = () => {
   showPassword.value = !showPassword.value;
 };
 
-const handleLogin = () => {
-  // Handle login logic here
-  console.log('Login attempted with:', user.value);
-};
+
 </script>

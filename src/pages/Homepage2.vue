@@ -23,16 +23,16 @@
           <img :src="fallbackImage" alt="User Avatar" class="w-12 h-12 rounded-full object-cover" />
           <div class="ml-4 text-white">
             <h2 class="text-lg font-bold">{{ user.name }}</h2>
-            <!-- <p>Skill Score: 584</p> -->
+            <p>Skill Score: 584</p>
           </div>
         </div>
         <div class="bg-white p-4 rounded-lg text-gray-700 mb-4">
           <p class="flex items-center font-bold">
-            <font-awesome-icon icon="wallet" class="mr-2" /> My Balance <span class="ml-auto text-red-500">₹ {{ user.funds }}</span>
+            <font-awesome-icon icon="wallet" class="mr-2" /> My Balance <span class="ml-auto text-red-500">₹ 523</span>
           </p>
           <div class="flex mt-2">
-            <button @click="handleFunds('withdraw')" class="flex-1 py-2 bg-gray-200 rounded-lg mr-2">WITHDRAW</button>
-            <button @click="handleFunds('deposit')" class="flex-1 py-2 bg-gray-200 rounded-lg">ADD CASH</button>
+            <button class="flex-1 py-2 bg-gray-200 rounded-lg mr-2">WITHDRAW</button>
+            <button class="flex-1 py-2 bg-gray-200 rounded-lg">ADD CASH</button>
           </div>
         </div>
         <ul class="text-white space-y-4">
@@ -87,7 +87,7 @@
         <div class="space-y-4">
           <div v-for="(contest, index) in contests" :key="index"
                class="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200">
-            <div @click="fetchContest(contest.node_id)" class="flex p-4">
+            <div class="flex p-4">
               <!-- Contest Image -->
               <div class="w-1/4 flex-shrink-0">
                 <!-- <img :src="contest.image" :alt="contest.title" class="w-full h-full object-cover rounded-lg" /> -->
@@ -99,7 +99,7 @@
                 <!-- Category Badge - Centered at top -->
                 <div class="text-center mb-2">
                   <span class="bg-purple-50 text-purple-700 px-6 py-1 rounded-full inline-block">
-                    {{ contest.category.name }}
+                    {{ contest.category }}
                   </span>
                 </div>
                 
@@ -113,7 +113,7 @@
                 <div class="flex items-center">
                   <span class="text-orange-400 font-bold mr-2">MEGA PRIZE</span>
                   <font-awesome-icon icon="trophy" class="text-gray-600 mx-2" />
-                  <span class="text-gray-600">Prize ₹ {{ contest.prize_money }}</span>
+                  <span class="text-gray-600">Prize ₹ {{ contest.prize }}</span>
                 </div>
               </div>
             </div>
@@ -124,29 +124,35 @@
   </template>
   
   <script setup>
-  import { ref, inject, onMounted } from 'vue';
-  import { useRouter } from 'vue-router';
+  import { ref, inject } from 'vue';
   import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useMainStore } from '@/stores/mainStore';
-import { useAuthStore } from '@/stores/authStore';
-import { useTransactionStore } from '@/stores/transactionStore';
-import { storeToRefs } from 'pinia';
 import { faBars, faWallet, faChevronLeft, faChevronRight, faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
-  // Add icons to library
-  library.add(faBars, faWallet, faChevronLeft, faChevronRight, faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt);
-    
+// Add icons to library
+library.add(faBars, faWallet, faChevronLeft, faChevronRight, faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt);
+  
+  // User data
+  const user = ref({
+    name: 'RAJSHREE AHUJA',
+    avatar: '/api/placeholder/80/80'
+  });
   const avatar = ref('/api/placeholder/80/80');
 
-  const router = useRouter();
   const config = inject('config');
   const fallbackImage = config.FALLBACK_IMAGE;
 
   const menuOpen = ref(false);
-  const currentIndex = ref(0);
-
+const currentIndex = ref(0);
   
+  // Categories
+  const categories = ref([
+    { name: 'HISTORY & CULTURE', image: '/api/placeholder/96/96' },
+    { name: 'NATURAL SCIENCE', image: '/api/placeholder/96/96' },
+    { name: 'ART & CREATIVITY', image: '/api/placeholder/96/96' },
+    { name: 'WORLD GEOGRAPHY', image: '/api/placeholder/96/96' },
+    { name: 'FOOD & BEVERAGE', image: '/api/placeholder/96/96' }
+  ]);
   
   // Promotions
   const promotions = ref([
@@ -154,80 +160,38 @@ import { faBars, faWallet, faChevronLeft, faChevronRight, faUser, faQuestionCirc
     { title: 'Explore Today\'s Top Picks of Engaging Quizzes!' },
     { title: 'Conquer the Weekly Challenges!' }
   ]);
-
-  const mainStore = useMainStore();
-  const authStore = useAuthStore();
-  const transactionStore = useTransactionStore();
-
-  const { contests, categories } = storeToRefs(mainStore);
-  const { user } = storeToRefs(authStore);
-  const { fundAction } = storeToRefs(transactionStore);
-
-  const handleFunds = (fundType) => {
-    fundAction.value = fundType;
-    console.log(fundType);
-    console.log(fundAction.value);
-    router.push('/funds');
-  }
-
-  const fetchContest = async(nodeId) => {
-    await mainStore.fetchCurrentContest(nodeId)
-    router.push('/quiz/variants')
-  }
-
-  onMounted(() => {
-    mainStore.fetchContests();
-    mainStore.fetchCategories();
-  })
-
-  // User data
-  // const user = ref({
-  //   name: 'RAJSHREE AHUJA',
-  //   avatar: '/api/placeholder/80/80'
-  // });
-  
-  // Categories
-  // const categories = ref([
-  //   { name: 'HISTORY & CULTURE', image: '/api/placeholder/96/96' },
-  //   { name: 'NATURAL SCIENCE', image: '/api/placeholder/96/96' },
-  //   { name: 'ART & CREATIVITY', image: '/api/placeholder/96/96' },
-  //   { name: 'WORLD GEOGRAPHY', image: '/api/placeholder/96/96' },
-  //   { name: 'FOOD & BEVERAGE', image: '/api/placeholder/96/96' }
-  // ]);
   
   // Upcoming contests
-  // const contests = ref([
-  //   { 
-  //     title: 'SPORT QUIZ', 
-  //     category: 'Sports & Games',
-  //     image: '/api/placeholder/100/100',
-  //     prize: '10 Lakh',
-  //     time: 'Mon 11:00 Am'
-  //   },
-  //   { 
-  //     title: 'INT. POLITICS', 
-  //     category: 'Politics',
-  //     image: '/api/placeholder/100/100',
-  //     prize: '5 Lakh',
-  //     time: 'Sun 11:00 Am'
-  //   },
-  //   { 
-  //     title: 'CURRENT AFFAIR', 
-  //     category: 'Affairs',
-  //     image: '/api/placeholder/100/100',
-  //     prize: '10 Lakh',
-  //     time: 'Mon 11:00 Am'
-  //   },
-  //   { 
-  //     title: 'HOME SCIENCE', 
-  //     category: 'Science',
-  //     image: '/api/placeholder/100/100',
-  //     prize: '10 Lakh',
-  //     time: 'Mon 11:00 Am'
-  //   }
-  // ]);
-
-
+  const contests = ref([
+    { 
+      title: 'SPORT QUIZ', 
+      category: 'Sports & Games',
+      image: '/api/placeholder/100/100',
+      prize: '10 Lakh',
+      time: 'Mon 11:00 Am'
+    },
+    { 
+      title: 'INT. POLITICS', 
+      category: 'Politics',
+      image: '/api/placeholder/100/100',
+      prize: '5 Lakh',
+      time: 'Sun 11:00 Am'
+    },
+    { 
+      title: 'CURRENT AFFAIR', 
+      category: 'Affairs',
+      image: '/api/placeholder/100/100',
+      prize: '10 Lakh',
+      time: 'Mon 11:00 Am'
+    },
+    { 
+      title: 'HOME SCIENCE', 
+      category: 'Science',
+      image: '/api/placeholder/100/100',
+      prize: '10 Lakh',
+      time: 'Mon 11:00 Am'
+    }
+  ]);
 
   const menuItems = ref([
   { text: 'Refer & Earn', icon: 'user' },

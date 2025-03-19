@@ -1,7 +1,7 @@
 <template>
     <div class="min-h-screen bg-gradient-to-b from-gray-100 to-gray-800 flex flex-col items-center relative overflow-hidden">
       <!-- Background pattern -->
-      <div class="absolute inset-0 opacity-10">
+      <div class="relative inset-0 opacity-10">
         <div v-for="i in 20" :key="i" class="absolute" :style="{
           left: `${Math.random() * 100}%`,
           top: `${Math.random() * 100}%`,
@@ -96,6 +96,9 @@
   
   <script setup>
   import { ref } from 'vue';
+  import { storeToRefs } from 'pinia';
+  import { useAuthStore } from '@/stores/authStore';
+  import { useRouter } from 'vue-router';
   import { library } from '@fortawesome/fontawesome-svg-core';
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -109,18 +112,28 @@
   const password = ref('');
   const showPassword = ref(false);
   const stayLoggedIn = ref(false);
+  const router = useRouter();
+
+  const authStore = useAuthStore();
   
   // Methods
   const togglePassword = () => {
     showPassword.value = !showPassword.value;
   };
   
-  const handleLogin = () => {
+  const handleLogin = async() => {
     // Handle login logic here
     console.log('Login attempted with:', {
       email: email.value,
       password: password.value,
       stayLoggedIn: stayLoggedIn.value
     });
+    await authStore.login({login: email.value, password: password.value})
+    navigateToHome();
   };
+
+  const navigateToHome = () => {
+  console.log("Home clicked");
+  router.push("/home");
+}
   </script>
