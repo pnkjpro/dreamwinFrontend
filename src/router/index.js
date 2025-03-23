@@ -43,6 +43,30 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/quiz/play',
+      name: 'PlayQuiz',
+      component: () => import('@/pages/PlayPage.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/quiz/play/failed',
+      name: 'FailureScreen',
+      component: () => import('@/pages/FailureScreen.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/quiz/leaderboard',
+      name: 'Leaderboard',
+      component: () => import('@/pages/Leaderboard.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/quiz/contests',
+      name: 'Contests',
+      component: () => import('@/pages/ListContests.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/variant/details',
       name: 'VariantDetails',
       component: () => import('@/pages/GameDetail.vue'),
@@ -52,7 +76,7 @@ const router = createRouter({
       path: '/quiz/instruction',
       name: 'QuizInstruction',
       component: () => import('@/pages/GameInstruction.vue'),
-      // meta: { requiresAuth:true }
+      meta: { requiresAuth:true }
     },
     {
       path: '/funds',

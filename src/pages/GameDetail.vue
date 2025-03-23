@@ -21,7 +21,7 @@
   
       <!-- Join Button -->
       <div class="mx-4 my-2">
-        <button class="w-full bg-green-500 text-white py-3 rounded-lg font-medium">
+        <button @click="handleJoinGame()" class="w-full bg-green-500 text-white py-3 rounded-lg font-medium">
           JOIN ₹ {{ variant.entry_fee }}
         </button>
       </div>
@@ -71,5 +71,8 @@
   const router = useRouter();
   const mainStore = useMainStore();
   const {contest, prizeContents, variant} = storeToRefs(mainStore);
+  const handleJoinGame = () => {
+    router.push('/quiz/instruction');
+  }
   console.log(prizeContents.value);
   </script>

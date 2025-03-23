@@ -7,6 +7,7 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
 
 import config from './config/config';
+import lifeline from './config/lifeline';
 
 
 import App from './App.vue';
@@ -18,5 +19,6 @@ app.use(createPinia());
 app.use(router);
 
 app.provide('config', config);
+app.provide('lifeline', lifeline);
 
 app.mount('#app');

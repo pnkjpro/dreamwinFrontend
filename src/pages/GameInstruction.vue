@@ -18,7 +18,7 @@
         <h1 class="text-3xl font-semibold text-gray-600">SPORT QUIZ</h1>
         <p class="text-red-500 text-sm my-2">2 h 24m left</p>
         <!-- Fixed START button with more visible styling -->
-        <button class="bg-gray-400 hover:bg-gray-500 text-white font-medium px-8 py-1.5 text-sm mt-1 rounded">
+        <button @click="handlePlayGame()" class="bg-gray-400 hover:bg-gray-500 text-white font-medium px-8 py-1.5 text-sm mt-1 rounded">
           START
         </button>
       </div>
@@ -68,8 +68,20 @@
 <script setup>
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useQuizStore } from '@/stores/quizStore';
+import { storeToRefs } from 'pinia';
 import { faArrowLeft, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'vue-router';
 
 // Register FontAwesome icons
 library.add(faArrowLeft, faCircle);
+
+const quizStore = useQuizStore();
+const router = useRouter();
+const { playQuiz, question } = storeToRefs(quizStore);
+
+const handlePlayGame = async() => {
+  await quizStore.playQuiz();
+  router.push('/quiz/play');
+}
 </script>
