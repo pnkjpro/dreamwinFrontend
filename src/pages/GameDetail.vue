@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col min-h-screen bg-gray-100">
       <!-- Header -->
-      <div class="bg-orange-500 text-white p-3 flex items-center">
+      <div @click="navigateToBack()" class="bg-orange-500 text-white p-3 flex items-center">
         <font-awesome-icon icon="arrow-left" class="mr-2" />
         <span class="text-sm">2 h 24m left</span>
       </div>
@@ -73,6 +73,10 @@
   const {contest, prizeContents, variant} = storeToRefs(mainStore);
   const handleJoinGame = () => {
     router.push('/quiz/instruction');
+  }
+
+  const navigateToBack = () => {
+    router.back();
   }
   console.log(prizeContents.value);
   </script>

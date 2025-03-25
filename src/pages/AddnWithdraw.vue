@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col min-h-screen bg-gray-100">
       <!-- Header -->
-      <div class="bg-orange-500 text-white p-3 flex items-center">
+      <div @click="navigateToBack()" class="bg-orange-500 text-white p-3 flex items-center">
         <font-awesome-icon icon="arrow-left" class="mr-2" />
         <span class="font-medium">Fund Management</span>
       </div>
@@ -158,13 +158,15 @@
   import { library } from '@fortawesome/fontawesome-svg-core';
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { storeToRefs } from 'pinia';
-import { useAuthStore } from '@/stores/authStore';
+  import { storeToRefs } from 'pinia';
+  import { useAuthStore } from '@/stores/authStore';
+  import { useRouter } from 'vue-router';
   
   // Register FontAwesome icons
   library.add(faArrowLeft);
   // State for tab management
   const activeTab = ref('deposit');
+  const router = useRouter();
 
   const useTransaction = useTransactionStore();
   const useAuth = useAuthStore();
@@ -206,4 +208,8 @@ import { useAuthStore } from '@/stores/authStore';
       alert('Please enter a valid amount');
     }
   };
+
+  const navigateToBack = () => {
+    router.back();
+  }
   </script>

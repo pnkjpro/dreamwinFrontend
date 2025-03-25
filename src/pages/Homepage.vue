@@ -36,7 +36,7 @@
           </div>
         </div>
         <ul class="text-white space-y-4">
-          <li v-for="(item, index) in menuItems" :key="index" class="flex items-center cursor-pointer">
+          <li v-for="(item, index) in menuItems" :key="index" @click="navigateTo(item.url)" class="flex items-center cursor-pointer">
             <font-awesome-icon :icon="item.icon" class="mr-3" />
             <span>{{ item.text }}</span>
           </li>
@@ -230,13 +230,17 @@ import { faBars, faWallet, faChevronLeft, faChevronRight, faUser, faQuestionCirc
 
 
   const menuItems = ref([
-  { text: 'Refer & Earn', icon: 'user' },
-  { text: 'Help', icon: 'question-circle' },
-  { text: 'About Us', icon: 'file-alt' },
-  { text: 'How to Play', icon: 'gamepad' },
-  { text: 'Terms & Conditions', icon: 'file-alt' },
-  { text: 'Logout', icon: 'sign-out-alt' }
+  { text: 'Refer & Earn', icon: 'user', url: 'refernearn' },
+  { text: 'Help', icon: 'question-circle', url: 'help' },
+  { text: 'About Us', icon: 'file-alt', url: 'aboutus' },
+  { text: 'How to Play', icon: 'gamepad', url: 'how_to_play' },
+  { text: 'Terms & Conditions', icon: 'file-alt', url: 'terms' },
+  { text: 'Logout', icon: 'sign-out-alt', url: 'logout' }
 ]);
+
+const navigateTo = (url) => {
+  router.push(`/${url}`);
+}
 
 const toggleMenu = () => menuOpen.value = !menuOpen.value;
   </script>

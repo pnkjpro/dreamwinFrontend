@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col min-h-screen bg-gray-100">
     <!-- Header -->
-    <div class="bg-orange-500 text-white p-3 flex items-center">
+    <div @click="navigateToBack()" class="bg-orange-500 text-white p-3 flex items-center">
       <font-awesome-icon icon="arrow-left" class="mr-2" />
       <span class="text-sm">2 h 24m left</span>
       <div class="ml-auto">
@@ -147,6 +147,10 @@ const navigateTo = (variantId) => {
   console.log("gamelist variantId",variantId);
   mainStore.getPrizeContents(variantId);
   router.push('/variant/details');
+}
+
+const navigateToBack = () => {
+  router.back();
 }
 
 // Register FontAwesome icons
