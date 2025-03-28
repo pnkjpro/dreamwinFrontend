@@ -37,7 +37,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function register(userData) {
     loading.value = true;
-    error.value = null;
     try {
       const response = await api.post('/users/create', userData.value);
       user.value = response.data.user;
@@ -55,7 +54,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function login(credentials) {
     loading.value = true;
-    error.value = null;
     try {
       // Get CSRF cookie
       await axios.get(`${config.BASE_URL}/sanctum/csrf-cookie`);
@@ -105,6 +103,26 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function updateUpiId(newUpiId){
+    try{
+      loading.value = true;
+      const response = await api.post('/users/update/upi', {
+        upi_id: newUpiId
+      });
+      fetchUser();
+      loading.value = false;
+      if (response.data.success) {
+          return { success: true, message: response.data.message }
+      } else {
+          return { success: false, message: response.data.message}
+      }
+    } catch (error) {
+        loading.value = false;
+        console.error("Error withdrawing funds:", error);
+        return { success: false, message: "Something went wrong. Please try again." }
+    }
+  }
+
   return { 
     user, 
     loading, 
@@ -113,6 +131,7 @@ export const useAuthStore = defineStore('auth', () => {
     register, 
     login, 
     logout, 
-    fetchUser 
+    fetchUser,
+    updateUpiId
   };
 });

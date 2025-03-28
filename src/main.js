@@ -1,4 +1,6 @@
 import { createApp } from 'vue';
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 import { createPinia } from 'pinia';
 import '@mdi/font/css/materialdesignicons.css';
 import './assets/main.css'; // Import Tailwind CSS
@@ -16,6 +18,7 @@ import router from './router';
 const app = createApp(App);
 
 app.use(createPinia());
+app.use(Toast);
 app.use(router);
 
 app.provide('config', config);

@@ -121,7 +121,7 @@ router.beforeEach(async (to, from, next) => {
 if (to.meta.requiresAuth && !isAuthenticated) {
   next({ path: '/auth/login' });
 } else if (to.meta.guestOnly && isAuthenticated) {
-  next({ path: '/main/home' });
+  next({ path: '/home' });
 } else {
   next();
 }
