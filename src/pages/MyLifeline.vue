@@ -17,12 +17,12 @@
             <div class="text-sm text-gray-600">Available Balance</div>
             <div class="text-xl font-bold">₹ {{ user.funds }}</div>
           </div>
-          <router-link 
-            to="/add-fund" 
+          <button 
+            @click="navigateTo('funds')" 
             class="bg-orange-500 text-white px-4 py-1.5 rounded-lg text-sm font-medium"
           >
             Add Funds
-          </router-link>
+        </button>
         </div>
       </div>
   
@@ -40,10 +40,10 @@
             <div class="text-sm text-gray-600">Removes two incorrect options</div>
             <div class="mt-1.5 flex items-center">
               <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-                ₹ {{ l29 }} each
+                ₹ {{ 29 }} each
               </span>
               <span class="ml-3 text-xs text-green-600 font-medium">
-                Available: {{ user.lifelines[0].quantity }}
+                Available: {{ lifelines[0].quantity }}
               </span>
             </div>
           </div>
@@ -62,7 +62,7 @@
                 ₹ 49 each
               </span>
               <span class="ml-3 text-xs text-green-600 font-medium">
-                Available: {{ user.lifelines[1].quantity }}
+                Available: {{ lifelines[1].quantity }}
               </span>
             </div>
           </div>
@@ -81,7 +81,7 @@
                 ₹ 99 each
               </span>
               <span class="ml-3 text-xs text-green-600 font-medium">
-                Available: {{ user.lifelines[2].quantity }}
+                Available: {{ lifelines[2].quantity }}
               </span>
             </div>
           </div>
@@ -132,10 +132,10 @@
               <span>× {{ purchaseQuantity }}</span>
             </div>
             <div class="border-t border-gray-300 my-2"></div>
-            <div class="flex justify-between font-bold">
+            <!-- <div class="flex justify-between font-bold">
               <span>Total:</span>
               <span>₹ {{ getTotalPrice() }}</span>
-            </div>
+            </div> -->
           </div>
           
           <div v-if="errorMessage" class="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
@@ -177,12 +177,14 @@
     faClock 
   } from '@fortawesome/free-solid-svg-icons';
 import { useRouter, onBeforeRouteLeave } from 'vue-router';
+import { useToast } from "vue-toastification";
   
   // Register FontAwesome icons
   library.add(faArrowLeft, faCoins, faDivide, faForwardStep, faClock);
 
 
   const router = useRouter();
+  const toast = useToast();
   const lifelineReference = inject('lifeline')
   const mainStore = useMainStore();
   const authStore = useAuthStore();
@@ -190,105 +192,41 @@ import { useRouter, onBeforeRouteLeave } from 'vue-router';
   const transactionStore = useTransactionStore();
   const { user } = storeToRefs(authStore);
 
+  const lifelines = computed(() => user.value.lifelines || 0);
+
   const handlePurchaseLifeline = async() => {
-    console.log("hit");
-    await lifelineStore.purchaseLifeline(selectedLifeline, purchaseQuantity);
-    // router.push('/lifeline');
+    if(!selectedLifeline.value || purchaseQuantity.value > 0){
+      const result = await lifelineStore.purchaseLifeline(selectedLifeline.value, purchaseQuantity.value);
+      if(result.success){
+        toast.success(result.message);
+      }else{
+        toast.error(result.message);
+      }
+    } else {
+      toast.error("Please enter valid field!");
+    }
+    //reseting the value;
+    selectedLifeline.value = '';
+    purchaseQuantity.value = 1;
   }
-  
-  // Available balance
-  const availableBalance = ref(100); // Example amount (low to demonstrate insufficient funds)
 
   const navigateToBack = () => {
     router.back();
   }
-  
-  // Lifeline data
-  const lifelines = ref({
-    fifty: {
-      name: "50:50 Lifeline",
-      price: 29,
-      quantity: 2
-    },
-    skip: {
-      name: "Skip Lifeline",
-      price: 49,
-      quantity: 1
-    },
-    extendTime: {
-      name: "Revive Lifeline",
-      price: 99,
-      quantity: 3
-    }
-  });
+
+  const navigateTo = (link) => {
+    router.push(`/${link}`)
+  }
   
   // Purchase form state
   const selectedLifeline = ref('');
   const purchaseQuantity = ref(1);
-  const errorMessage = ref('');
-  const insufficientFunds = ref(false);
 
-  watch(selectedLifeline, (newValue) => {
-    console.log(newValue);
-  });
-
-  watch(purchaseQuantity, (newQuantity) => {
-    console.log(newQuantity);
-  })
-
-  onBeforeRouteLeave((to, from, next) => {
-  if (!confirm("Are you sure you want to leave the game, huh?")) {
-    next(false); // Cancel navigation
-  } else {
-    next(); // Allow navigation
-  }
-});
-
-const handleBeforeUnload = (event) => {
-  event.preventDefault();
-  alert("confirm");
-  event.returnValue = "Are you sure you want to leave?"; // Required for some browsers
-};
-  
-  // Get price for selected lifeline
-  const getLifelinePrice = (lifelineType) => {
-    if (!lifelineType) return 0;
-    return lifelines.value[lifelineType].price;
-  };
-  
-  // Calculate total price
-  const getTotalPrice = () => {
-    if (!selectedLifeline.value) return 0;
-    return getLifelinePrice(selectedLifeline.value) * purchaseQuantity.value;
-  };
-  
-  // Purchase lifeline
-  const purchaseLifeline = () => {
-    errorMessage.value = '';
-    insufficientFunds.value = false;
-    
-    const totalPrice = getTotalPrice();
-    
-    // Validate available funds
-    if (totalPrice > availableBalance.value) {
-      errorMessage.value = `Insufficient funds. You need ₹${totalPrice - availableBalance.value} more.`;
-      insufficientFunds.value = true;
-      return;
-    }
-    
-    // Validate quantity
-    if (purchaseQuantity.value <= 0) {
-      errorMessage.value = 'Please select at least 1 lifeline to purchase.';
-      return;
-    }
-    
-    // Process purchase
-    availableBalance.value -= totalPrice;
-    lifelines.value[selectedLifeline.value].quantity += purchaseQuantity.value;
-    
-    // Reset form
-    alert(`Successfully purchased ${purchaseQuantity.value} ${lifelines.value[selectedLifeline.value].name}`);
-    selectedLifeline.value = '';
-    purchaseQuantity.value = 1;
-  };
+//   onBeforeRouteLeave((to, from, next) => {
+//   if (!confirm("Are you sure you want to leave the game, huh?")) {
+//     next(false); // Cancel navigation
+//   } else {
+//     next(); // Allow navigation
+//   }
+// });
   </script>

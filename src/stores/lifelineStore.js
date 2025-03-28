@@ -55,20 +55,24 @@ export const useLifelineStore = defineStore('lifeline', () => {
 
     async function purchaseLifeline(lifelineId, quantity){
         try{
-            console.log("pinia hit", lifelineId.value, quantity.value);
             loading.value = true;
-            error.value = null;
             const response = await api.post('/lifeline/purchase', {
-                lifeline_id: lifelineId.value,
-                quantity: quantity.value
+                lifeline_id: lifelineId,
+                quantity: quantity
             });
-            console.log(response.data.data);
-            return
 
-        }catch(err){
-            console.log(err);
-        }finally{
-            loading.value = false
+            authStore.fetchUser();
+
+            loading.value = false;
+            if (response.data.success) {
+                return { success: true, message: response.data.message }
+            } else {
+                return { success: false, message: response.data.message}
+            }
+        } catch (error) {
+            loading.value = false;
+            console.error("Error purchasing lifeline:", error);
+            return { success: false, message: "Something went wrong. Please try again." }
         }
     }
 
