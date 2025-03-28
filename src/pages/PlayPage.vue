@@ -56,7 +56,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span class="text-xl font-bold">01:01</span>
+            <span class="text-xl font-bold">{{ timeLeft }}</span>
           </div>
         </div>
   
@@ -75,81 +75,82 @@
             {{ option.option }}
           </button>
         </div>
-        <!-- <div class="space-y-4">
-          <button 
-            class="w-full py-4 px-6 border-2 border-rose-400 rounded-full text-rose-500 font-bold text-2xl hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-300"
-            :class="{ 'hidden': options[0].hidden }"
-            @click="selectAnswer(0)"
-          >
-            32
-          </button>
-          <button 
-            class="w-full py-4 px-6 bg-gradient-to-r from-rose-500 to-red-600 rounded-full text-white font-bold text-2xl hover:from-rose-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-rose-300"
-            :class="{ 'hidden': options[1].hidden }"
-            @click="selectAnswer(1)"
-          >
-            16
-          </button>
-          <button 
-            class="w-full py-4 px-6 border-2 border-rose-400 rounded-full text-rose-500 font-bold text-2xl hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-300"
-            :class="{ 'hidden': options[2].hidden }"
-            @click="selectAnswer(2)"
-          >
-            8
-          </button>
-          <button 
-            class="w-full py-4 px-6 border-2 border-rose-400 rounded-full text-rose-500 font-bold text-2xl hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-300"
-            :class="{ 'hidden': options[3].hidden }"
-            @click="selectAnswer(3)"
-          >
-            64
-          </button>
-        </div> -->
       </div>
     </div>
   </template>
   
   <script setup>
   import { useLifelineStore } from '@/stores/lifelineStore';
-import { useMainStore } from '@/stores/mainStore';
-import { useQuizStore } from '@/stores/quizStore';
-import { storeToRefs } from 'pinia';
-import { ref, reactive, watch, inject } from 'vue';
-import { useRouter } from 'vue-router';
+  import { useMainStore } from '@/stores/mainStore';
+  import { useQuizStore } from '@/stores/quizStore';
+  import { storeToRefs } from 'pinia';
+  import { ref, inject, onMounted, onUnmounted, watch } from 'vue';
+  import { useRouter } from 'vue-router';
   
-  // Question data
-  const currentQuestion = ref(67);
-  const totalQuestions = ref(100);
-  const timeLeft = ref('01:00');
-  const points = ref(1);
-  const players = ref(100);
   const router = useRouter();
-  const lifelines = inject('lifeline');
   const quizStore = useQuizStore();
   const lifelineStore = useLifelineStore();
   const mainStore = useMainStore();
   const { question } = storeToRefs(quizStore);
   const { contest } = storeToRefs(mainStore);
   const { removedOption } = storeToRefs(lifelineStore);
-
-  const handleNextQuestion = async(selectedOption) => {
+  const lifelines = inject('lifeline');
+  
+  const timeLeft = ref(30);
+  let timer = null;
+  
+  // Function to start the timer
+  const startTimer = () => {
+    clearInterval(timer); // Clear any existing timer
+    timeLeft.value = 30;
+  
+    timer = setInterval(() => {
+      if (timeLeft.value > 0) {
+        timeLeft.value--;
+      } else {
+        clearInterval(timer);
+        handleTimeout();
+      }
+    }, 1000);
+  };
+  
+  // Handle timeout scenario
+  const handleTimeout = async () => {
+    await quizStore.nextQuestion(null); // Pass null to indicate timeout
+    router.push('/quiz/play/failed'); // Redirect the user
+  };
+  
+  // Handle user selecting an answer
+  const handleNextQuestion = async (selectedOption) => {
+    clearInterval(timer); // Stop timer when user answers
     removedOption.value = [];
     await quizStore.nextQuestion(selectedOption);
-  }
-
-  // Watch for changes to the question
-watch(question, (newQuestion) => {
-  console.log('Question changed:', newQuestion);
-}, { deep: true });
-
-const handleLifeline = async(lifelineId) => {
-  removedOption.value = [];
+    startTimer(); // Restart timer for next question
+  };
+  
+  // Watch for changes in the question to restart the timer
+  watch(question, () => {
+    startTimer();
+  }, { deep: true });
+  
+  // Handle lifeline usage
+  const handleLifeline = async (lifelineId) => {
+    removedOption.value = [];
     lifelineStore.useLifeline({
       lifeline_id: lifelineId,
       node_id: contest.value.node_id,
       question_id: question.value.id
-    })
-}
+    });
+  };
   
+  // Start timer when component is mounted
+  onMounted(() => {
+    startTimer();
+  });
   
+  // Cleanup timer when component is unmounted
+  onUnmounted(() => {
+    clearInterval(timer);
+  });
   </script>
+  

@@ -1,12 +1,12 @@
 <template>
     <div class="flex flex-col min-h-screen bg-gray-100">
       <!-- Header -->
-      <div class="bg-orange-500 text-white p-3 flex items-center">
+      <div @click="navigateToBack()" class="bg-orange-500 text-white p-3 flex items-center">
         <font-awesome-icon icon="arrow-left" class="mr-2" />
         <span class="font-medium">My Lifelines</span>
         <div class="ml-auto flex items-center">
           <font-awesome-icon icon="coins" class="mr-1" />
-          <span>₹ {{ availableBalance }}</span>
+          <span>₹ {{ user.funds }}</span>
         </div>
       </div>
   
@@ -15,7 +15,7 @@
         <div class="flex justify-between items-center">
           <div>
             <div class="text-sm text-gray-600">Available Balance</div>
-            <div class="text-xl font-bold">₹ {{ availableBalance }}</div>
+            <div class="text-xl font-bold">₹ {{ user.funds }}</div>
           </div>
           <router-link 
             to="/add-fund" 
@@ -40,10 +40,10 @@
             <div class="text-sm text-gray-600">Removes two incorrect options</div>
             <div class="mt-1.5 flex items-center">
               <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-                ₹ 49 each
+                ₹ {{ l29 }} each
               </span>
               <span class="ml-3 text-xs text-green-600 font-medium">
-                Available: {{ lifelines.fifty.quantity }}
+                Available: {{ user.lifelines[0].quantity }}
               </span>
             </div>
           </div>
@@ -59,10 +59,10 @@
             <div class="text-sm text-gray-600">Skip the current question without penalty</div>
             <div class="mt-1.5 flex items-center">
               <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-                ₹ 149 each
+                ₹ 49 each
               </span>
               <span class="ml-3 text-xs text-green-600 font-medium">
-                Available: {{ lifelines.skip.quantity }}
+                Available: {{ user.lifelines[1].quantity }}
               </span>
             </div>
           </div>
@@ -74,14 +74,14 @@
             <font-awesome-icon icon="clock" class="text-yellow-600 text-lg" />
           </div>
           <div class="flex-1">
-            <div class="font-medium">Extend Time Lifeline</div>
+            <div class="font-medium">Revive Lifeline</div>
             <div class="text-sm text-gray-600">Add 30 seconds to your question timer</div>
             <div class="mt-1.5 flex items-center">
               <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-                ₹ 29 each
+                ₹ 99 each
               </span>
               <span class="ml-3 text-xs text-green-600 font-medium">
-                Available: {{ lifelines.extendTime.quantity }}
+                Available: {{ user.lifelines[2].quantity }}
               </span>
             </div>
           </div>
@@ -101,9 +101,9 @@
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             >
               <option value="">Select a lifeline to purchase</option>
-              <option value="fifty">50:50 Lifeline (₹ 49)</option>
-              <option value="skip">Skip Lifeline (₹ 149)</option>
-              <option value="extendTime">Extend Time by 30s (₹ 29)</option>
+              <option value="1">50:50 Lifeline (₹ 29)</option>
+              <option value="2">Skip Lifeline (₹ 49)</option>
+              <option value="3">Revive Game (₹ 99)</option>
             </select>
           </div>
           
@@ -151,8 +151,7 @@
           
           <button 
             class="bg-orange-500 text-white py-2 px-6 rounded-lg font-medium w-full"
-            @click="purchaseLifeline"
-            :disabled="!selectedLifeline || purchaseQuantity <= 0"
+            @click="handlePurchaseLifeline"
           >
             PURCHASE
           </button>
@@ -162,7 +161,12 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, inject, watch } from 'vue';
+  import { useMainStore } from '@/stores/mainStore';
+  import { useAuthStore } from '@/stores/authStore';
+  import { useLifelineStore } from '@/stores/lifelineStore';
+  import { useTransactionStore } from '@/stores/transactionStore';
+  import { storeToRefs } from 'pinia';
   import { library } from '@fortawesome/fontawesome-svg-core';
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   import { 
@@ -172,28 +176,48 @@
     faForwardStep, 
     faClock 
   } from '@fortawesome/free-solid-svg-icons';
+import { useRouter, onBeforeRouteLeave } from 'vue-router';
   
   // Register FontAwesome icons
   library.add(faArrowLeft, faCoins, faDivide, faForwardStep, faClock);
+
+
+  const router = useRouter();
+  const lifelineReference = inject('lifeline')
+  const mainStore = useMainStore();
+  const authStore = useAuthStore();
+  const lifelineStore = useLifelineStore();
+  const transactionStore = useTransactionStore();
+  const { user } = storeToRefs(authStore);
+
+  const handlePurchaseLifeline = async() => {
+    console.log("hit");
+    await lifelineStore.purchaseLifeline(selectedLifeline, purchaseQuantity);
+    // router.push('/lifeline');
+  }
   
   // Available balance
   const availableBalance = ref(100); // Example amount (low to demonstrate insufficient funds)
+
+  const navigateToBack = () => {
+    router.back();
+  }
   
   // Lifeline data
   const lifelines = ref({
     fifty: {
       name: "50:50 Lifeline",
-      price: 49,
+      price: 29,
       quantity: 2
     },
     skip: {
       name: "Skip Lifeline",
-      price: 149,
+      price: 49,
       quantity: 1
     },
     extendTime: {
-      name: "Extend Time Lifeline",
-      price: 29,
+      name: "Revive Lifeline",
+      price: 99,
       quantity: 3
     }
   });
@@ -203,6 +227,28 @@
   const purchaseQuantity = ref(1);
   const errorMessage = ref('');
   const insufficientFunds = ref(false);
+
+  watch(selectedLifeline, (newValue) => {
+    console.log(newValue);
+  });
+
+  watch(purchaseQuantity, (newQuantity) => {
+    console.log(newQuantity);
+  })
+
+  onBeforeRouteLeave((to, from, next) => {
+  if (!confirm("Are you sure you want to leave the game, huh?")) {
+    next(false); // Cancel navigation
+  } else {
+    next(); // Allow navigation
+  }
+});
+
+const handleBeforeUnload = (event) => {
+  event.preventDefault();
+  alert("confirm");
+  event.returnValue = "Are you sure you want to leave?"; // Required for some browsers
+};
   
   // Get price for selected lifeline
   const getLifelinePrice = (lifelineType) => {

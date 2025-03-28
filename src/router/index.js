@@ -93,6 +93,12 @@ const router = createRouter({
       path: '/createQuiz',
       name: 'CreateQuiz',
       component: () => import('@/pages/CreateExamsheet.vue')
+    },
+    {
+      path: '/lifeline',
+      name: 'Lifeline',
+      component: () => import('@/pages/MyLifeline.vue'),
+      meta: { requiresAuth:true }
     }
   ],
 })

@@ -117,7 +117,7 @@ import { useRouter } from 'vue-router';
 
   
   // Revival timer
-  const initialTime = 30; // 30 seconds for revival
+  const initialTime = 7; // 30 seconds for revival
   const timeRemaining = ref(initialTime);
   let timerInterval = null;
   

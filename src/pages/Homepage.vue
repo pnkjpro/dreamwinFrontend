@@ -231,6 +231,7 @@ import { faBars, faWallet, faChevronLeft, faChevronRight, faUser, faQuestionCirc
 
   const menuItems = ref([
   { text: 'Refer & Earn', icon: 'user', url: 'refernearn' },
+  { text: 'My Lifelines', icon: 'phone', url: 'lifeline'},
   { text: 'Help', icon: 'question-circle', url: 'help' },
   { text: 'About Us', icon: 'file-alt', url: 'aboutus' },
   { text: 'How to Play', icon: 'gamepad', url: 'how_to_play' },

@@ -5,17 +5,19 @@ import { useMainStore } from './mainStore';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useQuizStore } from './quizStore';
+import lifeline from '@/config/lifeline';
 
 export const useLifelineStore = defineStore('lifeline', () => {
     const loading = ref(false);
     const error = ref(null);
+    const lifelines = ref([]);
     const config = inject('config');
     const router = useRouter();
     const removedOption = ref([]);
     const mainStore = useMainStore();
     const authStore = useAuthStore();
     const quizStore = useQuizStore();
-    const { token } = storeToRefs(authStore);
+    const { token, user } = storeToRefs(authStore);
     const { contests, contest, variant } = storeToRefs(mainStore);
     const { question } = storeToRefs(quizStore);
 
@@ -51,9 +53,28 @@ export const useLifelineStore = defineStore('lifeline', () => {
         }
     }
 
+    async function purchaseLifeline(lifelineId, quantity){
+        try{
+            console.log("pinia hit", lifelineId.value, quantity.value);
+            loading.value = true;
+            error.value = null;
+            const response = await api.post('/lifeline/purchase', {
+                lifeline_id: lifelineId.value,
+                quantity: quantity.value
+            });
+            console.log(response.data.data);
+            return
+
+        }catch(err){
+            console.log(err);
+        }finally{
+            loading.value = false
+        }
+    }
+
     return {
         useLifeline,
-        removedOption
-
+        removedOption,
+        purchaseLifeline,
     }
 });
