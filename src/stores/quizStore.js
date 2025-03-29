@@ -10,6 +10,7 @@ export const useQuizStore = defineStore('playQuiz', () => {
     const error = ref(null);
     const config = inject('config');
     const router = useRouter();
+    const responses = ref([]);
     const question = ref({});
     const mainStore = useMainStore();
     const authStore = useAuthStore();
@@ -58,9 +59,31 @@ export const useQuizStore = defineStore('playQuiz', () => {
         }
       }
 
+      async function getUserResponses(){
+        try{
+          const response = await api.get('/quiz/responses/list');
+          responses.value = response.data.data;
+          console.log("pinia: ",responses.value);
+
+          loading.value = false;
+          return {
+              success: response.data.success,
+              message: response.data.message
+          }
+      } catch (error) {
+          loading.value = false;
+          console.error("Error Responses:", error);
+          const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+          return { success: false, message: errorMessage };
+      }
+      }
+
       return {
         playQuiz,
         nextQuestion,
+        getUserResponses,
+        responses,
         question,
         loading,
         error

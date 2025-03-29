@@ -142,10 +142,10 @@ import { useMainStore } from '@/stores/mainStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useTransactionStore } from '@/stores/transactionStore';
 import { storeToRefs } from 'pinia';
-import { faBars, faWallet, faChevronLeft, faChevronRight, faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
   // Add icons to library
-  library.add(faBars, faWallet, faChevronLeft, faChevronRight, faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt);
+  library.add(faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt);
     
   const avatar = ref('/api/placeholder/80/80');
 
@@ -193,6 +193,8 @@ import { faBars, faWallet, faChevronLeft, faChevronRight, faUser, faQuestionCirc
   const menuItems = ref([
   { text: 'Refer & Earn', icon: 'user', url: 'refernearn' },
   { text: 'My Lifelines', icon: 'phone', url: 'lifeline'},
+  { text: 'My Transactions', icon: 'cash-register', url: 'transactions'},
+  { text: 'My Contests', icon: 'gamepad', url: 'my-contests'},
   { text: 'Help', icon: 'question-circle', url: 'help' },
   { text: 'About Us', icon: 'file-alt', url: 'aboutus' },
   { text: 'How to Play', icon: 'gamepad', url: 'how_to_play' },

@@ -7,7 +7,7 @@ export const useMainStore = defineStore('main', () => {
   const loading = ref(false);
   const error = ref(null);
   const contests = ref([]);
-  const contest = ref({});
+  const contest = ref(null);
   const variant = ref({});
   const prizeContents = ref([]);
   const currentContest = ref([]);
@@ -50,8 +50,8 @@ export const useMainStore = defineStore('main', () => {
     console.log("pinia VariantId",variantId);
     variant.value = contest.value.quiz_variants.find(v => v.id === variantId);
     if (variant.value) {
-    prizeContents.value = variant.value.prize_contents;
-}
+      prizeContents.value = variant.value.prize_contents;
+    }
 
   }
 

@@ -99,6 +99,18 @@ const router = createRouter({
       name: 'Lifeline',
       component: () => import('@/pages/MyLifeline.vue'),
       meta: { requiresAuth:true }
+    },
+    {
+      path: '/transactions',
+      name: 'Transactions',
+      component: () => import('@/pages/MyTransactions.vue'),
+      meta: { requiresAuth:true }
+    },
+    {
+      path: '/my-contests',
+      name: 'MyContests',
+      component: () => import('@/pages/MyContests.vue'),
+      meta: { requiresAuth:true }
     }
   ],
 })

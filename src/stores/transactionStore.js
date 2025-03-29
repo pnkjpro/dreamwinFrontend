@@ -1,12 +1,13 @@
 import { defineStore, storeToRefs } from "pinia";
 import { useAuthStore } from "./authStore";
-import { ref, watch, computed, onMounted, inject } from "vue";
+import { ref, watch, computed, onMounted, inject, reactive } from "vue";
 import axios from "axios";
 import { useToast } from "vue-toastification";
 import { useMainStore } from "./mainStore";
 
 export const useTransactionStore = defineStore('transaction', () => {
     const loading = ref(false);
+    const transactions = ref([]);
     const error = ref(null);
     const toast = useToast();
     const config = inject('config');
@@ -99,11 +100,32 @@ export const useTransactionStore = defineStore('transaction', () => {
         }
     }
 
+    async function getTransactions() {
+        try {
+            const response = await api.get('/funds/transaction/list');
+            transactions.value = response.data.data;
+            console.log("pinia: ",transactions.value);
+
+            loading.value = false;
+            return {
+                success: response.data.success,
+                message: response.data.message
+            }
+        } catch (error) {
+            loading.value = false;
+            console.error("Error Joining Game:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+            return { success: false, message: errorMessage };
+        }
+    }
+
     return {
         fundAction,
         addFunds,
         withdrawFunds,
-        joinGame
-
+        joinGame,
+        getTransactions,
+        transactions
     };
 });
