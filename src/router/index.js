@@ -55,6 +55,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/quiz/play/finished',
+      name: 'FinishedScreen',
+      component: () => import('@/pages/FinishedScreen.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/quiz/leaderboard',
       name: 'Leaderboard',
       component: () => import('@/pages/Leaderboard.vue'),

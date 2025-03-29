@@ -48,19 +48,23 @@ export const useQuizStore = defineStore('playQuiz', () => {
           // More explicit update - replace the entire object
           question.value =  {...response.data.data };
           
-          console.log("Updated question:", question.value);
-          return question.value;
-        } catch (err) {
-          error.value = err.message || 'Failed to load next question';
-          router.push('/quiz/play/failed');
-          console.error(error.value);
-        } finally {
           loading.value = false;
-        }
+          return {
+              success: response.data.success,
+              message: response.data.message
+          }
+      } catch (error) {
+          loading.value = false;
+          console.error("Error Responses:", error);
+          const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+          return { success: false, message: errorMessage };
+      }
       }
 
       async function getUserResponses(){
         try{
+          loading.value = true;
           const response = await api.get('/quiz/responses/list');
           responses.value = response.data.data;
           console.log("pinia: ",responses.value);

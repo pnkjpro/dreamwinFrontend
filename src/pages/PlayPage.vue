@@ -1,29 +1,33 @@
 <template>
     <div class="min-h-screen bg-gradient-to-b from-rose-300 to-rose-600 p-4 flex flex-col items-center">
       <!-- Progress bar -->
-      <div class="w-full max-w-md mb-8 mt-24">
-        <div class="flex justify-between mb-2">
-          <div class="bg-amber-400 flex items-center justify-center px-4 py-2 rounded-full">
-            <span class="text-black font-bold flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5 3a2 2 0 012-2h6a2 2 0 012 2v1h2a2 2 0 012 2v11a2 2 0 01-2 2H3a2 2 0 01-2-2V6a2 2 0 012-2h2V3zm6 0H9v1h2V3z" clip-rule="evenodd" />
-              </svg>
-              5 Point
-            </span>
-          </div>
-          <div class="bg-rose-500 flex items-center justify-center px-4 py-2 rounded-full">
-            <span class="text-white font-bold flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-              </svg>
-              100
-            </span>
-          </div>
-        </div>
-        <div class="bg-gray-300 rounded-full h-4">
-          <div class="bg-white rounded-full h-4 w-1/5"></div>
-        </div>
-      </div>
+      <!-- Progress bar -->
+<div class="w-full max-w-md mb-8 mt-24">
+  <div class="flex justify-between mb-2">
+    <div class="bg-amber-400 flex items-center justify-center px-4 py-2 rounded-full">
+      <span class="text-black font-bold flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5 3a2 2 0 012-2h6a2 2 0 012 2v1h2a2 2 0 012 2v11a2 2 0 01-2 2H3a2 2 0 01-2-2V6a2 2 0 012-2h2V3zm6 0H9v1h2V3z" clip-rule="evenodd" />
+        </svg>
+        {{ question.id }} / {{ totalQuestions }}
+      </span>
+    </div>
+    <div class="bg-rose-500 flex items-center justify-center px-4 py-2 rounded-full">
+      <span class="text-white font-bold flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+        </svg>
+        100
+      </span>
+    </div>
+  </div>
+  <div class="bg-gray-300 rounded-full h-4">
+    <div 
+      class="bg-white rounded-full h-4" 
+      :style="{ width: progressPercentage + '%' }"
+    ></div>
+  </div>
+</div>
       
       <!-- Lifelines -->
       <div class="w-full max-w-md mb-4 flex justify-center space-x-4">
@@ -84,10 +88,12 @@
   import { useMainStore } from '@/stores/mainStore';
   import { useQuizStore } from '@/stores/quizStore';
   import { storeToRefs } from 'pinia';
-  import { ref, inject, onMounted, onUnmounted, watch } from 'vue';
+  import { ref, inject, onMounted, onUnmounted, watch, computed } from 'vue';
   import { useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification';
   
   const router = useRouter();
+  const toast = useToast();
   const quizStore = useQuizStore();
   const lifelineStore = useLifelineStore();
   const mainStore = useMainStore();
@@ -98,6 +104,13 @@
   
   const timeLeft = ref(30);
   let timer = null;
+
+  const totalQuestions = ref(100); // Adjust based on actual total questions
+
+  const progressPercentage = computed(() => {
+    return (question.value.id / totalQuestions.value) * 100;
+  });
+
   
   // Function to start the timer
   const startTimer = () => {
@@ -124,7 +137,21 @@
   const handleNextQuestion = async (selectedOption) => {
     clearInterval(timer); // Stop timer when user answers
     removedOption.value = [];
-    await quizStore.nextQuestion(selectedOption);
+    if(contest.value.totalQuestion === question.value.id){
+      const result = await quizStore.nextQuestion(selectedOption);
+      if(!result.success){
+        toast.error(result.message);
+        router.push('/quiz/play/failed');
+      } else{
+        router.push('/quiz/play/finished');
+      }
+    } else {
+      const result = await quizStore.nextQuestion(selectedOption);
+      if(!result.success){
+        toast.error(result.message);
+        router.push('/quiz/play/failed');
+      }
+    }
     startTimer(); // Restart timer for next question
   };
   
@@ -136,11 +163,14 @@
   // Handle lifeline usage
   const handleLifeline = async (lifelineId) => {
     removedOption.value = [];
-    lifelineStore.useLifeline({
+    const result = await lifelineStore.useLifeline({
       lifeline_id: lifelineId,
       node_id: contest.value.node_id,
       question_id: question.value.id
     });
+    if(!result.success){
+      toast.error(result.message);
+    }
   };
   
   // Start timer when component is mounted

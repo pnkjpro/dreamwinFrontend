@@ -46,10 +46,17 @@ export const useLifelineStore = defineStore('lifeline', () => {
                 console.log("fiftyFifty: ",removedOption.value);
             }
 
-        }catch(err){
-            //
-        }finally{
             loading.value = false;
+            return {
+                success: response.data.success,
+                message: response.data.message
+            }
+        } catch (error) {
+            loading.value = false;
+            console.error("Error using Lifeline:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+            return { success: false, message: errorMessage };
         }
     }
 
