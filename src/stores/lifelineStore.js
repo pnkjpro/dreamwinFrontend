@@ -64,15 +64,16 @@ export const useLifelineStore = defineStore('lifeline', () => {
             authStore.fetchUser();
 
             loading.value = false;
-            if (response.data.success) {
-                return { success: true, message: response.data.message }
-            } else {
-                return { success: false, message: response.data.message}
+            return {
+                success: response.data.success,
+                message: response.data.message
             }
         } catch (error) {
             loading.value = false;
-            console.error("Error purchasing lifeline:", error);
-            return { success: false, message: "Something went wrong. Please try again." }
+            console.error("Error Purchasing Lifeline:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+            return { success: false, message: errorMessage };
         }
     }
 

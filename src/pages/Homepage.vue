@@ -85,30 +85,39 @@
   
         <!-- Contest Cards -->
         <div class="space-y-4">
-          <div v-for="(contest, index) in contests" :key="index"
-               class="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200">
+          <div v-for="(contest, index) in activeContests" :key="index"
+            class="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200">
             <div @click="fetchContest(contest.node_id)" class="flex p-4">
               <!-- Contest Image -->
               <div class="w-1/4 flex-shrink-0">
-                <!-- <img :src="contest.image" :alt="contest.title" class="w-full h-full object-cover rounded-lg" /> -->
                 <img :src="fallbackImage" :alt="contest.title" class="w-full h-full object-cover rounded-lg" />
               </div>
-              
+
               <!-- Contest Details -->
               <div class="w-3/4 pl-4 flex flex-col justify-between">
-                <!-- Category Badge - Centered at top -->
+                <!-- Category Badge -->
                 <div class="text-center mb-2">
                   <span class="bg-purple-50 text-purple-700 px-6 py-1 rounded-full inline-block">
                     {{ contest.category.name }}
                   </span>
                 </div>
-                
-                <!-- Title and Time in same row -->
-                <div class="flex justify-between items-center mb-2">
-                  <h3 class="text-md font-bold text-gray-700">{{ contest.title }}</h3>
-                  <p class="text-red-500 font-bold">{{ contest.time }}</p>
+
+                <!-- Title -->
+                <div class="mb-2">
+                  <h3 class="text-md font-bold text-gray-700 truncate">{{ contest.title }}</h3>
                 </div>
                 
+                <!-- Time indicator on its own row -->
+                <div class="mb-2">
+                  <p v-if="getContestStatus(contest.start_time).isLive" class="text-red-500 font-bold flex items-center">
+                    <span class="inline-block h-2 w-2 rounded-full bg-red-500 mr-2"></span>
+                    LIVE
+                  </p>
+                  <p v-else class="text-blue-500 font-medium">
+                    {{ getContestStatus(contest.start_time).text }}
+                  </p>
+                </div>
+
                 <!-- Prize row -->
                 <div class="flex items-center">
                   <span class="text-orange-400 font-bold mr-2">MEGA PRIZE</span>
@@ -124,7 +133,8 @@
   </template>
   
   <script setup>
-  import { ref, inject, onMounted } from 'vue';
+  import { ref, inject, onMounted, computed, onUnmounted } from 'vue';
+  import { fromUnixTime, isPast, formatDistanceToNow } from 'date-fns';
   import { useRouter } from 'vue-router';
   import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -180,55 +190,6 @@ import { faBars, faWallet, faChevronLeft, faChevronRight, faUser, faQuestionCirc
     mainStore.fetchCategories();
   })
 
-  // User data
-  // const user = ref({
-  //   name: 'RAJSHREE AHUJA',
-  //   avatar: '/api/placeholder/80/80'
-  // });
-  
-  // Categories
-  // const categories = ref([
-  //   { name: 'HISTORY & CULTURE', image: '/api/placeholder/96/96' },
-  //   { name: 'NATURAL SCIENCE', image: '/api/placeholder/96/96' },
-  //   { name: 'ART & CREATIVITY', image: '/api/placeholder/96/96' },
-  //   { name: 'WORLD GEOGRAPHY', image: '/api/placeholder/96/96' },
-  //   { name: 'FOOD & BEVERAGE', image: '/api/placeholder/96/96' }
-  // ]);
-  
-  // Upcoming contests
-  // const contests = ref([
-  //   { 
-  //     title: 'SPORT QUIZ', 
-  //     category: 'Sports & Games',
-  //     image: '/api/placeholder/100/100',
-  //     prize: '10 Lakh',
-  //     time: 'Mon 11:00 Am'
-  //   },
-  //   { 
-  //     title: 'INT. POLITICS', 
-  //     category: 'Politics',
-  //     image: '/api/placeholder/100/100',
-  //     prize: '5 Lakh',
-  //     time: 'Sun 11:00 Am'
-  //   },
-  //   { 
-  //     title: 'CURRENT AFFAIR', 
-  //     category: 'Affairs',
-  //     image: '/api/placeholder/100/100',
-  //     prize: '10 Lakh',
-  //     time: 'Mon 11:00 Am'
-  //   },
-  //   { 
-  //     title: 'HOME SCIENCE', 
-  //     category: 'Science',
-  //     image: '/api/placeholder/100/100',
-  //     prize: '10 Lakh',
-  //     time: 'Mon 11:00 Am'
-  //   }
-  // ]);
-
-
-
   const menuItems = ref([
   { text: 'Refer & Earn', icon: 'user', url: 'refernearn' },
   { text: 'My Lifelines', icon: 'phone', url: 'lifeline'},
@@ -239,11 +200,53 @@ import { faBars, faWallet, faChevronLeft, faChevronRight, faUser, faQuestionCirc
   { text: 'Logout', icon: 'sign-out-alt', url: 'logout' }
 ]);
 
+// Filter contests that are still active
+const activeContests = computed(() => {
+  const currentTime = Math.floor(Date.now() / 1000); // Get current Unix timestamp
+  return contests.value.filter(contest => contest.end_time > currentTime);
+});
+
 const navigateTo = (url) => {
   router.push(`/${url}`);
 }
 
 const toggleMenu = () => menuOpen.value = !menuOpen.value;
+
+// ======================== Date n Time Handle ====================
+// Update current time every minute
+const now = ref(new Date());
+
+onMounted(() => {
+  const timer = setInterval(() => {
+    now.value = new Date();
+  }, 60000);
+  
+  onUnmounted(() => {
+    clearInterval(timer);
+  });
+});
+// Check contest status
+function getContestStatus(unixTimestamp) {
+  // Make sure the timestamp is being processed correctly
+  // If it's in milliseconds, you don't need fromUnixTime
+  // If it's in seconds (standard Unix timestamp), use fromUnixTime
+  
+  const startTime = typeof unixTimestamp === 'number' ? 
+    fromUnixTime(unixTimestamp) : 
+    new Date(unixTimestamp);
+    
+  const isLive = now.value >= startTime;
+  
+  if (isLive) {
+    return { isLive: true, text: 'LIVE' };
+  } else {
+    return { 
+      isLive: false, 
+      text: formatDistanceToNow(startTime) + ' left'
+    };
+  }
+}
+  // ==============================================================
   </script>
   
   <style scoped>

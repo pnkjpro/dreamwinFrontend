@@ -3,7 +3,6 @@
     <!-- Header -->
     <div @click="navigateToBack()" class="bg-orange-500 text-white p-3 flex items-center">
       <font-awesome-icon icon="arrow-left" class="mr-2" />
-      <span class="text-sm">2 h 24m left</span>
       <div class="ml-auto">
         <font-awesome-icon icon="bars" />
       </div>

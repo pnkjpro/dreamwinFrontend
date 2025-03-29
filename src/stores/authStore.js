@@ -111,16 +111,17 @@ export const useAuthStore = defineStore('auth', () => {
       });
       fetchUser();
       loading.value = false;
-      if (response.data.success) {
-          return { success: true, message: response.data.message }
-      } else {
-          return { success: false, message: response.data.message}
-      }
-    } catch (error) {
-        loading.value = false;
-        console.error("Error withdrawing funds:", error);
-        return { success: false, message: "Something went wrong. Please try again." }
-    }
+            return {
+                success: response.data.success,
+                message: response.data.message
+            }
+        } catch (error) {
+            loading.value = false;
+            console.error("Error Updating Upi:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+            return { success: false, message: errorMessage };
+        }
   }
 
   return { 

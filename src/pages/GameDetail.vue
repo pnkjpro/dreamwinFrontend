@@ -3,7 +3,6 @@
       <!-- Header -->
       <div @click="navigateToBack()" class="bg-orange-500 text-white p-3 flex items-center">
         <font-awesome-icon icon="arrow-left" class="mr-2" />
-        <span class="text-sm">2 h 24m left</span>
       </div>
   
       <!-- Prize Details Card -->
@@ -21,7 +20,13 @@
   
       <!-- Join Button -->
       <div class="mx-4 my-2">
-        <button @click="handleJoinGame()" class="w-full bg-green-500 text-white py-3 rounded-lg font-medium">
+        <button v-if="joinStatus == 'joined'" @click="navigateTo('/quiz/instruction')" class="w-full bg-green-500 text-white py-3 rounded-lg font-medium">
+          Start Quiz
+        </button>
+        <button disabled v-else-if="joinStatus == 'disabled'" class="w-full bg-stone-400 text-white py-3 rounded-lg font-medium">
+          Joined Other Variant!
+        </button>
+        <button v-else="" @click="handleJoinGame(variant.id)" class="w-full bg-green-500 text-white py-3 rounded-lg font-medium">
           JOIN ₹ {{ variant.entry_fee }}
         </button>
       </div>
@@ -30,9 +35,6 @@
       <div class="flex border-b border-gray-200 mt-2">
         <div class="flex-1 text-center py-3 text-red-700 font-medium border-b-2 border-red-700">
           Winning
-        </div>
-        <div class="flex-1 text-center py-3 text-gray-400">
-          Guide to Win
         </div>
       </div>
   
@@ -57,26 +59,60 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import { ref, computed } from 'vue';
   import { useMainStore } from '@/stores/mainStore';
   import { storeToRefs } from 'pinia';
   import { useRouter } from 'vue-router';
   import { library } from '@fortawesome/fontawesome-svg-core';
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { useTransactionStore } from '@/stores/transactionStore';
+import { useToast } from 'vue-toastification';
+import { useAuthStore } from '@/stores/authStore';
   
   // Register FontAwesome icons
   library.add(faArrowLeft);
 
   const router = useRouter();
+  const toast = useToast();
   const mainStore = useMainStore();
+  const authStore = useAuthStore();
+  const transactionStore = useTransactionStore();
   const {contest, prizeContents, variant} = storeToRefs(mainStore);
-  const handleJoinGame = () => {
-    router.push('/quiz/instruction');
+  const { user } = storeToRefs(authStore);
+  const handleJoinGame = async(variantId) => {
+    const result = await transactionStore.joinGame(variant.value.id)
+    if(result.success){
+      toast.success(result.message);
+      router.push('/quiz/instruction');
+    }else{
+      toast.error(result.message);
+    }
   }
+
+  // =================== Know Join Status ==================
+  const userResponse = computed(() => {
+  return user.value?.user_responses.find(response => response.node_id === contest.value.node_id) || null;
+  });
+
+  const joinStatus = computed(() => {
+    if (!userResponse.value) {
+      return 'pending'; // If userResponse is empty, return 'pending'
+    }
+
+    return userResponse.value.quiz_variant_id === variant.value.id
+      ? userResponse.value.status
+      : 'disabled'; // If userResponse exists but quiz_variant_id doesn't match, return 'disabled'
+  });
+
+  // ==========================================================
 
   const navigateToBack = () => {
     router.back();
+  }
+
+  const navigateTo = (link) => {
+    router.push(link)
   }
   console.log(prizeContents.value);
   </script>
