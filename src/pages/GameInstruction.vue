@@ -80,6 +80,7 @@ import { useRouter } from 'vue-router';
 import { fromUnixTime, isPast, formatDistanceToNow } from 'date-fns';
 import { useMainStore } from '@/stores/mainStore';
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useToast } from 'vue-toastification';
 
 
 // Register FontAwesome icons
@@ -88,12 +89,18 @@ library.add(faArrowLeft, faCircle);
 const quizStore = useQuizStore();
 const mainStore = useMainStore();
 const router = useRouter();
+const toast = useToast();
 const { playQuiz, question } = storeToRefs(quizStore);
 const { contest } = storeToRefs(mainStore);
 
 const handlePlayGame = async() => {
-  await quizStore.playQuiz();
-  router.push('/quiz/play');
+  const result = await quizStore.playQuiz();
+  if(!result.success){
+    toast.error(result.message);
+  }
+  if(result.success){
+    router.push('/quiz/play');
+  }
 }
 
 // ======================== Date n Time Handle ====================

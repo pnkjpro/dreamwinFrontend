@@ -105,7 +105,7 @@ import { useToast } from 'vue-toastification';
   const timeLeft = ref(30);
   let timer = null;
 
-  const totalQuestions = ref(100); // Adjust based on actual total questions
+  const totalQuestions = ref(contest.value.totalQuestion); // Adjust based on actual total questions
 
   const progressPercentage = computed(() => {
     return (question.value.id / totalQuestions.value) * 100;
@@ -137,20 +137,10 @@ import { useToast } from 'vue-toastification';
   const handleNextQuestion = async (selectedOption) => {
     clearInterval(timer); // Stop timer when user answers
     removedOption.value = [];
-    if(contest.value.totalQuestion === question.value.id){
-      const result = await quizStore.nextQuestion(selectedOption);
-      if(!result.success){
-        toast.error(result.message);
-        router.push('/quiz/play/failed');
-      } else{
-        router.push('/quiz/play/finished');
-      }
-    } else {
-      const result = await quizStore.nextQuestion(selectedOption);
-      if(!result.success){
-        toast.error(result.message);
-        router.push('/quiz/play/failed');
-      }
+    const result = await quizStore.nextQuestion(selectedOption);
+    if(!result.success){
+      toast.error(result.message);
+      router.push('/quiz/play/failed');
     }
     startTimer(); // Restart timer for next question
   };

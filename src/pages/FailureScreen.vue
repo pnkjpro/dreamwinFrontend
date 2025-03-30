@@ -99,19 +99,6 @@ import { useToast } from 'vue-toastification';
   
   const handleLifeline = async(lifelineId) => {
     try{
-      if(contest.value.totalQuestion === question.value.id){
-        const result = await lifelineStore.useLifeline({
-          lifeline_id: lifelineId,
-          node_id: contest.value.node_id,
-          question_id: question.value.id
-          });
-        if(!result.success){
-          toast.error(result.message);
-        }
-        if(result.success){
-          router.push('/quiz/play/finished');
-        }
-      } else {
         const result = await lifelineStore.useLifeline({
           lifeline_id: lifelineId,
           node_id: contest.value.node_id,
@@ -123,7 +110,6 @@ import { useToast } from 'vue-toastification';
         if(result.success){
           router.push('/quiz/play');
         }
-      }
     } catch(err){
       toast.error("Unexpected Error Occured!");
     }

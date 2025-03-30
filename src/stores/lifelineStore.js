@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useQuizStore } from './quizStore';
 import lifeline from '@/config/lifeline';
+import { useToast } from 'vue-toastification';
 
 export const useLifelineStore = defineStore('lifeline', () => {
     const loading = ref(false);
@@ -13,6 +14,7 @@ export const useLifelineStore = defineStore('lifeline', () => {
     const lifelines = ref([]);
     const config = inject('config');
     const router = useRouter();
+    const toast = useToast();
     const removedOption = ref([]);
     const mainStore = useMainStore();
     const authStore = useAuthStore();
@@ -38,7 +40,12 @@ export const useLifelineStore = defineStore('lifeline', () => {
             const response = await api.post('/lifeline/use', lifelineData);
             console.log("lifeline_type pinia: ",response.data.data.lifeline_type);
             if(response.data.data.lifeline_type == 'skip_question' || response.data.data.lifeline_type == 'revive_game'){
-                question.value = { ...response.data.data };
+                if(response.data.data?.flag && response.data.data?.is_nextQuestion === false){
+                    toast.success(response.data.data.message);
+                    router.push('/quiz/play/finished')
+                } else {
+                    question.value = { ...response.data.data };
+                }
             }
             else {
                 //50:50 lifeline, options to remove

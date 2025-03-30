@@ -4,12 +4,14 @@ import { useAuthStore } from './authStore';
 import { useMainStore } from './mainStore';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification';
 
 export const useQuizStore = defineStore('playQuiz', () => {
     const loading = ref(false);
     const error = ref(null);
     const config = inject('config');
     const router = useRouter();
+    const toast = useToast();
     const responses = ref([]);
     const question = ref({});
     const mainStore = useMainStore();
@@ -26,12 +28,26 @@ export const useQuizStore = defineStore('playQuiz', () => {
       });
 
       async function playQuiz(){
+        try{
         const response = await api.post('/play', {
             node_id: contest.value.node_id,
             variant_id: variant.value.id
         });
         console.log(response.data.data);
-        question.value = {...response.data.data};
+        if(response.data.success){
+          question.value = {...response.data.data};
+        }
+          return {
+            success: response.data.success,
+            message: response.data.message
+          }
+        } catch (error) {
+            loading.value = false;
+            console.error("Error Responses:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+            return { success: false, message: errorMessage };
+        }
       }
 
       async function nextQuestion(selectedOption){
@@ -45,8 +61,12 @@ export const useQuizStore = defineStore('playQuiz', () => {
             answer_id: selectedOption
           });
           
-          // More explicit update - replace the entire object
-          question.value =  {...response.data.data };
+          if(response.data.data?.flag && response.data.data?.is_nextQuestion === false){
+            toast.success(response.data.data.message);
+            router.push('/quiz/play/finished')
+          } else {
+              question.value = { ...response.data.data };
+          }
           
           loading.value = false;
           return {
