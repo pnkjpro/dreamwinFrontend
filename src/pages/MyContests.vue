@@ -40,7 +40,7 @@
                     <span class="inline-block h-2 w-2 rounded-full bg-red-500 mr-2"></span>
                     LIVE
                   </p>
-                  <p v-else-if="getContestStatus(response.quiz.start_time, response.quiz.end_time).text === 'Completed'" @click="showLeaderBoard(response.node_id)" class="text-blue-500 font-medium">
+                  <p v-else-if="getContestStatus(response.quiz.start_time, response.quiz.end_time).text === 'Show Result'" @click="showLeaderBoard(response.node_id)" class="text-blue-500 font-medium">
                     {{ getContestStatus(response.quiz.start_time, response.quiz.end_time).text }}
                   </p>
                   <p v-else class="text-blue-500 font-medium">
@@ -114,7 +114,7 @@ function getContestStatus(startTimestamp, endTimestamp) {
   const endTime = typeof endTimestamp === 'number' ? fromUnixTime(endTimestamp) : new Date(endTimestamp);
 
   if (now >= endTime) {
-    return { isLive: false, text: 'Completed' }; // Contest has ended
+    return { isLive: false, text: 'Show Result' }; // Contest has ended
   } else if (now >= startTime) {
     return { isLive: true, text: 'LIVE' }; // Contest is currently live
   } else {
