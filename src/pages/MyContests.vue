@@ -40,6 +40,9 @@
                     <span class="inline-block h-2 w-2 rounded-full bg-red-500 mr-2"></span>
                     LIVE
                   </p>
+                  <p v-else-if="getContestStatus(response.quiz.start_time, response.quiz.end_time).text === 'Completed'" @click="showLeaderBoard(response.node_id)" class="text-blue-500 font-medium">
+                    {{ getContestStatus(response.quiz.start_time, response.quiz.end_time).text }}
+                  </p>
                   <p v-else class="text-blue-500 font-medium">
                     {{ getContestStatus(response.quiz.start_time, response.quiz.end_time).text }}
                   </p>
@@ -125,6 +128,11 @@ const navigateTo = async(nodeId, variantId) => {
   }
   mainStore.getPrizeContents(variantId);
   router.push('/variant/details');
+}
+
+const showLeaderBoard = (nodeId) => {
+  quizStore.getLeaderboard(nodeId);
+  router.push('/quiz/leaderboard');
 }
 
 const navigateToBack = () => {

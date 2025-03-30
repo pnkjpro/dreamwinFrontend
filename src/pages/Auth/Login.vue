@@ -88,7 +88,7 @@
       </div> -->
       
       <!-- Register Option -->
-      <div class="mt-8 mb-12 text-white text-lg">
+      <div @click="navigateToRegister" class="mt-8 mb-12 text-white text-lg">
         Don't you have an account? <a href="#" class="text-orange-400 font-bold">Register Now</a>
       </div>
     </div>
@@ -131,6 +131,10 @@
     await authStore.login({login: email.value, password: password.value})
     navigateToHome();
   };
+
+  const navigateToRegister = () => {
+    router.push('/register');
+  }
 
   const navigateToHome = () => {
   console.log("Home clicked");

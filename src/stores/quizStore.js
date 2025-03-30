@@ -5,6 +5,7 @@ import { useMainStore } from './mainStore';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import Leaderboard from '@/pages/Leaderboard.vue';
 
 export const useQuizStore = defineStore('playQuiz', () => {
     const loading = ref(false);
@@ -14,6 +15,11 @@ export const useQuizStore = defineStore('playQuiz', () => {
     const toast = useToast();
     const responses = ref([]);
     const question = ref({});
+    const leaderboard = ref({
+      userPoints: { score: 0 },
+      totalParticipants: 0,
+      topPlayers: []
+    });
     const mainStore = useMainStore();
     const authStore = useAuthStore();
     const { token } = storeToRefs(authStore);
@@ -103,10 +109,31 @@ export const useQuizStore = defineStore('playQuiz', () => {
       }
       }
 
+      async function getLeaderboard(nodeId){
+        try{
+          loading.value = true;
+          const response = await api.post('/quiz/leaderboard', {node_id: nodeId});
+          leaderboard.value = {...response.data.data};
+          loading.value = false;
+          return {
+              success: response.data.success,
+              message: response.data.message
+              }
+          } catch (error) {
+              loading.value = false;
+              console.error("Error Responses:", error);
+              const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+              return { success: false, message: errorMessage };
+          }
+      }
+
       return {
         playQuiz,
         nextQuestion,
         getUserResponses,
+        getLeaderboard,
+        leaderboard,
         responses,
         question,
         loading,
