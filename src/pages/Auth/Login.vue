@@ -17,7 +17,7 @@
       <div class="mt-16 mb-8">
         <div class="flex items-center">
           <div class="text-6xl font-bold">
-            <span class="text-orange-500">D</span><span class="text-purple-700">DREAM</span> <span class="text-blue-700">WIN</span>
+            <span class="text-orange-500">H</span><span class="text-purple-700">IMP</span> <span class="text-blue-700">RI</span>
           </div>
         </div>
         <div class="text-gray-600 italic text-center mt-1">LET THE GAME BEGIN</div>
@@ -61,7 +61,7 @@
                 <span class="ml-2 text-gray-700">Stay Logged In</span>
               </label>
             </div>
-            <a href="#" class="text-purple-500 hover:underline">Forgot Password?</a>
+            <!-- <a href="#" class="text-purple-500 hover:underline">Forgot Password?</a> -->
           </div>
           
           <button type="submit" class="w-full bg-orange-400 hover:bg-orange-500 text-white py-4 px-6 rounded-full text-xl font-bold transition duration-300">
@@ -89,7 +89,7 @@
       
       <!-- Register Option -->
       <div @click="navigateToRegister" class="mt-8 mb-12 text-white text-lg">
-        Don't you have an account? <a href="#" class="text-orange-400 font-bold">Register Now</a>
+        Don't you have an account? <span class="text-orange-400 font-bold">Register Now</span>
       </div>
     </div>
   </template>
@@ -133,7 +133,7 @@
   };
 
   const navigateToRegister = () => {
-    router.push('/register');
+    router.push('/auth/register').catch(err => console.error("Navigation error:", err));
   }
 
   const navigateToHome = () => {

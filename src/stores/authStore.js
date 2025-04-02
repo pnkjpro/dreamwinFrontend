@@ -75,13 +75,27 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logout() {
     loading.value = true;
-    
+    console.log("hit");
     try {
-      await api.post('/logout');
-      isAuth.value = false;
+      // If you have a backend logout endpoint
+      // if (token.value) {
+      //   await api.post('/users/logout', {}, {
+      //     headers: {
+      //       'Authorization': `Bearer ${token.value}`
+      //     }
+      //   });
+      // }
+      
+      // Clear local storage and state
+      localStorage.removeItem('authToken');
+      token.value = null;
       user.value = null;
+      
+      return { success: true, message: 'Logged out successfully' };
     } catch (err) {
+      console.error('Logout error:', err);
       error.value = err.response?.data?.message || 'Logout failed';
+      return { success: false, message: error.value };
     } finally {
       loading.value = false;
     }
@@ -100,6 +114,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = null;
       error.value = 'User not authenticated';
     } finally {
+      loading.value = false;
     }
   }
 

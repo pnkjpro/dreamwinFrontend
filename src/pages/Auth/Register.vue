@@ -17,7 +17,7 @@
     <div class="mt-16 mb-8">
       <div class="flex items-center">
         <div class="text-6xl font-bold">
-          <span class="text-orange-500">D</span><span class="text-purple-700">DREAM</span> <span class="text-blue-700">WIN</span>
+          <span class="text-orange-500">H</span><span class="text-purple-700">IMP</span><span class="text-blue-700">RI</span>
         </div>
       </div>
       <div class="text-gray-600 italic text-center mt-1">LET THE GAME BEGIN</div>
@@ -90,16 +90,6 @@
           </button>
         </div>
         
-        <div class="flex justify-between items-center mb-8">
-          <div>
-            <label class="flex items-center cursor-pointer">
-              <input type="checkbox" class="w-5 h-5 border-2 border-gray-300 rounded" v-model="stayLoggedIn">
-              <span class="ml-2 text-gray-700">Stay Logged In</span>
-            </label>
-          </div>
-          <a href="#" class="text-purple-500 hover:underline">Forgot Password?</a>
-        </div>
-        
         <button type="submit" class="w-full bg-orange-400 hover:bg-orange-500 text-white py-4 px-6 rounded-full text-xl font-bold transition duration-300">
           Register
         </button>
@@ -107,8 +97,8 @@
     </div>
     
     <!-- Register Option -->
-    <div class="mt-8 mb-12 text-white text-lg">
-      Already have an account? <a href="#" class="text-orange-400 font-bold">Login Now</a>
+    <div @click="navigateToLogin" class="mt-8 mb-12 text-white text-lg">
+      Already have an account? <span class="text-orange-400 font-bold">Login Now</span>
     </div>
   </div>
 </template>
@@ -178,7 +168,6 @@ const form = ref({
 })
 
 const handleRegistration = async () => {
-  console.log("clicked",form.value);
   const isValid = await validateForm();
   if (!isValid) return;
     try {
@@ -191,8 +180,11 @@ const handleRegistration = async () => {
 };
 
 const navigateToHome = () => {
-  console.log("Home clicked");
   router.push("/home");
+}
+
+const navigateToLogin = () => {
+  router.push('/auth/login');
 }
 
 const showPassword = ref(false);
