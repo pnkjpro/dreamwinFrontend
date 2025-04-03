@@ -4,7 +4,7 @@
       <header class="flex justify-between items-center p-4 bg-white">
         <div class="flex items-center">
           <!-- <img :src="avatar" alt="User Avatar" class="w-16 h-16 rounded-full object-cover" /> -->
-          <img :src="fallbackImage" alt="User Avatar" class="w-16 h-16 rounded-full object-cover" />
+          <img :src="'/images/fallbackImage.png'" alt="User Avatar" class="w-16 h-16 rounded-full object-cover" />
           <div class="ml-4">
             <p class="text-gray-600">Good to see you!</p>
             <h1 class="text-lg font-bold text-gray-700">{{ user.name }}</h1>
@@ -20,7 +20,7 @@
       <aside v-if="menuOpen" class="fixed top-0 left-0 w-3/4 h-full bg-orange-500 p-6 z-50 shadow-lg">
         <div class="flex items-center mb-6">
           <!-- <img :src="avatar" alt="User Avatar" class="w-12 h-12 rounded-full object-cover" /> -->
-          <img :src="fallbackImage" alt="User Avatar" class="w-12 h-12 rounded-full object-cover" />
+          <img :src="'/images/fallbackImage.png'" alt="User Avatar" class="w-12 h-12 rounded-full object-cover" />
           <div class="ml-4 text-white">
             <h2 class="text-lg font-bold">{{ user.name }}</h2>
             <!-- <p>Skill Score: 584</p> -->
@@ -40,6 +40,11 @@
             <font-awesome-icon :icon="item.icon" class="mr-3" />
             <span>{{ item.text }}</span>
           </li>
+          <button @click="handleLogout" :disabled="authStore.loading" class="logout-btn">
+            <font-awesome-icon icon="sign-out-alt" class="mr-3" />
+            <span v-if="authStore.loading">Logging out...</span>
+            <span v-else>Logout</span>
+          </button>
         </ul>
       </aside>
     </Transition>
@@ -49,7 +54,7 @@
         <div v-for="(category, index) in categories" :key="index" class="flex flex-col items-center">
           <div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
             <!-- <img :src="category.image" :alt="category.name" class="w-full h-full object-cover" /> -->
-            <img :src="fallbackImage" :alt="category.name" class="w-full h-full object-cover" />
+            <img :src="'/images/fallbackImage.png'" :alt="category.name" class="w-full h-full object-cover" />
           </div>
           <p class="text-center font-bold text-sm mt-2 max-w-24">{{ category.name }}</p>
         </div>
@@ -90,7 +95,7 @@
             <div @click="fetchContest(contest.node_id)" class="flex p-4">
               <!-- Contest Image -->
               <div class="w-1/4 flex-shrink-0">
-                <img :src="fallbackImage" :alt="contest.title" class="w-full h-full object-cover rounded-lg" />
+                <img :src="'/images/fallbackImage.png'" :alt="contest.title" class="w-full h-full object-cover rounded-lg" />
               </div>
 
               <!-- Contest Details -->
@@ -143,6 +148,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useTransactionStore } from '@/stores/transactionStore';
 import { storeToRefs } from 'pinia';
 import { faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { useToast } from 'vue-toastification';
 
   // Add icons to library
   library.add(faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt);
@@ -150,8 +156,9 @@ import { faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, faUser
   const avatar = ref('/api/placeholder/80/80');
 
   const router = useRouter();
+  const toast = useToast();
   const config = inject('config');
-  const fallbackImage = config.FALLBACK_IMAGE;
+  // const fallbackImage = config.FALLBACK_IMAGE;
 
   const menuOpen = ref(false);
   const currentIndex = ref(0);
@@ -198,8 +205,7 @@ import { faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, faUser
   { text: 'Help', icon: 'question-circle', url: 'help' },
   { text: 'About Us', icon: 'file-alt', url: 'aboutus' },
   { text: 'How to Play', icon: 'gamepad', url: 'how_to_play' },
-  { text: 'Terms & Conditions', icon: 'file-alt', url: 'terms' },
-  { text: 'Logout', icon: 'sign-out-alt', url: 'logout' }
+  { text: 'Terms & Conditions', icon: 'file-alt', url: 'terms' }
 ]);
 
 // Filter contests that are still active
@@ -211,6 +217,15 @@ const activeContests = computed(() => {
 const navigateTo = (url) => {
   router.push(`/${url}`);
 }
+
+const handleLogout = async () => {
+    const result = await authStore.logout();
+    if (!result.success) {
+      toast.error(result.message);
+    } else {
+      router.push('/auth/login');
+    }
+};
 
 const toggleMenu = () => menuOpen.value = !menuOpen.value;
 

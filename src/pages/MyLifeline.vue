@@ -43,7 +43,7 @@
                 ₹ {{ 29 }} each
               </span>
               <span class="ml-3 text-xs text-green-600 font-medium">
-                Available: {{ lifelines[0].quantity }}
+                Available: {{ lifelines[0]?.quantity || 0 }}
               </span>
             </div>
           </div>
@@ -62,7 +62,7 @@
                 ₹ 49 each
               </span>
               <span class="ml-3 text-xs text-green-600 font-medium">
-                Available: {{ lifelines[1].quantity }}
+                Available: {{ lifelines[1]?.quantity || 0 }}
               </span>
             </div>
           </div>
@@ -81,7 +81,7 @@
                 ₹ 99 each
               </span>
               <span class="ml-3 text-xs text-green-600 font-medium">
-                Available: {{ lifelines[2].quantity }}
+                Available: {{ lifelines[2]?.quantity || 0 }}
               </span>
             </div>
           </div>

@@ -61,7 +61,7 @@
                 <span class="ml-2 text-gray-700">Stay Logged In</span>
               </label>
             </div>
-            <a href="#" class="text-purple-500 hover:underline">Forgot Password?</a>
+            <!-- <a href="#" class="text-purple-500 hover:underline">Forgot Password?</a> -->
           </div>
           
           <button type="submit" class="w-full bg-orange-400 hover:bg-orange-500 text-white py-4 px-6 rounded-full text-xl font-bold transition duration-300">
@@ -89,7 +89,7 @@
       
       <!-- Register Option -->
       <div @click="navigateToRegister" class="mt-8 mb-12 text-white text-lg">
-        Don't you have an account? <a href="#" class="text-orange-400 font-bold">Register Now</a>
+        Don't you have an account? <span class="text-orange-400 font-bold">Register Now</span>
       </div>
     </div>
   </template>
@@ -124,12 +124,6 @@
   };
   
   const handleLogin = async() => {
-    // Handle login logic here
-    console.log('Login attempted with:', {
-      email: email.value,
-      password: password.value,
-      stayLoggedIn: stayLoggedIn.value
-    });
     const result = await authStore.login({login: email.value, password: password.value})
     if(!result.success){
       toast.error(result.message);
@@ -143,7 +137,6 @@
   }
 
   const navigateToHome = () => {
-  console.log("Home clicked");
   router.push("/home");
 }
   </script>
