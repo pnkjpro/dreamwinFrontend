@@ -123,11 +123,13 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle, faFacebook } from '@fortawesome/free-brands-svg-icons';
+import { useToast } from 'vue-toastification';
 
 // Add icons to the library
 library.add(faEye, faEyeSlash, faGoogle, faFacebook);
 
 const router = useRouter();
+const toast = useToast();
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
 
@@ -181,13 +183,13 @@ const handleRegistration = async () => {
   console.log("clicked",form.value);
   const isValid = await validateForm();
   if (!isValid) return;
-    try {
-      await authStore.register(form);
-      navigateToHome();
-    } catch (error) {
-      // Handle login errors
-      console.error("Login failed", error);
-    }
+  const result = await authStore.register(form);
+  if(!result.success){
+    toast.error(result.message);
+  } else {
+    navigateToHome();
+  }
+    
 };
 
 const navigateToHome = () => {

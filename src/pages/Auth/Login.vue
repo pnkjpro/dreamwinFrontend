@@ -17,7 +17,7 @@
       <div class="mt-16 mb-8">
         <div class="flex items-center">
           <div class="text-6xl font-bold">
-            <span class="text-orange-500">D</span><span class="text-purple-700">DREAM</span> <span class="text-blue-700">WIN</span>
+            <span class="text-orange-500">H</span><span class="text-purple-700">IMP</span><span class="text-blue-700">RI</span>
           </div>
         </div>
         <div class="text-gray-600 italic text-center mt-1">LET THE GAME BEGIN</div>
@@ -103,6 +103,7 @@
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
   import { faGoogle, faFacebook } from '@fortawesome/free-brands-svg-icons';
+  import { useToast } from 'vue-toastification';
   
   // Add icons to the library
   library.add(faEye, faEyeSlash, faGoogle, faFacebook);
@@ -113,6 +114,7 @@
   const showPassword = ref(false);
   const stayLoggedIn = ref(false);
   const router = useRouter();
+  const toast = useToast();
 
   const authStore = useAuthStore();
   
@@ -128,12 +130,16 @@
       password: password.value,
       stayLoggedIn: stayLoggedIn.value
     });
-    await authStore.login({login: email.value, password: password.value})
-    navigateToHome();
+    const result = await authStore.login({login: email.value, password: password.value})
+    if(!result.success){
+      toast.error(result.message);
+    } else {
+      navigateToHome();
+    }
   };
 
   const navigateToRegister = () => {
-    router.push('/register');
+    router.push('/auth/register');
   }
 
   const navigateToHome = () => {
