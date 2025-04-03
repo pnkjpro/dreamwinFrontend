@@ -86,19 +86,17 @@ export const useAuthStore = defineStore('auth', () => {
       if (token.value) {
         await api.post('/users/logout');
       }
-      
-      // Clear local storage and state
-      localStorage.removeItem('authToken');
-      token.value = null;
-      user.value = null;
-      
-      return { success: true, message: 'Logged out successfully' };
+  
     } catch (err) {
       console.error('Logout error:', err);
       error.value = err.response?.data?.message || 'Logout failed';
-      return { success: false, message: error.value };
+
     } finally {
       loading.value = false;
+      localStorage.removeItem('authToken');
+      token.value = null;
+      user.value = null;
+      return { success: true, message: 'Logged out successfully' };
     }
   }
 
