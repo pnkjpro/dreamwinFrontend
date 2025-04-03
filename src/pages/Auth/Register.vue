@@ -182,7 +182,7 @@ const handleRegistration = async () => {
 };
 
 const navigateToHome = () => {
-  router.push("/home");
+  router.push('/home');
 }
 
 const navigateToLogin = () => {

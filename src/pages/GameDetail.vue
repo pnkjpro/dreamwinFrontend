@@ -29,6 +29,9 @@
         <button disabled v-else-if="joinStatus == 'initiated'" class="w-full bg-stone-400 text-white py-3 rounded-lg font-medium">
           Game Already Started!
         </button>
+        <button disabled v-else-if="joinStatus == 'completed'" class="w-full bg-stone-400 text-white py-3 rounded-lg font-medium">
+          Game Completed!
+        </button>
         <button v-else="" @click="handleJoinGame(variant.id)" class="w-full bg-green-500 text-white py-3 rounded-lg font-medium">
           JOIN ₹ {{ variant.entry_fee }}
         </button>
