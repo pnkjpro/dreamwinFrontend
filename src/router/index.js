@@ -117,6 +117,12 @@ const router = createRouter({
       name: 'MyContests',
       component: () => import('@/pages/MyContests.vue'),
       meta: { requiresAuth:true }
+    },
+    {
+      path: '/refernearn',
+      name: 'MyReferral',
+      component: () => import('@/pages/MyReferral.vue'),
+      meta: { requiresAuth:true }
     }
   ],
 })

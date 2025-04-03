@@ -176,7 +176,7 @@
     faForwardStep, 
     faClock 
   } from '@fortawesome/free-solid-svg-icons';
-import { useRouter, onBeforeRouteLeave } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useToast } from "vue-toastification";
   
   // Register FontAwesome icons

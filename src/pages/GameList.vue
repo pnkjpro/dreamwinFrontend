@@ -17,7 +17,7 @@
     <div class="px-4 mb-4">
       <div class="relative w-full h-48 overflow-hidden rounded-lg">
         <img 
-          :src="fallbackImage" 
+          :src="'/images/fallbackImage.png'"
           alt="Sports athletes collage" 
           class="w-full h-full object-cover"
         />
@@ -140,7 +140,7 @@ console.log("Game list",contest.value);
 // console.log("Prize Contents", contest.value.quiz_variants[0].prize_contents);
 
 const config = inject('config');
-const fallbackImage = config.FALLBACK_IMAGE;
+// const fallbackImage = config.FALLBACK_IMAGE;
 
 const navigateTo = (variantId) => {
   console.log("gamelist variantId",variantId);

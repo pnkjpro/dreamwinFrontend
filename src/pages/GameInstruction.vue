@@ -34,12 +34,12 @@
       <h3 class="font-bold text-base mb-3">QUESTION PAPER INSTRUCTIONS!</h3>
       <ol class="space-y-1 text-sm ml-5 list-decimal">
         <li>1 Question at one time</li>
-        <li>It Consist of 100 Question</li>
+        <li>It Consist of {{ totalQuestions }} Question</li>
+        <li>Each question contains 1 marks</li>
+        <li>You can use only 3 lifelines</li>
+        <li>You can use only 1 lifeline per question</li>
+        <li>Refreshing the page will submit the Quiz</li>
         <li>You cannot solve or correct previous question, once submitted cant be change</li>
-        <li>1-20 question of 1 marks each and you will get 25 seconds for each question</li>
-        <li>20-40 question of 2 mark and you will get 50 sec for each question</li>
-        <li>40-70 question of 5 mark and you will get 1 min 20 sec for each question</li>
-        <li>70-100 question of 3 mark and you will get 45 sec for each question</li>
       </ol>
     </div>
 
@@ -92,6 +92,8 @@ const router = useRouter();
 const toast = useToast();
 const { playQuiz, question } = storeToRefs(quizStore);
 const { contest } = storeToRefs(mainStore);
+
+const totalQuestions = ref(contest.value.totalQuestion); // Adjust based on actual total questions
 
 const handlePlayGame = async() => {
   const result = await quizStore.playQuiz();
