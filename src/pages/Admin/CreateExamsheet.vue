@@ -58,7 +58,7 @@
       <div class="form-group">
         <label for="entryFees">Entry Fees</label>
         <div class="input-with-prefix">
-          <span class="input-prefix">$</span>
+          <span class="input-prefix">Rs</span>
           <input
             type="number"
             id="entryFees"
@@ -74,7 +74,7 @@
       <div class="form-group">
         <label for="prizeMoney">Prize Money</label>
         <div class="input-with-prefix">
-          <span class="input-prefix">$</span>
+          <span class="input-prefix">Rs</span>
           <input
             type="number"
             id="prizeMoney"
@@ -178,10 +178,13 @@
 <script setup>
 import { ref, watch, computed } from "vue";
 import axios from "axios";
+import { useAdminStore } from "@/stores/adminStore";
 
 let QuestionId = ref(1);
 let quiz = ref([]);
 const step2 = ref(false);
+
+const adminStore = useAdminStore();
 
 const initialQuizInfo = {
   category_id: null,
@@ -234,7 +237,7 @@ const addQuestion = () => {
   quizForm.value.id = QuestionId.value;
 };
 
-const createQuiz = () => {
+const createQuiz = async() => {
   if (quiz.value.length === 0) {
     // No questions added yet
     return;
@@ -245,22 +248,7 @@ const createQuiz = () => {
     quizContents: quiz.value
   };
   console.log("finalQuizData: ",finalQuizData);
-  // Submit to API
-  axios.post(`http://dreamwin.local:8000/api/quiz/create`, finalQuizData)
-    .then(response => {
-      console.log("Quiz Created:", response.data);
-      // Reset everything after successful creation
-      quiz.value = [];
-      QuestionId.value = 1;
-      quizInfo.value = JSON.parse(JSON.stringify(initialQuizInfo));
-      quizForm.value = JSON.parse(JSON.stringify(initialQuizForm));
-      step2.value = false;
-      // Optionally add success notification here
-    })
-    .catch(error => {
-      console.error("Error creating quiz:", error.response?.data);
-      // Optionally add error notification here
-    });
+  const result = await adminStore.createQuiz(finalQuizData);
 };
 </script>
 

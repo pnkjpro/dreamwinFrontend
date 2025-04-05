@@ -25,10 +25,10 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  async function createQuiz(){
+  async function createQuiz(finalQuizData){
     try{
         loading.value = true;
-        const response = await api.post('/admin/quiz/create', {});
+        const response = await api.post('/admin/quiz/create', finalQuizData);
         return {
             success: response.data.success,
             message: response.data.message
