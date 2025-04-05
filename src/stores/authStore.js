@@ -53,7 +53,6 @@ export const useAuthStore = defineStore('auth', () => {
       await axios.get(`${import.meta.env.BASE_API}/sanctum/csrf-cookie`);
       const response = await api.post('/users/login', credentials);
       user.value = response.data.data.user;
-      console.log("user responses", userResponses.value);
       token.value = response.data.data.token;
       localStorage.setItem('authToken', response.data.data.token);
       loading.value = false;
@@ -96,9 +95,7 @@ export const useAuthStore = defineStore('auth', () => {
     console.log("fetching user.. ");
     try {
       const response = await api.get('/users/user');
-      console.log(response.data.user);
       user.value = response.data.user;
-      console.log("user responses:", userResponses.value);
       console.log("fetched user data", user.value);
       return user.value;
     } catch (err) {

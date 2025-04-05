@@ -52,7 +52,7 @@ const isMobile = ref(false);
 const menuItems = ref([
   { name: 'Fund Approval', path: '/admin/funds/approval' },
   { name: 'Quiz Creation', path: '/admin/quiz/create' },
-  { name: 'Quiz Variant Creation', path: '/admin/quiz/variant/create' },
+  { name: 'Quiz Variant Creation', path: '/admin/variant/create' },
   { name: 'Category Create', path: '/admin/category/create' },
 ]);
 

@@ -1,8 +1,8 @@
 <template>
   <div class="admin-form-container">
-    <h2 class="form-title">{{ isEditing ? 'Edit Category' : 'Add New Category' }}</h2>
+    <h2 class="form-title">Add New Category</h2>
     
-    <form @submit.prevent="saveCategory" class="category-form">
+    <form @submit.prevent="handleCreateCategory" class="category-form">
       <!-- Name Field -->
       <div class="form-group">
         <label for="name">Category Name</label>
@@ -13,21 +13,6 @@
           class="form-control"
           required
         />
-      </div>
-      
-      <!-- Slug Field -->
-      <div class="form-group">
-        <label for="slug">Slug</label>
-        <div class="slug-field">
-          <input 
-            id="slug"
-            v-model="category.slug"
-            type="text"
-            class="form-control"
-            required
-          />
-          <button type="button" @click="generateSlug" class="slug-button">Generate</button>
-        </div>
       </div>
       
       <!-- Description Field -->
@@ -89,20 +74,7 @@
         </div>
       </div>
       
-      <!-- Active Status Field -->
-      <div class="form-group">
-        <div class="toggle-field">
-          <input 
-            id="is_active"
-            v-model="category.is_active"
-            type="checkbox"
-            class="toggle-input"
-          />
-          <label for="is_active" class="toggle-label">Active</label>
-        </div>
-      </div>
-      
-      <!-- Display Order Field -->
+      <!-- Display Order Field
       <div class="form-group">
         <label for="display_order">Display Order</label>
         <input 
@@ -112,7 +84,7 @@
           class="form-control"
           min="1"
         />
-      </div>
+      </div> -->
       
       <!-- Form Actions -->
       <div class="form-actions">
@@ -123,86 +95,72 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'CategoryForm',
-  props: {
-    initialCategory: {
-      type: Object,
-      default: () => ({
-        name: '',
-        slug: '',
-        description: '',
-        icon: '',
-        icon_color: '#007bff',
-        banner_image: '',
-        is_active: 1,
-        display_order: 1
-      })
+<script setup>
+import { ref } from 'vue'
+import { useAdminStore } from '@/stores/adminStore'
+import { storeToRefs } from 'pinia';
+import { object } from 'yup';
+
+const initialCategory = {
+      name: '',
+      description: '',
+      icon: '',
+      icon_color: '#007bff',
+      banner_image: '',
+      display_order: 1
     }
-  },
-  data() {
-    return {
-      category: { ...this.initialCategory },
-      isEditing: false
-    }
-  },
-  created() {
-    // Check if we're editing an existing category
-    this.isEditing = !!this.initialCategory.name
-    
-    // Create a deep copy of the initial category
-    this.category = JSON.parse(JSON.stringify(this.initialCategory))
-  },
-  methods: {
-    generateSlug() {
-      // Generate slug from name - convert to lowercase and replace spaces with hyphens
-      if (this.category.name) {
-        this.category.slug = this.category.name
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^a-z0-9-]/g, '')
-      }
-    },
-    handleIconUpload(event) {
-      if (event.target.files.length > 0) {
-        this.category.icon = event.target.files[0].name
-        // In a real app, you would upload the file to the server here
-      }
-    },
-    handleBannerUpload(event) {
-      if (event.target.files.length > 0) {
-        this.category.banner_image = event.target.files[0].name
-        // In a real app, you would upload the file to the server here
-      }
-    },
-    saveCategory() {
-      // Emit save event with category data
-      this.$emit('save', { ...this.category })
-    },
-    resetForm() {
-      // Reset form to initial values or clear if adding new
-      if (this.isEditing) {
-        this.category = JSON.parse(JSON.stringify(this.initialCategory))
-      } else {
-        this.category = {
-          name: '',
-          slug: '',
-          description: '',
-          icon: '',
-          icon_color: '#007bff',
-          banner_image: '',
-          is_active: 1,
-          display_order: 1
-        }
-      }
-      
-      // Emit cancel event
-      this.$emit('cancel')
-    }
+
+const category = ref({...initialCategory});
+
+const resetForm = () => {
+  Object.assign(category, JSON.parse(JSON.stringify(initialCategory)));
+}
+
+const adminStore = useAdminStore();
+const { } = storeToRefs(adminStore);
+
+const handleBannerUpload = (event) => {
+  const file = event.target.files[0];
+  if(file){
+    category.value.bannerFile = file;
+    category.value.banner_image = file.name;
   }
 }
+
+const handleIconUpload = (event) => {
+  const file = event.target.files[0];
+  if(file){
+    category.value.iconFile = file;
+    category.value.icon = file.name
+  }
+}
+
+const handleCreateCategory = async() => {
+  try {
+    const formData = new FormData();
+    formData.append('name', category.value.name);
+    formData.append('description', category.value.description);
+    formData.append('icon_color', category.value.icon_color);
+    
+    if (category.value.iconFile) {
+      formData.append('icon', category.value.iconFile);
+    }
+    
+    if (category.value.bannerFile) {
+      formData.append('banner_image', category.value.bannerFile);
+    }
+
+    const result = await adminStore.createCategory(formData);
+    if (result.success) {
+      resetForm();
+    }
+  } catch (error) {
+    console.error('Error creating category:', error);
+  }
+}
+
 </script>
+
 
 <style scoped>
 .admin-form-container {

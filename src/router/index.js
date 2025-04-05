@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/authStore';
+import AdminLayout from '@/pages/Admin/Homelayout.vue'
 
 
 const router = createRouter({
@@ -125,31 +126,32 @@ const router = createRouter({
     // ======================= Admin Panel ===================================
     {
       path: '/admin/',
+      component: AdminLayout,
       redirect: '/admin/funds/approval',
       children: [
         {
           path: 'funds/approval',
           name: 'FundsApproval',
           component: () => import('@/pages/Admin/FundApproval.vue'),
-          meta: { requiresAuth: true }
+          // meta: { requiresAuth: true }
         },
         {
           path: 'category/create',
           name: 'CreateCategory',
           component: () => import('@/pages/Admin/CreateCategory.vue'),
-          meta: { requiresAuth: true }
+          // meta: { requiresAuth: true }
         },
         {
           path: 'quiz/create',
           name: 'CreateQuiz',
           component: () => import('@/pages/Admin/CreateExamsheet.vue'),
-          meta: { requiresAuth: true }
+          // meta: { requiresAuth: true }
         },
         {
           path: 'variant/create',
           name: 'CreateVariant',
           component: () => import('@/pages/Admin/CreateVariant.vue'),
-          meta: { requiresAuth: true }
+          // meta: { requiresAuth: true }
         }
       ]
     },
@@ -175,9 +177,9 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  if (!from.name && to.name !== 'Home' && to.name !== 'Login') {
-    return next({ name: 'Home' });
-  }
+  // if (!from.name && to.name !== 'Home' && to.name !== 'Login') {
+  //   return next({ name: 'Home' });
+  // }
   
   
   const isAuthenticated = !!authStore.user;

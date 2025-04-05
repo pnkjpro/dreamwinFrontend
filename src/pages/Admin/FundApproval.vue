@@ -2,7 +2,7 @@
     <div class="approval-dashboard">
       <div class="dashboard-header">
         <h2>Customer Payment Requests</h2>
-        <div class="filter-controls">
+        <!-- <div class="filter-controls">
           <select v-model="statusFilter" class="status-filter">
             <option value="all">All Requests</option>
             <option value="pending">Pending</option>
@@ -15,7 +15,7 @@
             placeholder="Search by name or UPI ID"
             class="search-input"
           />
-        </div>
+        </div> -->
       </div>
   
       <div class="table-container">
@@ -31,179 +31,69 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="filteredRequests.length === 0">
+            <tr v-if="allTransactions.length === 0">
               <td colspan="6" class="no-results">
                 No requests found matching your filters.
               </td>
             </tr>
-            <tr v-for="(request, index) in filteredRequests" :key="index" :class="'status-' + request.update_approved_status">
-              <td>{{ request.name }}</td>
+            <tr v-for="(request, index) in allTransactions" :key="index" :class="'status-' + request.approved_status">
+              <td style="text-transform: capitalize;">{{ request.name }}</td>
               <td>{{ request.upi_id }}</td>
-              <td>{{ request.action }}</td>
-              <td>₹{{ formatAmount(request.amount) }}</td>
+              <td style="text-transform: capitalize;">{{ request.action }}</td>
+              <td>₹{{ request.amount }}</td>
               <td>
-                <span class="status-badge" :class="'status-' + request.update_approved_status">
-                  {{ capitalize(request.update_approved_status) }}
+                <span class="status-badge" :class="'status-' + request.approved_status">
+                  {{ request.approved_status }}
                 </span>
               </td>
               <td class="action-buttons">
                 <button 
-                  v-if="request.update_approved_status === 'pending'"
-                  @click="approveRequest(request)" 
+                  v-if="request.approved_status === 'pending'"
+                  @click="handleStatusApproval(request, 'approved')" 
                   class="btn-approve"
                 >
                   Approve
                 </button>
                 <button 
-                  v-if="request.update_approved_status === 'pending'"
-                  @click="rejectRequest(request)" 
+                  v-if="request.approved_status === 'pending'"
+                  @click="handleStatusApproval(request, 'rejected')" 
                   class="btn-reject"
                 >
                   Reject
-                </button>
-                <button v-if="request.update_approved_status !== 'pending'"
-                  @click="resetStatus(request)" 
-                  class="btn-reset"
-                >
-                  Reset
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-  
-      <!-- Modal for confirmation -->
-      <div v-if="showModal" class="modal-overlay">
-        <div class="modal-content">
-          <h3>{{ modalTitle }}</h3>
-          <p>{{ modalMessage }}</p>
-          <div class="modal-form" v-if="modalAction === 'reject'">
-            <label for="rejection-reason">Reason for rejection:</label>
-            <textarea 
-              id="rejection-reason" 
-              v-model="rejectionReason"
-              rows="3"
-              placeholder="Please provide a reason for rejection..."
-            ></textarea>
-          </div>
-          <div class="modal-actions">
-            <button @click="cancelModal" class="btn-cancel">Cancel</button>
-            <button @click="confirmModal" class="btn-confirm" :class="modalAction === 'approve' ? 'btn-approve' : 'btn-reject'">
-              Confirm
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   </template>
   
-  <script>
-  export default {
-    name: 'CustomerRequestApproval',
-    data() {
-      return {
-        requests: [
-          // Sample data - replace with API calls in production
-          { name: 'Rahul Sharma', upi_id: 'rahul@oksbi', action: 'Withdrawal', amount: 5000, update_approved_status: 'pending' },
-          { name: 'Priya Patel', upi_id: 'priya@ybl', action: 'Withdrawal', amount: 2500, update_approved_status: 'approved' },
-          { name: 'Amit Kumar', upi_id: 'amit@paytm', action: 'Refund', amount: 1200, update_approved_status: 'rejected' },
-          { name: 'Neha Singh', upi_id: 'neha@icici', action: 'Withdrawal', amount: 3000, update_approved_status: 'pending' },
-          { name: 'Vikram Joshi', upi_id: 'vikram@hdfc', action: 'Refund', amount: 800, update_approved_status: 'pending' }
-        ],
-        statusFilter: 'all',
-        searchQuery: '',
-        showModal: false,
-        modalTitle: '',
-        modalMessage: '',
-        modalAction: '',
-        selectedRequest: null,
-        rejectionReason: ''
-      };
-    },
-    computed: {
-      filteredRequests() {
-        return this.requests.filter(request => {
-          // Apply status filter
-          if (this.statusFilter !== 'all' && request.update_approved_status !== this.statusFilter) {
-            return false;
-          }
-          
-          // Apply search filter (case insensitive)
-          if (this.searchQuery) {
-            const query = this.searchQuery.toLowerCase();
-            return request.name.toLowerCase().includes(query) || 
-                   request.upi_id.toLowerCase().includes(query);
-          }
-          
-          return true;
-        });
+  <script setup>
+    import { ref, computed, onMounted } from 'vue';
+    import { useAdminStore } from '@/stores/adminStore';
+    import { storeToRefs } from 'pinia';
+    import { useToast } from 'vue-toastification';
+
+    const toast = useToast();
+    const adminStore = useAdminStore();
+    const { allTransactions } = storeToRefs(adminStore);
+
+    onMounted(() => {
+      adminStore.fetchTransactions();
+    })
+
+    const handleStatusApproval = async(request, approval) => {
+      const result = await adminStore.statusApproval(request, approval)
+      if(!result.success){
+        toast.error(result.message);
       }
-    },
-    methods: {
-      formatAmount(amount) {
-        return amount.toLocaleString('en-IN');
-      },
-      capitalize(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-      },
-      approveRequest(request) {
-        this.selectedRequest = request;
-        this.modalTitle = 'Approve Request';
-        this.modalMessage = `Are you sure you want to approve the ${request.action.toLowerCase()} request of ₹${this.formatAmount(request.amount)} for ${request.name}?`;
-        this.modalAction = 'approve';
-        this.showModal = true;
-      },
-      rejectRequest(request) {
-        this.selectedRequest = request;
-        this.modalTitle = 'Reject Request';
-        this.modalMessage = `Are you sure you want to reject the ${request.action.toLowerCase()} request of ₹${this.formatAmount(request.amount)} for ${request.name}?`;
-        this.modalAction = 'reject';
-        this.rejectionReason = '';
-        this.showModal = true;
-      },
-      resetStatus(request) {
-        this.selectedRequest = request;
-        this.modalTitle = 'Reset Status';
-        this.modalMessage = `Are you sure you want to reset this request back to pending status?`;
-        this.modalAction = 'reset';
-        this.showModal = true;
-      },
-      cancelModal() {
-        this.showModal = false;
-        this.selectedRequest = null;
-        this.rejectionReason = '';
-      },
-      confirmModal() {
-        if (!this.selectedRequest) return;
-        
-        if (this.modalAction === 'approve') {
-          this.selectedRequest.update_approved_status = 'approved';
-          // In production, make API call to update status
-          // this.updateRequestStatus(this.selectedRequest.id, 'approved');
-        } else if (this.modalAction === 'reject') {
-          this.selectedRequest.update_approved_status = 'rejected';
-          // In production, make API call to update status with reason
-          // this.updateRequestStatus(this.selectedRequest.id, 'rejected', this.rejectionReason);
-        } else if (this.modalAction === 'reset') {
-          this.selectedRequest.update_approved_status = 'pending';
-          // In production, make API call to reset status
-          // this.updateRequestStatus(this.selectedRequest.id, 'pending');
-        }
-        
-        // Close modal
-        this.showModal = false;
-        this.selectedRequest = null;
-        this.rejectionReason = '';
-      },
-      // In production, implement these methods to call your API
-      // updateRequestStatus(requestId, status, reason = '') {
-      //   // Make API call to update request status
-      //   // Example: axios.put(`/api/requests/${requestId}`, { status, reason })
-      // }
+      toast.success(result.message);
     }
-  };
-  </script>
+
+    
+</script>
+
   
   <style scoped>
   .approval-dashboard {
