@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
-import { ref, inject } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
+import api from '@/plugins/axios';
 
 
 export const useAuthStore = defineStore('auth', () => {
@@ -8,15 +9,6 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false);
   const error = ref(null);
   const token = ref(localStorage.getItem('authToken'));
-  const config = inject("config");
-
-  const api = axios.create({
-    baseURL: config.API_URL,
-    withCredentials: true,
-    headers: {
-      'Authorization': `Bearer ${token.value}`,
-    }
-  });
 
   // Actions as functions
   async function init() {
@@ -59,7 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true;
     try {
       // Get CSRF cookie
-      await axios.get(`${config.BASE_URL}/sanctum/csrf-cookie`);
+      await axios.get(`${import.meta.env.BASE_API}/sanctum/csrf-cookie`);
       // Attempt login
       const response = await api.post('/users/login', credentials);
       user.value = response.data.data.user;
@@ -84,6 +76,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       // If you have a backend logout endpoint
       if (token.value) {
+        console.log('if token:', token.value);
         await api.post('/users/logout');
       }
   
@@ -95,6 +88,7 @@ export const useAuthStore = defineStore('auth', () => {
       loading.value = false;
       localStorage.removeItem('authToken');
       token.value = null;
+      console.log("does it hit", token.value);
       user.value = null;
       return { success: true, message: 'Logged out successfully' };
     }

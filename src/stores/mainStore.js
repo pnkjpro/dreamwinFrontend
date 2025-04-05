@@ -1,7 +1,6 @@
-import { defineStore, storeToRefs } from 'pinia';
-import { ref, inject } from 'vue';
-import { useAuthStore } from './authStore';
-import axios from 'axios';
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import api from '@/plugins/axios';
 
 export const useMainStore = defineStore('main', () => {
   const loading = ref(false);
@@ -10,21 +9,7 @@ export const useMainStore = defineStore('main', () => {
   const contest = ref(null);
   const variant = ref({});
   const prizeContents = ref([]);
-  const currentContest = ref([]);
-  const categories = ref([]);
-  const config = inject("config");
-  const authStore = useAuthStore();
-  const { token } = storeToRefs(authStore);
-
-  console.log("mainStore token:", token.value);
-
-  const api = axios.create({
-    baseURL: config.API_URL,
-    withCredentials: true,
-    headers: {
-      'Authorization': `Bearer ${token.value}`,
-    }
-  });
+  const categories = ref([]);  
 
   async function fetchContests() {
     const response = await api.get('/quiz')
@@ -54,7 +39,6 @@ export const useMainStore = defineStore('main', () => {
     }
 
   }
-
 
     return {
         fetchCurrentContest,

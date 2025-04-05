@@ -1,35 +1,20 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { ref, inject } from 'vue';
+import { ref } from 'vue';
 import { useAuthStore } from './authStore';
-import { useMainStore } from './mainStore';
-import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useQuizStore } from './quizStore';
-import lifeline from '@/config/lifeline';
 import { useToast } from 'vue-toastification';
+import api from '@/plugins/axios';
 
 export const useLifelineStore = defineStore('lifeline', () => {
     const loading = ref(false);
     const error = ref(null);
-    const lifelines = ref([]);
-    const config = inject('config');
     const router = useRouter();
     const toast = useToast();
     const removedOption = ref([]);
-    const mainStore = useMainStore();
     const authStore = useAuthStore();
     const quizStore = useQuizStore();
-    const { token, user } = storeToRefs(authStore);
-    const { contests, contest, variant } = storeToRefs(mainStore);
-    const { question } = storeToRefs(quizStore);
-
-    const api = axios.create({
-        baseURL: config.API_URL,
-        withCredentials: true,
-        headers: {
-          'Authorization': `Bearer ${token.value}`,
-        }
-      });
+    const { question } = storeToRefs(quizStore);      
 
     async function useLifeline(lifelineData){
         console.log("Lifeline Pinia Data: ", lifelineData);

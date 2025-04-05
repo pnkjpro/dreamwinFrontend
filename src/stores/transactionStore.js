@@ -1,31 +1,17 @@
 import { defineStore, storeToRefs } from "pinia";
 import { useAuthStore } from "./authStore";
-import { ref, watch, computed, onMounted, inject, reactive } from "vue";
-import axios from "axios";
-import { useToast } from "vue-toastification";
+import { ref } from "vue";
 import { useMainStore } from "./mainStore";
+import api from "@/plugins/axios";
 
 export const useTransactionStore = defineStore('transaction', () => {
     const loading = ref(false);
     const transactions = ref([]);
     const error = ref(null);
-    const toast = useToast();
-    const config = inject('config');
     const fundAction = ref("");
     const mainStore = useMainStore();
-    const { contests, contest, variant } = storeToRefs(mainStore);
-
-    
+    const { contest } = storeToRefs(mainStore);  
     const authStore = useAuthStore();
-    const { token, user } = storeToRefs(authStore);
-
-    const api = axios.create({
-        baseURL: config.API_URL,
-        withCredentials: true,
-        headers: {
-          'Authorization': `Bearer ${token.value}`,
-        }
-    });
 
     async function addFunds(fund) {
         try {

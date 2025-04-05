@@ -1,16 +1,13 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { ref, inject } from 'vue';
-import { useAuthStore } from './authStore';
+import { ref } from 'vue';
 import { useMainStore } from './mainStore';
-import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import Leaderboard from '@/pages/Leaderboard.vue';
+import api from '@/plugins/axios';
 
 export const useQuizStore = defineStore('playQuiz', () => {
     const loading = ref(false);
     const error = ref(null);
-    const config = inject('config');
     const router = useRouter();
     const toast = useToast();
     const responses = ref([]);
@@ -21,17 +18,7 @@ export const useQuizStore = defineStore('playQuiz', () => {
       topPlayers: []
     });
     const mainStore = useMainStore();
-    const authStore = useAuthStore();
-    const { token } = storeToRefs(authStore);
-    const { contests, contest, variant } = storeToRefs(mainStore);
-
-    const api = axios.create({
-        baseURL: config.API_URL,
-        withCredentials: true,
-        headers: {
-          'Authorization': `Bearer ${token.value}`,
-        }
-      });
+    const { contest, variant } = storeToRefs(mainStore);
 
       async function playQuiz(){
         try{
