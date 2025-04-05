@@ -139,20 +139,14 @@ const router = createRouter({
           path: 'category/create',
           name: 'CreateCategory',
           component: () => import('@/pages/Admin/CreateCategory.vue'),
-          // meta: { requiresAuth: true }
+          meta: { requiresAuth: true }
         },
         {
           path: 'quiz/create',
           name: 'CreateQuiz',
           component: () => import('@/pages/Admin/CreateExamsheet.vue'),
-          // meta: { requiresAuth: true }
+          meta: { requiresAuth: true }
         },
-        {
-          path: 'variant/create',
-          name: 'CreateVariant',
-          component: () => import('@/pages/Admin/CreateVariant.vue'),
-          // meta: { requiresAuth: true }
-        }
       ]
     },
     // ======================== Main Routes =========================

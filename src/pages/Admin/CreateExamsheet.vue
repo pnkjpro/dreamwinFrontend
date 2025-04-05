@@ -1,9 +1,11 @@
 <template>
   <div class="quiz-form-container">
-    <h2 class="form-title">{{ step2 ? 'Create Quiz Questions' : 'Create Quiz' }}</h2>
+    <h2 class="form-title">
+      {{ step === 1 ? 'Create Quiz' : step === 2 ? 'Create Quiz Variants' : 'Create Quiz Questions' }}
+    </h2>
     
-    <!-- =========================== Quiz Information ================================ -->
-    <form v-if="!step2" class="quiz-form" @submit.prevent="proceed">
+    <!-- =========================== Step 1: Quiz Information ================================ -->
+    <form v-if="step === 1" class="quiz-form" @submit.prevent="proceedToVariants">
       <div class="form-group">
         <label for="category">Select Category</label>
         <select
@@ -79,7 +81,7 @@
           />
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="spotLimit">Spot Limit</label>
         <input
@@ -131,13 +133,146 @@
           type="submit"
           class="btn-save"
         >
-          Proceed to Create Questions
+          Proceed to Variants
         </button>
       </div>
     </form>
 
-    <!-- ===================== Question Form ===================== -->
-    <form v-if="step2" class="quiz-form" @submit.prevent="addQuestion">
+    <!-- =========================== Step 2: Quiz Variants ================================ -->
+    <div v-if="step === 2" class="quiz-form">
+      <div class="variant-section">
+        <h3 class="section-title">Quiz Variant {{ currentVariantIndex + 1 }}</h3>
+        
+        <div class="form-group">
+          <label for="entryFees">Entry Fees</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">Rs</span>
+            <input
+              type="number"
+              id="entryFees"
+              v-model.number="currentVariant.entry_fee"
+              placeholder="Input Entry Fees"
+              class="form-control"
+              min="0"
+              required
+            />
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="prizeMoney">Prize Money</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">Rs</span>
+            <input
+              type="number"
+              id="prizeMoney"
+              v-model.number="currentVariant.prize"
+              placeholder="Input Prize Money"
+              class="form-control"
+              min="0"
+              required
+            />
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="spotLimit">Slot Limit</label>
+          <input
+            type="number"
+            id="spotLimit"
+            v-model.number="currentVariant.slot_limit"
+            placeholder="Enter Slot Limit"
+            class="form-control"
+            min="1"
+            required
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select
+            id="status"
+            v-model="currentVariant.status"
+            class="form-control"
+            required
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <div class="prize-distribution-header">
+            <label>Prize Distribution</label>
+            <button type="button" @click="addPrizeRank" class="btn-add-rank">+ Add Rank</button>
+          </div>
+          
+          <div class="prize-ranks-container">
+            <div v-for="(prizeAmount, rank) in currentVariant.prize_contents" :key="rank" class="prize-rank-item">
+              <div class="rank-label">Rank {{ rank }}</div>
+              <div class="input-with-prefix">
+                <span class="input-prefix">Rs</span>
+                <input
+                  type="number"
+                  v-model.number="currentVariant.prize_contents[rank]"
+                  placeholder="Prize amount"
+                  class="form-control"
+                  min="0"
+                  required
+                />
+              </div>
+              <button 
+                type="button" 
+                @click="removePrizeRank(rank)" 
+                class="btn-remove-rank"
+                title="Remove this rank"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant Actions -->
+      <div class="form-actions">
+        <button type="button" @click="goBack" class="btn-cancel">
+          Back to Quiz Info
+        </button>
+        <button type="button" @click="saveCurrentVariant" class="btn-save">
+          {{ editingExistingVariant ? 'Update Variant' : 'Add Variant' }}
+        </button>
+        <button type="button" @click="proceedToQuestions" class="btn-primary" :disabled="quizVariants.length === 0">
+          Proceed to Questions
+        </button>
+      </div>
+      
+      <!-- Variants Summary -->
+      <div v-if="quizVariants.length > 0" class="variants-summary">
+        <h3 class="summary-title">Variants Added ({{ quizVariants.length }})</h3>
+        <div v-for="(variant, index) in quizVariants" :key="`variant-${index}`" class="variant-summary-item">
+          <div class="variant-summary-number">{{ index + 1 }}</div>
+          <div class="variant-summary-text">
+            <span class="variant-detail">Entry: Rs {{ variant.entry_fee }}</span>
+            <span class="variant-detail">Prize: Rs {{ variant.prize }}</span>
+            <span class="variant-detail">Slots: {{ variant.slot_limit }}</span>
+            <span class="variant-status" :class="variant.status">{{ variant.status }}</span>
+          </div>
+          <div class="variant-actions">
+            <button @click="editVariant(index)" class="btn-edit-variant" title="Edit variant">
+              Edit
+            </button>
+            <button @click="deleteVariant(index)" class="btn-delete-variant" title="Delete variant">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== Step 3: Question Form ===================== -->
+    <form v-if="step === 3" class="quiz-form" @submit.prevent="addQuestion">
       <div class="question-section">
         <h3 class="section-title">Question {{ QuestionId }}</h3>
         
@@ -191,8 +326,8 @@
 
       <!-- Form Actions -->
       <div class="form-actions">
-        <button type="button" @click="goBack" class="btn-cancel">
-          Back to Quiz Info
+        <button type="button" @click="goBackToVariants" class="btn-cancel">
+          Back to Variants
         </button>
         <button type="submit" class="btn-save">
           Add Question
@@ -207,6 +342,11 @@
         <div v-for="(question, index) in quiz" :key="`summary-${index}`" class="question-summary-item">
           <div class="question-summary-number">{{ index + 1 }}</div>
           <div class="question-summary-text">{{ question.question }}</div>
+          <div class="question-actions">
+            <button @click="deleteQuestion(index)" class="btn-delete-question" title="Delete question">
+              Delete
+            </button>
+          </div>
         </div>
       </div>
     </form>
@@ -219,12 +359,14 @@ import axios from "axios";
 import { useAdminStore } from "@/stores/adminStore";
 import { useToast } from "vue-toastification";
 
-
 const toast = useToast();
 let QuestionId = ref(1);
 let quiz = ref([]);
-const step2 = ref(false);
+const step = ref(1); // 1: Quiz Info, 2: Variants, 3: Questions
 const imagePreview = ref(null);
+const quizVariants = ref([]);
+const currentVariantIndex = ref(-1);
+const editingExistingVariant = ref(false);
 
 const adminStore = useAdminStore();
 
@@ -241,6 +383,17 @@ const initialQuizInfo = {
   prize_money: 0
 };
 
+
+const initialVariant = {
+  entry_fee: 0,
+  prize: 0,
+  slot_limit: 100,
+  status: "active",
+  prize_contents: {
+    "1": 0
+  }
+};
+
 const initialQuizForm = {
   id: 1,
   question: "",
@@ -254,6 +407,7 @@ const initialQuizForm = {
 };
 
 const quizInfo = ref(JSON.parse(JSON.stringify(initialQuizInfo)));
+const currentVariant = ref(JSON.parse(JSON.stringify(initialVariant)));
 const quizForm = ref(JSON.parse(JSON.stringify(initialQuizForm)));
 
 const categories = [
@@ -277,21 +431,108 @@ const handleImageUpload = (event) => {
   }
 };
 
-const proceed = () => {
+const proceedToVariants = () => {
   // Validate date/time (ensure end time is after start time)
   if (new Date(quizInfo.value.end_time) <= new Date(quizInfo.value.start_time)) {
-    alert("End time must be after start time");
+    toast.error("End time must be after start time");
     return;
   }
   
-  step2.value = true;
+  step.value = 2; // Move to variants step
+  resetCurrentVariant();
+};
+
+const proceedToQuestions = () => {
+  if (quizVariants.value.length === 0) {
+    toast.error("You need to add at least one variant");
+    return;
+  }
+  
+  step.value = 3; // Move to questions step
 };
 
 const goBack = () => {
-  step2.value = false;
+  step.value = 1; // Go back to quiz info
+};
+
+const goBackToVariants = () => {
+  step.value = 2; // Go back to variants
+};
+
+const resetCurrentVariant = () => {
+  currentVariant.value = JSON.parse(JSON.stringify(initialVariant));
+  editingExistingVariant.value = false;
+  currentVariantIndex.value = -1;
+};
+
+const addPrizeRank = () => {
+  const ranks = Object.keys(currentVariant.value.prize_contents);
+  const nextRank = ranks.length > 0 ? parseInt(ranks[ranks.length - 1]) + 1 : 1;
+  currentVariant.value.prize_contents[nextRank] = 0;
+};
+
+const removePrizeRank = (rank) => {
+  const updatedPrizeContents = {};
+  Object.keys(currentVariant.value.prize_contents)
+    .filter(r => r !== rank)
+    .forEach(r => {
+      updatedPrizeContents[r] = currentVariant.value.prize_contents[r];
+    });
+  
+  currentVariant.value.prize_contents = updatedPrizeContents;
+};
+
+const saveCurrentVariant = () => {
+  // Validate entry fee and prize
+  if (currentVariant.value.entry_fee < 0) {
+    toast.error("Entry fee cannot be negative");
+    return;
+  }
+
+  if (currentVariant.value.prize < 0) {
+    toast.error("Prize amount cannot be negative");
+    return;
+  }
+
+  // Validate prize distribution
+  const totalPrizeDistribution = Object.values(currentVariant.value.prize_contents).reduce((sum, amount) => sum + amount, 0);
+  if (totalPrizeDistribution > currentVariant.value.prize) {
+    toast.error("Total prize distribution exceeds the total prize amount");
+    return;
+  }
+
+  if (editingExistingVariant.value) {
+    // Update existing variant
+    quizVariants.value[currentVariantIndex.value] = JSON.parse(JSON.stringify(currentVariant.value));
+  } else {
+    // Add new variant
+    quizVariants.value.push(JSON.parse(JSON.stringify(currentVariant.value)));
+  }
+  
+  resetCurrentVariant();
+  toast.success(editingExistingVariant.value ? "Variant updated successfully" : "Variant added successfully");
+};
+
+const editVariant = (index) => {
+  currentVariant.value = JSON.parse(JSON.stringify(quizVariants.value[index]));
+  currentVariantIndex.value = index;
+  editingExistingVariant.value = true;
+};
+
+const deleteVariant = (index) => {
+  if (confirm("Are you sure you want to delete this variant?")) {
+    quizVariants.value.splice(index, 1);
+    toast.success("Variant deleted successfully");
+  }
 };
 
 const addQuestion = () => {
+  // Validate if correct answer is selected
+  if (!quizForm.value.correctAnswerId) {
+    toast.error("Please select a correct answer");
+    return;
+  }
+  
   // Save current question
   quiz.value.push({...quizForm.value, id: QuestionId.value});
   
@@ -299,18 +540,33 @@ const addQuestion = () => {
   QuestionId.value++;
   quizForm.value = JSON.parse(JSON.stringify(initialQuizForm));
   quizForm.value.id = QuestionId.value;
+  
+  toast.success("Question added successfully");
+};
+
+const deleteQuestion = (index) => {
+  if (confirm("Are you sure you want to delete this question?")) {
+    quiz.value.splice(index, 1);
+    toast.success("Question deleted successfully");
+  }
 };
 
 const resetQuiz = () => {
-  quizInfo.value = {...initialQuizInfo}
-  quizForm.value = {...initialQuizForm}
-}
+  quizInfo.value = JSON.parse(JSON.stringify(initialQuizInfo));
+  quizVariants.value = [];
+  quiz.value = [];
+  quizForm.value = JSON.parse(JSON.stringify(initialQuizForm));
+  step.value = 1;
+  QuestionId.value = 1;
+  imagePreview.value = null;
+};
 
 const createQuiz = async() => {
   if (quiz.value.length === 0) {
-    // No questions added yet
+    toast.error("No questions added yet");
     return;
   }
+  
   const formData = new FormData();
 
   // Append basic quiz info
@@ -328,10 +584,24 @@ const createQuiz = async() => {
     formData.append("banner_image", quizInfo.value.banner_image);
   }
 
+  // Append quiz variants
+  quizVariants.value.forEach((variant, i) => {
+    formData.append(`quizVariants[${i}][entry_fee]`, variant.entry_fee);
+    formData.append(`quizVariants[${i}][prize]`, variant.prize);
+    formData.append(`quizVariants[${i}][slot_limit]`, variant.slot_limit);
+    formData.append(`quizVariants[${i}][status]`, variant.status);
+    
+    // Append prize distribution
+    Object.entries(variant.prize_contents).forEach(([rank, amount]) => {
+      formData.append(`quizVariants[${i}][prize_contents][${rank}]`, amount);
+    });
+  });
+
+  // Append quiz questions
   quiz.value.forEach((question, i) => {
-  formData.append(`quizContents[${i}][id]`, question.id);
-  formData.append(`quizContents[${i}][question]`, question.question);
-  
+    formData.append(`quizContents[${i}][id]`, question.id);
+    formData.append(`quizContents[${i}][question]`, question.question);
+    
     question.options.forEach((option, j) => {
       formData.append(`quizContents[${i}][options][${j}][id]`, option.id);
       formData.append(`quizContents[${i}][options][${j}][option]`, option.option);
@@ -341,10 +611,10 @@ const createQuiz = async() => {
 
   const result = await adminStore.createQuiz(formData);
   if (!result.success){
-    toast.error(result.message)
+    toast.error(result.message);
   } else {
-    toast.success(result.message)
-    resetQuiz()
+    toast.success(result.message);
+    resetQuiz();
   }
 };
 </script>
@@ -431,7 +701,7 @@ const createQuiz = async() => {
   gap: 6px;
 }
 
-.question-section {
+.question-section, .variant-section {
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 6px;
@@ -498,7 +768,7 @@ const createQuiz = async() => {
   cursor: not-allowed;
 }
 
-.questions-summary {
+.questions-summary, .variants-summary {
   margin-top: 30px;
   padding: 20px;
   background-color: #f9f9f9;
@@ -511,7 +781,7 @@ const createQuiz = async() => {
   font-size: 1.2rem;
 }
 
-.question-summary-item {
+.question-summary-item, .variant-summary-item {
   display: flex;
   align-items: center;
   padding: 12px;
@@ -521,7 +791,7 @@ const createQuiz = async() => {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.question-summary-number {
+.question-summary-number, .variant-summary-number {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -535,12 +805,134 @@ const createQuiz = async() => {
   flex-shrink: 0;
 }
 
-.question-summary-text {
+.question-summary-text, .variant-summary-text {
   font-size: 14px;
   color: #333;
+  flex: 1;
 }
 
-/* New styles for the added fields */
+.variant-summary-text {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.variant-detail {
+  font-weight: 500;
+}
+
+.variant-status {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.variant-status.active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.variant-status.inactive {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.variant-status.draft {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.question-actions, .variant-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit-variant, .btn-delete-variant, .btn-delete-question {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-edit-variant {
+  background-color: #e7f5ff;
+  border: 1px solid #4a90e2;
+  color: #1e6fcc;
+}
+
+.btn-delete-variant, .btn-delete-question {
+  background-color: #fff2f2;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+}
+
+.btn-edit-variant:hover {
+  background-color: #d0e7fb;
+}
+
+.btn-delete-variant:hover, .btn-delete-question:hover {
+  background-color: #ffdbdb;
+}
+
+/* Prize distribution styles */
+.prize-distribution-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.btn-add-rank {
+  padding: 6px 12px;
+  background: #4a90e2;
+  border: 1px solid #4a90e2;
+  border-radius: 4px;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.prize-ranks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prize-rank-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rank-label {
+  min-width: 80px;
+  font-weight: 500;
+}
+
+.btn-remove-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #f8d7da;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-remove-rank:hover {
+  background-color: #f5c6cb;
+}
+
+/* File input and image preview */
 .file-input {
   padding: 8px 12px;
 }
@@ -572,6 +964,29 @@ const createQuiz = async() => {
   .date-time-group {
     flex-direction: column;
     gap: 16px;
+  }
+  
+  .prize-rank-item {
+    flex-wrap: wrap;
+  }
+  
+  .variant-summary-text {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .question-summary-item, .variant-summary-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .question-summary-number, .variant-summary-number {
+    margin-bottom: 8px;
+  }
+  
+  .question-actions, .variant-actions {
+    margin-left: 0;
+    margin-top: 8px;
   }
 }
 </style>
