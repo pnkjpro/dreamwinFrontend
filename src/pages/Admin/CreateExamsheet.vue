@@ -41,6 +41,44 @@
           required
         ></textarea>
       </div>
+
+      <div class="form-group">
+        <label for="bannerImage">Banner Image</label>
+        <input
+          type="file"
+          id="bannerImage"
+          @change="handleImageUpload"
+          class="form-control file-input"
+          accept="image/*"
+        />
+        <div v-if="imagePreview" class="image-preview">
+          <img :src="imagePreview" alt="Banner preview" />
+        </div>
+      </div>
+      
+      <div class="form-group date-time-group">
+        <div class="date-time-input">
+          <label for="startTime">Start Time</label>
+          <input
+            type="datetime-local"
+            id="startTime"
+            v-model="quizInfo.start_time"
+            class="form-control"
+            required
+          />
+        </div>
+        
+        <div class="date-time-input">
+          <label for="endTime">End Time</label>
+          <input
+            type="datetime-local"
+            id="endTime"
+            v-model="quizInfo.end_time"
+            class="form-control"
+            required
+          />
+        </div>
+      </div>
       
       <div class="form-group">
         <label for="spotLimit">Spot Limit</label>
@@ -179,10 +217,14 @@
 import { ref, watch, computed } from "vue";
 import axios from "axios";
 import { useAdminStore } from "@/stores/adminStore";
+import { useToast } from "vue-toastification";
 
+
+const toast = useToast();
 let QuestionId = ref(1);
 let quiz = ref([]);
 const step2 = ref(false);
+const imagePreview = ref(null);
 
 const adminStore = useAdminStore();
 
@@ -191,6 +233,8 @@ const initialQuizInfo = {
   title: "",
   description: "",
   banner_image: null,
+  start_time: "",
+  end_time: "",
   quizContents: {},
   spot_limit: 100,
   entry_fees: 0,
@@ -219,7 +263,27 @@ const categories = [
   { id: 4, name: "Politics" }
 ];
 
+const handleImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    quizInfo.value.banner_image = file;
+    
+    // Create image preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagePreview.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
 const proceed = () => {
+  // Validate date/time (ensure end time is after start time)
+  if (new Date(quizInfo.value.end_time) <= new Date(quizInfo.value.start_time)) {
+    alert("End time must be after start time");
+    return;
+  }
+  
   step2.value = true;
 };
 
@@ -237,18 +301,51 @@ const addQuestion = () => {
   quizForm.value.id = QuestionId.value;
 };
 
+const resetQuiz = () => {
+  quizInfo.value = {...initialQuizInfo}
+  quizForm.value = {...initialQuizForm}
+}
+
 const createQuiz = async() => {
   if (quiz.value.length === 0) {
     // No questions added yet
     return;
   }
+  const formData = new FormData();
+
+  // Append basic quiz info
+  formData.append("category_id", quizInfo.value.category_id);
+  formData.append("title", quizInfo.value.title);
+  formData.append("description", quizInfo.value.description);
+  formData.append("start_time", quizInfo.value.start_time);
+  formData.append("end_time", quizInfo.value.end_time);
+  formData.append("spot_limit", quizInfo.value.spot_limit);
+  formData.append("entry_fees", quizInfo.value.entry_fees);
+  formData.append("prize_money", quizInfo.value.prize_money);
+
+  // Append the banner image if exists
+  if (quizInfo.value.banner_image) {
+    formData.append("banner_image", quizInfo.value.banner_image);
+  }
+
+  quiz.value.forEach((question, i) => {
+  formData.append(`quizContents[${i}][id]`, question.id);
+  formData.append(`quizContents[${i}][question]`, question.question);
   
-  const finalQuizData = {
-    ...quizInfo.value,
-    quizContents: quiz.value
-  };
-  console.log("finalQuizData: ",finalQuizData);
-  const result = await adminStore.createQuiz(finalQuizData);
+    question.options.forEach((option, j) => {
+      formData.append(`quizContents[${i}][options][${j}][id]`, option.id);
+      formData.append(`quizContents[${i}][options][${j}][option]`, option.option);
+    });
+    formData.append(`quizContents[${i}][correctAnswerId]`, question.correctAnswerId);
+  });
+
+  const result = await adminStore.createQuiz(formData);
+  if (!result.success){
+    toast.error(result.message)
+  } else {
+    toast.success(result.message)
+    resetQuiz()
+  }
 };
 </script>
 
@@ -441,5 +538,40 @@ const createQuiz = async() => {
 .question-summary-text {
   font-size: 14px;
   color: #333;
+}
+
+/* New styles for the added fields */
+.file-input {
+  padding: 8px 12px;
+}
+
+.image-preview {
+  margin-top: 10px;
+  max-width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.image-preview img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.date-time-group {
+  display: flex;
+  gap: 16px;
+}
+
+.date-time-input {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .date-time-group {
+    flex-direction: column;
+    gap: 16px;
+  }
 }
 </style>
