@@ -127,7 +127,7 @@ const navigateTo = async(nodeId, variantId) => {
     await mainStore.fetchCurrentContest(nodeId);
   }
   mainStore.getPrizeContents(variantId);
-  router.push('/variant/details');
+  router.push('/quiz/variant/details');
 }
 
 const showLeaderBoard = (nodeId) => {

@@ -145,7 +145,7 @@ const config = inject('config');
 const navigateTo = (variantId) => {
   console.log("gamelist variantId",variantId);
   mainStore.getPrizeContents(variantId);
-  router.push('/variant/details');
+  router.push('/quiz/variant/details');
 }
 
 const navigateToBack = () => {

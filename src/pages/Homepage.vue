@@ -184,7 +184,7 @@ import { useToast } from 'vue-toastification';
     fundAction.value = fundType;
     console.log(fundType);
     console.log(fundAction.value);
-    router.push('/funds');
+    router.push('/dashboard/funds');
   }
 
   const fetchContest = async(nodeId) => {
@@ -198,10 +198,10 @@ import { useToast } from 'vue-toastification';
   })
 
   const menuItems = ref([
-  { text: 'Refer & Earn', icon: 'user', url: 'refernearn' },
-  { text: 'My Lifelines', icon: 'phone', url: 'lifeline'},
-  { text: 'My Transactions', icon: 'cash-register', url: 'transactions'},
-  { text: 'My Contests', icon: 'gamepad', url: 'my-contests'},
+  { text: 'Refer & Earn', icon: 'user', url: 'dashboard/refernearn' },
+  { text: 'My Lifelines', icon: 'phone', url: 'dashboard/lifeline'},
+  { text: 'My Transactions', icon: 'cash-register', url: 'dashboard/transactions'},
+  { text: 'My Contests', icon: 'gamepad', url: 'dashboard/my-contests'},
   { text: 'Help', icon: 'question-circle', url: 'help' },
   { text: 'About Us', icon: 'file-alt', url: 'aboutus' },
   { text: 'How to Play', icon: 'gamepad', url: 'how_to_play' },

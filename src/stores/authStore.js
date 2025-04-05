@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import axios from 'axios';
 import api from '@/plugins/axios';
 
@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(null);
   const loading = ref(false);
   const error = ref(null);
+  const userResponses = ref([]);
   const token = ref(localStorage.getItem('authToken'));
 
   // Actions as functions
@@ -50,11 +51,11 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(credentials) {
     loading.value = true;
     try {
-      // Get CSRF cookie
       await axios.get(`${import.meta.env.BASE_API}/sanctum/csrf-cookie`);
-      // Attempt login
       const response = await api.post('/users/login', credentials);
       user.value = response.data.data.user;
+      userResponses.value = response.data.data.user.user_responses;
+      console.log("user responses", userResponses.value);
       token.value = response.data.data.token;
       localStorage.setItem('authToken', response.data.data.token);
       loading.value = false;
@@ -76,7 +77,6 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       // If you have a backend logout endpoint
       if (token.value) {
-        console.log('if token:', token.value);
         await api.post('/users/logout');
       }
   
@@ -88,7 +88,6 @@ export const useAuthStore = defineStore('auth', () => {
       loading.value = false;
       localStorage.removeItem('authToken');
       token.value = null;
-      console.log("does it hit", token.value);
       user.value = null;
       return { success: true, message: 'Logged out successfully' };
     }
@@ -101,6 +100,8 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await api.get('/users/user');
       console.log(response.data.user);
       user.value = response.data.user;
+      userResponses.value = response.data.user.user_responses;
+      console.log("user responses:", userResponses.value);
       console.log("fetched user data", user.value);
       return user.value;
     } catch (err) {
@@ -137,6 +138,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading, 
     error, 
     token,
+    userResponses,
     register, 
     login, 
     logout, 

@@ -10,6 +10,7 @@ const router = createRouter({
       path: '',
       redirect: '/auth/'
     },
+    // =============== Authentication Routes ================
     {
       path: '/auth/',
       redirect: '/auth/login',
@@ -20,109 +21,145 @@ const router = createRouter({
         },
         {
           path: 'login',
+          name: 'Login',
           component: () => import('@/pages/Auth/Login.vue'),
           meta: { guestOnly: true }
         },
         {
           path: 'register',
+          name: 'Register',
           component: () => import('@/pages/Auth/Register.vue'),
           meta: { guestOnly: true }
         }
       ]
     },
+    // ====================== Dashboard Routes ====================
+    {
+      path: '/dashboard/',
+      children: [
+        {
+          path: 'funds',
+          name: 'Funds',
+          component: () => import('@/pages/MyDashboard/AddnWithdraw.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'lifeline',
+          name: 'MyLifeline',
+          component: () => import('@/pages/MyDashboard/MyLifeline.vue'),
+          meta: { requiresAuth:true }
+        },
+        {
+          path: 'transactions',
+          name: 'MyTransactions',
+          component: () => import('@/pages/MyDashboard/MyTransactions.vue'),
+          meta: { requiresAuth:true }
+        },
+        {
+          path: 'my-contests',
+          name: 'MyContests',
+          component: () => import('@/pages/MyDashboard/MyContests.vue'),
+          meta: { requiresAuth:true }
+        },
+        {
+          path: 'refernearn',
+          name: 'MyReferral',
+          component: () => import('@/pages/MyDashboard/MyReferral.vue'),
+          meta: { requiresAuth:true }
+        }
+      ]
+    },
+    // ====================== Quiz Routes ====================
+    {
+      path: '/quiz/',
+      children: [
+        {
+          path: 'variants',
+          name: 'QuizVariants',
+          component: () => import('@/pages/Quiz/GameList.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: '/variant/details',
+          name: 'VariantDetails',
+          component: () => import('@/pages/Quiz/GameDetail.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'instruction',
+          name: 'QuizInstruction',
+          component: () => import('@/pages/Quiz/GameInstruction.vue'),
+          meta: { requiresAuth:true }
+        },
+        {
+          path: 'play',
+          name: 'PlayQuiz',
+          component: () => import('@/pages/Quiz/PlayPage.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'play/failed',
+          name: 'FailureScreen',
+          component: () => import('@/pages/Quiz/FailureScreen.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'play/finished',
+          name: 'FinishedScreen',
+          component: () => import('@/pages/Quiz/FinishedScreen.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'leaderboard',
+          name: 'Leaderboard',
+          component: () => import('@/pages/Quiz/Leaderboard.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'contests',
+          name: 'Contests',
+          component: () => import('@/pages/ListContests.vue'),
+          meta: { requiresAuth: true }
+        }
+      ]
+    },
+    // ======================= Admin Panel ===================================
+    {
+      path: '/admin/',
+      redirect: '/admin/funds/approval',
+      children: [
+        {
+          path: 'funds/approval',
+          name: 'FundsApproval',
+          component: () => import('@/pages/Admin/FundApproval.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'category/create',
+          name: 'CreateCategory',
+          component: () => import('@/pages/Admin/CreateCategory.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'quiz/create',
+          name: 'CreateQuiz',
+          component: () => import('@/pages/Admin/CreateExamsheet.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'variant/create',
+          name: 'CreateVariant',
+          component: () => import('@/pages/Admin/CreateVariant.vue'),
+          meta: { requiresAuth: true }
+        }
+      ]
+    },
+    // ======================== Main Routes =========================
     {
       path: '/home',
       name: 'Home',
       component: () => import('@/pages/Homepage.vue'),
       meta: { requiresAuth: true }
-    },
-    {
-      path: '/quiz/variants',
-      name: 'QuizVariants',
-      component: () => import('@/pages/GameList.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/quiz/play',
-      name: 'PlayQuiz',
-      component: () => import('@/pages/PlayPage.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/quiz/play/failed',
-      name: 'FailureScreen',
-      component: () => import('@/pages/FailureScreen.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/quiz/play/finished',
-      name: 'FinishedScreen',
-      component: () => import('@/pages/FinishedScreen.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/quiz/leaderboard',
-      name: 'Leaderboard',
-      component: () => import('@/pages/Leaderboard.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/quiz/contests',
-      name: 'Contests',
-      component: () => import('@/pages/ListContests.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/variant/details',
-      name: 'VariantDetails',
-      component: () => import('@/pages/GameDetail.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/quiz/instruction',
-      name: 'QuizInstruction',
-      component: () => import('@/pages/GameInstruction.vue'),
-      meta: { requiresAuth:true }
-    },
-    {
-      path: '/funds',
-      name: 'Funds',
-      component: () => import('@/pages/AddnWithdraw.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/examination',
-      name: 'Examination',
-      component: () => import('@/pages/Examination.vue')
-    },
-    {
-      path: '/createQuiz',
-      name: 'CreateQuiz',
-      component: () => import('@/pages/CreateExamsheet.vue')
-    },
-    {
-      path: '/lifeline',
-      name: 'Lifeline',
-      component: () => import('@/pages/MyLifeline.vue'),
-      meta: { requiresAuth:true }
-    },
-    {
-      path: '/transactions',
-      name: 'Transactions',
-      component: () => import('@/pages/MyTransactions.vue'),
-      meta: { requiresAuth:true }
-    },
-    {
-      path: '/my-contests',
-      name: 'MyContests',
-      component: () => import('@/pages/MyContests.vue'),
-      meta: { requiresAuth:true }
-    },
-    {
-      path: '/refernearn',
-      name: 'MyReferral',
-      component: () => import('@/pages/MyReferral.vue'),
-      meta: { requiresAuth:true }
     }
   ],
 })
@@ -139,6 +176,11 @@ router.beforeEach(async (to, from, next) => {
       console.log('User not authenticated');
     }
   }
+
+  if (!from.name && to.name !== 'Home' && to.name !== 'Login') {
+    return next({ name: 'Home' });
+  }
+  
   
   const isAuthenticated = !!authStore.user;
 
