@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/authStore';
-import { storeToRefs } from 'pinia';
 
 
 const router = createRouter({
@@ -80,7 +79,7 @@ const router = createRouter({
           meta: { requiresAuth: true }
         },
         {
-          path: '/variant/details',
+          path: 'variant/details',
           name: 'VariantDetails',
           component: () => import('@/pages/Quiz/GameDetail.vue'),
           meta: { requiresAuth: true }
@@ -172,7 +171,6 @@ router.beforeEach(async (to, from, next) => {
     try {
       await authStore.fetchUser();
     } catch (error) {
-      // If error, consider user not authenticated
       console.log('User not authenticated');
     }
   }

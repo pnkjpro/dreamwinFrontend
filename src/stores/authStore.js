@@ -8,7 +8,6 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(null);
   const loading = ref(false);
   const error = ref(null);
-  const userResponses = ref([]);
   const token = ref(localStorage.getItem('authToken'));
 
   // Actions as functions
@@ -54,7 +53,6 @@ export const useAuthStore = defineStore('auth', () => {
       await axios.get(`${import.meta.env.BASE_API}/sanctum/csrf-cookie`);
       const response = await api.post('/users/login', credentials);
       user.value = response.data.data.user;
-      userResponses.value = response.data.data.user.user_responses;
       console.log("user responses", userResponses.value);
       token.value = response.data.data.token;
       localStorage.setItem('authToken', response.data.data.token);
@@ -100,7 +98,6 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await api.get('/users/user');
       console.log(response.data.user);
       user.value = response.data.user;
-      userResponses.value = response.data.user.user_responses;
       console.log("user responses:", userResponses.value);
       console.log("fetched user data", user.value);
       return user.value;
@@ -138,7 +135,6 @@ export const useAuthStore = defineStore('auth', () => {
     loading, 
     error, 
     token,
-    userResponses,
     register, 
     login, 
     logout, 

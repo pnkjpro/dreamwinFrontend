@@ -65,7 +65,7 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, watch } from 'vue';
   import { useMainStore } from '@/stores/mainStore';
   import { storeToRefs } from 'pinia';
   import { useRouter } from 'vue-router';
@@ -98,7 +98,7 @@ import { useAuthStore } from '@/stores/authStore';
 
   // =================== Know Join Status ==================
   const userResponse = computed(() => {
-  return user.value?.user_responses.find(response => response.node_id === contest.value.node_id) || null;
+    return user.value.user_responses.find(response => response.node_id == contest.value.node_id) || null;
   });
 
   const joinStatus = computed(() => {

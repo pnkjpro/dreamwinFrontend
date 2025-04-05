@@ -3,9 +3,6 @@
     <!-- Header -->
     <div @click="navigateToBack()" class="bg-orange-500 text-white p-3 flex items-center">
       <font-awesome-icon icon="arrow-left" class="mr-2" />
-      <div class="ml-auto">
-        <font-awesome-icon icon="bars" />
-      </div>
     </div>
 
     <!-- Title -->
