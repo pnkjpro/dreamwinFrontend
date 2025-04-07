@@ -101,7 +101,7 @@ const { contest } = storeToRefs(mainStore);
 const { removedOption } = storeToRefs(lifelineStore);
 const lifelines = inject('lifeline');
 
-const timeLeft = ref(30);
+const timeLeft = ref(contest.value.quiz_timer || 30);
 let timer = null;
 const isLifelineActive = ref(false);
 
