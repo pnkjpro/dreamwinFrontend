@@ -3,8 +3,7 @@
       <!-- Header -->
       <header class="flex justify-between items-center p-4 bg-white">
         <div class="flex items-center">
-          <!-- <img :src="avatar" alt="User Avatar" class="w-16 h-16 rounded-full object-cover" /> -->
-          <img :src="'/images/fallbackImage.png'" alt="User Avatar" class="w-16 h-16 rounded-full object-cover" />
+          <img :src="displayImage(user.avatar)" alt="User Avatar" class="w-16 h-16 rounded-full object-cover" />
           <div class="ml-4">
             <p class="text-gray-600">Good to see you!</p>
             <h1 class="text-lg font-bold text-gray-700">{{ user.name }}</h1>
@@ -19,8 +18,7 @@
     <Transition name="slide-fade">
       <aside v-if="menuOpen" class="fixed top-0 left-0 w-3/4 h-full bg-orange-500 p-6 z-50 shadow-lg">
         <div class="flex items-center mb-6">
-          <!-- <img :src="avatar" alt="User Avatar" class="w-12 h-12 rounded-full object-cover" /> -->
-          <img :src="'/images/fallbackImage.png'" alt="User Avatar" class="w-12 h-12 rounded-full object-cover" />
+          <img :src="displayImage(user.avatar)" alt="User Avatar" class="w-12 h-12 rounded-full object-cover" />
           <div class="ml-4 text-white">
             <h2 class="text-lg font-bold">{{ user.name }}</h2>
             <!-- <p>Skill Score: 584</p> -->
@@ -53,8 +51,7 @@
       <div class="flex overflow-x-auto p-4 space-x-4 no-scrollbar">
         <div v-for="(category, index) in categories" :key="index" class="flex flex-col items-center">
           <div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-            <!-- <img :src="category.image" :alt="category.name" class="w-full h-full object-cover" /> -->
-            <img :src="'/images/fallbackImage.png'" :alt="category.name" class="w-full h-full object-cover" />
+            <img :src="displayImage(category.icon)" :alt="category.name" class="w-full h-full object-cover" />
           </div>
           <p class="text-center font-bold text-sm mt-2 max-w-24">{{ category.name }}</p>
         </div>
@@ -95,7 +92,7 @@
             <div @click="fetchContest(contest.node_id)" class="flex p-4">
               <!-- Contest Image -->
               <div class="w-1/4 flex-shrink-0">
-                <img :src="'/images/fallbackImage.png'" :alt="contest.title" class="w-full h-full object-cover rounded-lg" />
+                <img :src="displayImage(contest.banner_image)" :alt="contest.title" class="w-full h-full object-cover rounded-lg" />
               </div>
 
               <!-- Contest Details -->
@@ -228,6 +225,14 @@ const handleLogout = async () => {
 };
 
 const toggleMenu = () => menuOpen.value = !menuOpen.value;
+
+const displayImage = (imagePath) => {
+  let path = '/images/fallbackImage.png';
+  if(imagePath){
+    path = `${import.meta.env.VITE_BASE_API}/storage/${imagePath}`
+  }
+  return path;
+}
 
 // ======================== Date n Time Handle ====================
 // Update current time every minute

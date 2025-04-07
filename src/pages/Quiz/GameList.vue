@@ -14,7 +14,7 @@
     <div class="px-4 mb-4">
       <div class="relative w-full h-48 overflow-hidden rounded-lg">
         <img 
-          :src="'/images/fallbackImage.png'"
+          :src="displayImage(contest.banner_image)"
           alt="Sports athletes collage" 
           class="w-full h-full object-cover"
         />
@@ -133,8 +133,13 @@ const router = useRouter();
 const mainStore = useMainStore();
 const { contest, prizeContents } = storeToRefs(mainStore);
 
-console.log("Game list",contest.value);
-// console.log("Prize Contents", contest.value.quiz_variants[0].prize_contents);
+const displayImage = (imagePath) => {
+  let path = '/images/fallbackImage.png';
+  if(imagePath){
+    path = `${import.meta.env.VITE_BASE_API}/storage/${imagePath}`
+  }
+  return path;
+}
 
 const config = inject('config');
 // const fallbackImage = config.FALLBACK_IMAGE;
