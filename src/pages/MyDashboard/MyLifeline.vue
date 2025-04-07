@@ -75,7 +75,7 @@
         </div>
         <div class="flex-1">
           <div class="font-medium">Revive Lifeline</div>
-          <div class="text-sm text-gray-600">Add 30 seconds to your question timer</div>
+          <div class="text-sm text-gray-600">This lifeline continues your game when failed</div>
           <div class="mt-1.5 flex items-center">
             <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
               ₹ 99 each

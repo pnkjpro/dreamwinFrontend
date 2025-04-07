@@ -175,9 +175,9 @@
         </div>
         
         <button 
-          class="bg-orange-500 text-white py-2 px-6 rounded-lg font-medium w-full"
+          class="bg-orange-500 text-white py-2 px-6 rounded-lg font-medium w-full disabled:bg-gray-400 disabled:cursor-not-allowed"
           @click="requestWithdrawal"
-          :disabled="withdrawAmount <= 0 || withdrawAmount > availableBalance || !upi_id"
+          :disabled="withdrawAmount < 50 || withdrawAmount > availableBalance || !upi_id"
         >
           REQUEST WITHDRAWAL
         </button>
@@ -244,7 +244,7 @@ const submitAddFund = async() => {
 };
 
 const requestWithdrawal = async() => {
-  if (withdrawAmount.value > 0 && withdrawAmount.value <= availableBalance.value) {
+  if (withdrawAmount.value > 50 && withdrawAmount.value <= availableBalance.value) {
     const result = await transactionStore.withdrawFunds(withdrawAmount.value);
     if(result.success){
       toast.success(result.message);
@@ -253,7 +253,7 @@ const requestWithdrawal = async() => {
     }
     withdrawAmount.value = '';
   } else {
-    toast.error('Please enter an amount');
+    toast.error('Please enter a valid amount');
   }
 };
 

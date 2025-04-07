@@ -354,10 +354,12 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import axios from "axios";
 import { useAdminStore } from "@/stores/adminStore";
+import { useMainStore } from "@/stores/mainStore";
 import { useToast } from "vue-toastification";
+import { storeToRefs } from "pinia";
 
 const toast = useToast();
 let QuestionId = ref(1);
@@ -369,6 +371,13 @@ const currentVariantIndex = ref(-1);
 const editingExistingVariant = ref(false);
 
 const adminStore = useAdminStore();
+const mainStore = useMainStore();
+
+const { categories } = storeToRefs(mainStore);
+
+onMounted(() => {
+  mainStore.fetchCategories();
+})
 
 const initialQuizInfo = {
   category_id: null,
@@ -410,12 +419,12 @@ const quizInfo = ref(JSON.parse(JSON.stringify(initialQuizInfo)));
 const currentVariant = ref(JSON.parse(JSON.stringify(initialVariant)));
 const quizForm = ref(JSON.parse(JSON.stringify(initialQuizForm)));
 
-const categories = [
-  { id: 1, name: "Sports" },
-  { id: 2, name: "Current Affairs" },
-  { id: 3, name: "History" },
-  { id: 4, name: "Politics" }
-];
+// const categories = [
+//   { id: 1, name: "Sports" },
+//   { id: 2, name: "Current Affairs" },
+//   { id: 3, name: "History" },
+//   { id: 4, name: "Politics" }
+// ];
 
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
