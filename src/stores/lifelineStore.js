@@ -78,6 +78,8 @@ export const useLifelineStore = defineStore('lifeline', () => {
 
     return {
         useLifeline,
+        error,
+        loading,
         removedOption,
         purchaseLifeline,
     }

@@ -109,6 +109,8 @@ export const useTransactionStore = defineStore('transaction', () => {
     return {
         fundAction,
         addFunds,
+        loading,
+        error,
         withdrawFunds,
         joinGame,
         getTransactions,
