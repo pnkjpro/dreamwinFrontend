@@ -1,7 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/authStore';
 import AdminLayout from '@/pages/Admin/Homelayout.vue'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 
+// Configure NProgress
+NProgress.configure({ 
+  easing: 'ease',
+  speed: 500,
+  showSpinner: false,
+  trickleSpeed: 200,
+  minimum: 0.1
+})
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -159,7 +169,23 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async (to, from, next) => {
+// Show progress bar on route change
+router.beforeEach((to, from, next) => {
+  // Start the progress bar
+  NProgress.start()
+  next()
+})
+
+// Hide progress bar when route is completely loaded
+router.afterEach(() => {
+  // Complete the progress bar
+  setTimeout(() => {
+    NProgress.done()
+  }, 100) // Small delay to make the transition look smoother
+})
+
+// Authentication check
+router.beforeResolve(async (to, from, next) => {
   const authStore = useAuthStore();
   
   // Check if user is already fetched
@@ -178,13 +204,13 @@ router.beforeEach(async (to, from, next) => {
   
   const isAuthenticated = !!authStore.user;
 
-if (to.meta.requiresAuth && !isAuthenticated) {
-  next({ path: '/auth/login' });
-} else if (to.meta.guestOnly && isAuthenticated) {
-  next({ path: '/home' });
-} else {
-  next();
-}
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next({ path: '/auth/login' });
+  } else if (to.meta.guestOnly && isAuthenticated) {
+    next({ path: '/home' });
+  } else {
+    next();
+  }
 });
 
 export default router
