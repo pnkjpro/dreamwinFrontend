@@ -59,9 +59,9 @@
   
       <!-- Promotion Cards -->
       <div class="px-4 overflow-x-auto flex space-x-4 no-scrollbar">
-        <div v-for="(promo, index) in promotions" :key="index" 
+        <div v-for="(banner, index) in banners" :key="index" 
              class="flex-shrink-0 w-64 bg-orange-400 rounded-lg p-6 text-white">
-          <p class="font-bold">{{ promo.title }}</p>
+             <img :src="displayImage(banner.banner_path)" :alt="banner.title" class="w-full h-full object-cover" />
         </div>
       </div>
   
@@ -173,7 +173,7 @@ import { useToast } from 'vue-toastification';
   const authStore = useAuthStore();
   const transactionStore = useTransactionStore();
 
-  const { contests, categories } = storeToRefs(mainStore);
+  const { contests, categories, banners } = storeToRefs(mainStore);
   const { user } = storeToRefs(authStore);
   const { fundAction } = storeToRefs(transactionStore);
 
@@ -192,6 +192,7 @@ import { useToast } from 'vue-toastification';
   onMounted(() => {
     mainStore.fetchContests();
     mainStore.fetchCategories();
+    mainStore.fetchHomeBanners();
   })
 
   const menuItems = ref([

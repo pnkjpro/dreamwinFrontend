@@ -157,6 +157,12 @@ const router = createRouter({
           component: () => import('@/pages/Admin/CreateExamsheet.vue'),
           meta: { requiresAuth: true }
         },
+        {
+          path: 'banner/update',
+          name: 'BannerUpdate',
+          component: () => import('@/pages/Admin/HomeBanner.vue'),
+          meta: { guestOnly: true }
+        },
       ]
     },
     // ======================== Main Routes =========================
@@ -165,6 +171,21 @@ const router = createRouter({
       name: 'Home',
       component: () => import('@/pages/Homepage.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/faqs',
+      name: 'FAQs',
+      component: () => import('@/pages/HelpNFAQs.vue')
+    },
+    {
+      path: '/aboutus',
+      name: 'AboutUs',
+      component: () => import('@/pages/AboutUs.vue')
+    },
+    {
+      path: '/terms',
+      name: 'Terms',
+      component: () => import('@/pages/TermsNCondition.vue')
     }
   ],
 })

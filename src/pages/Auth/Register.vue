@@ -89,6 +89,16 @@
             <font-awesome-icon :icon="showPassword ? 'eye' : 'eye-slash'" />
           </button>
         </div>
+
+        <div class="mb-4 relative">
+          <input 
+            type="text" 
+            placeholder="Refer Code(Optional)" 
+            class="w-full bg-gray-200 py-4 px-6 rounded-xl text-gray-700"
+            v-model="form.refer_code"
+          />
+          <p v-if="errors.refer_code" class="text-red-500 text-sm mt-1">{{ errors.refer_code }}</p>
+        </div>
         
         <button 
             type="submit" 
@@ -117,7 +127,7 @@
 
 <script setup>
 import { ref, watch, computed, reactive, onMounted } from 'vue';
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from '@/stores/authStore';
 import { storeToRefs } from 'pinia';
 import * as yup from "yup";
@@ -131,6 +141,7 @@ import { useToast } from 'vue-toastification';
 library.add(faEye, faEyeSlash, faGoogle, faFacebook);
 
 const router = useRouter();
+const route = useRoute();
 const toast = useToast();
 const authStore = useAuthStore();
 const { user } = storeToRefs(authStore);
@@ -178,8 +189,13 @@ const form = ref({
   mobile: null,
   email: "",
   password: "",
-  password_confirmation: ""
+  password_confirmation: "",
+  refer_code: "",
 })
+
+if(route.query.refer_code){
+  form.value.refer_code = route.query.refer_code;
+}
 
 const handleRegistration = async () => {
   const isValid = await validateForm();

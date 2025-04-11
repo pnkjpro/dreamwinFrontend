@@ -40,11 +40,48 @@ export const useMainStore = defineStore('main', () => {
 
   }
 
+    async function updateBanner(payload){
+      try{
+        loading.value = true;
+        const response = api.post('admin/banner/update', payload);
+        return {
+          success: response.data.success,
+          message: response.data.message
+        }
+      } catch (error) {
+          console.error("Error updating banner:", error);
+          const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+          return { success: false, message: errorMessage };
+      } finally {
+          loading.value = false;
+      }
+    }
+
+    async function fetchHomeBanners(){
+      try{
+        loading.value = true;
+        const response = await api.get('/banner/list');
+        banners.value = response.data.data;
+        return {
+          success: response.data.success,
+          message: response.data.message
+        }
+      } catch (error) {
+          console.error("Error getting banners:", error);
+          const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+          return { success: false, message: errorMessage };
+      } finally {
+          loading.value = false;
+      }
+    }
+
     return {
         fetchCurrentContest,
         fetchContests,
         fetchCategories,
         getPrizeContents,
+        fetchHomeBanners,
+        updateBanner,
         prizeContents,
         variant,
         contest,

@@ -1,164 +1,167 @@
 <template>
-    <div class="bg-gray-100 min-h-screen">
-      <!-- Header -->
-      <header class="bg-white sticky top-0 z-50 border-b border-gray-200">
-        <div class="flex justify-between items-center p-4">
-          <button class="text-2xl" @click="goBack">
-            <span class="inline-block transform rotate-180">→</span>
-          </button>
-          <h1 class="text-xl font-semibold">All Upcoming Contests</h1>
-          <button class="text-xl">
-            <span class="inline-block">⚙️</span>
-          </button>
-        </div>
-      </header>
-  
-      <!-- Category Filters -->
-      <div class="bg-white border-b border-gray-200">
-        <div class="p-4 overflow-x-auto">
-          <div class="flex gap-3">
-            <button 
-              v-for="category in categories" 
-              :key="category.id"
-              :class="[
-                'px-4 py-2 rounded-full text-sm whitespace-nowrap', 
-                selectedCategory === category.id 
-                  ? 'bg-indigo-600 text-white' 
-                  : 'bg-gray-100 text-gray-700'
-              ]"
-              @click="selectCategory(category.id)"
-            >
-              {{ category.name }}
-            </button>
-          </div>
-        </div>
+  <div class="flex flex-col min-h-screen bg-gray-100">
+     <!-- Header -->
+     <div @click="navigateToBack()" class="bg-orange-500 text-white p-3 flex items-center">
+      <font-awesome-icon icon="arrow-left" class="mr-2" />
+      <span class="font-medium">Fund Management</span>
+    </div>
+
+    <!-- Upcoming Contest Section -->
+    <div class="p-4">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-700">Upcoming Contest</h2>
+        <a href="#" class="flex items-center text-gray-700">
+          View All
+          <font-awesome-icon icon="arrow-right" class="ml-2" />
+        </a>
       </div>
-  
-      <!-- Contest List -->
-      <div class="p-4">
-        <div v-for="contest in filteredContests" :key="contest.id" class="bg-white rounded-xl shadow mb-4 overflow-hidden">
-          <!-- Contest Card -->
-          <div class="p-4">
-            <!-- Category Tag -->
-            <div class="mb-2">
-              <span class="bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full">
-                {{ contest.category }}
-              </span>
+
+      <!-- Contest Cards -->
+      <div class="space-y-4">
+        <div v-for="(contest, index) in activeContests" :key="index"
+          class="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200">
+          <div @click="fetchContest(contest.node_id)" class="flex p-4">
+            <!-- Contest Image -->
+            <div class="w-1/4 flex-shrink-0">
+              <img :src="displayImage(contest.banner_image)" :alt="contest.title" class="w-full h-full object-cover rounded-lg" />
             </div>
-  
-            <!-- Contest Info -->
-            <div class="flex">
-              <img :src="contest.image" alt="Contest image" class="w-20 h-20 rounded-lg object-cover mr-3">
-              <div class="flex-1">
-                <h3 class="text-lg font-bold text-gray-800">{{ contest.title }}</h3>
-                <div class="flex items-center text-red-500 mt-1">
-                  <span class="mr-1">📅</span>
-                  <span>{{ contest.date }}</span>
-                </div>
-                <div class="flex items-center text-gray-600 mt-1">
-                  <span class="mr-1">🏆</span>
-                  <span>Prize ₹ {{ contest.prize }}</span>
-                </div>
+
+            <!-- Contest Details -->
+            <div class="w-3/4 pl-4 flex flex-col justify-between">
+              <!-- Category Badge -->
+              <div class="text-center mb-2">
+                <span class="bg-purple-50 text-purple-700 px-6 py-1 rounded-full inline-block">
+                  {{ contest.category.name }}
+                </span>
+              </div>
+
+              <!-- Title -->
+              <div class="mb-2">
+                <h3 class="text-md font-bold text-gray-700 truncate">{{ contest.title }}</h3>
+              </div>
+              
+              <!-- Time indicator on its own row -->
+              <div class="mb-2">
+                <p v-if="getContestStatus(contest.start_time).isLive" class="text-red-500 font-bold flex items-center">
+                  <span class="inline-block h-2 w-2 rounded-full bg-red-500 mr-2"></span>
+                  LIVE
+                </p>
+                <p v-else class="text-blue-500 font-medium">
+                  {{ getContestStatus(contest.start_time).text }}
+                </p>
+              </div>
+
+              <!-- Prize row -->
+              <div class="flex items-center">
+                <span class="text-orange-400 font-bold mr-2">MEGA PRIZE</span>
+                <font-awesome-icon icon="trophy" class="text-gray-600 mx-2" />
+                <span class="text-gray-600">Prize ₹ {{ contest.prize_money }}</span>
               </div>
             </div>
-          </div>
-  
-          <!-- Action Button -->
-          <div class="bg-orange-500 p-3 text-center text-white font-medium">
-            Register Now
           </div>
         </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, computed, onUnmounted } from 'vue';
+import { fromUnixTime, isPast, formatDistanceToNow } from 'date-fns';
+import { useRouter } from 'vue-router';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useMainStore } from '@/stores/mainStore';
+import { storeToRefs } from 'pinia';
+import { useToast } from 'vue-toastification';
+
+const router = useRouter();
+const toast = useToast();
+
+const mainStore = useMainStore();
+
+const { contests } = storeToRefs(mainStore);
+
+const fetchContest = async(nodeId) => {
+  await mainStore.fetchCurrentContest(nodeId)
+  router.push('/quiz/variants')
+}
+
+onMounted(() => {
+  mainStore.fetchContests();
+  mainStore.fetchCategories();
+})
+
+// Filter contests that are still active
+const activeContests = computed(() => {
+const currentTime = Math.floor(Date.now() / 1000); // Get current Unix timestamp
+return contests.value.filter(contest => contest.end_time > currentTime);
+});
+
+const displayImage = (imagePath) => {
+let path = '/images/fallbackImage.png';
+if(imagePath){
+  path = `${import.meta.env.VITE_BASE_API}/storage/${imagePath}`
+}
+return path;
+}
+
+// ======================== Date n Time Handle ====================
+// Update current time every minute
+const now = ref(new Date());
+
+onMounted(() => {
+const timer = setInterval(() => {
+  now.value = new Date();
+}, 60000);
+
+onUnmounted(() => {
+  clearInterval(timer);
+});
+});
+// Check contest status
+function getContestStatus(unixTimestamp) {
+// Make sure the timestamp is being processed correctly
+// If it's in milliseconds, you don't need fromUnixTime
+// If it's in seconds (standard Unix timestamp), use fromUnixTime
+
+const startTime = typeof unixTimestamp === 'number' ? 
+  fromUnixTime(unixTimestamp) : 
+  new Date(unixTimestamp);
   
-  <script>
-  export default {
-    data() {
-      return {
-        selectedCategory: 'all',
-        categories: [
-          { id: 'all', name: 'All Categories' },
-          { id: 'sports', name: 'Sports & Games' },
-          { id: 'politics', name: 'Politics' },
-          { id: 'current', name: 'Current Affairs' },
-          { id: 'science', name: 'Science' },
-          { id: 'history', name: 'History & Culture' },
-          { id: 'food', name: 'Food & Beverage' },
-          { id: 'art', name: 'Art & Creativity' },
-          { id: 'geography', name: 'World Geography' }
-        ],
-        contests: [
-          {
-            id: 1,
-            title: 'SPORT QUIZ',
-            category: 'Sports & Games',
-            date: 'Mon 11:00 Am',
-            prize: '10 Lakh',
-            image: '/api/placeholder/400/320'
-          },
-          {
-            id: 2,
-            title: 'INT. POLITICS',
-            category: 'Politics',
-            date: 'Sun 11:00 Am',
-            prize: '5 Lakh',
-            image: '/api/placeholder/400/320'
-          },
-          {
-            id: 3,
-            title: 'CURRENT AFFAIR',
-            category: 'Current Affairs',
-            date: 'Mon 11:00 Am',
-            prize: '10 Lakh',
-            image: '/api/placeholder/400/320'
-          },
-          {
-            id: 4,
-            title: 'HOME SCIENCE',
-            category: 'Science',
-            date: 'Mon 11:00 Am',
-            prize: '10 Lakh',
-            image: '/api/placeholder/400/320'
-          },
-          {
-            id: 5,
-            title: 'WORLD TRIVIA',
-            category: 'World Geography',
-            date: 'Tue 3:00 Pm',
-            prize: '7 Lakh',
-            image: '/api/placeholder/400/320'
-          },
-          {
-            id: 6,
-            title: 'ANCIENT HISTORY',
-            category: 'History & Culture',
-            date: 'Wed 12:00 Pm',
-            prize: '8 Lakh',
-            image: '/api/placeholder/400/320'
-          }
-        ]
-      }
-    },
-    computed: {
-      filteredContests() {
-        if (this.selectedCategory === 'all') {
-          return this.contests;
-        } else {
-          return this.contests.filter(contest => 
-            contest.category.toLowerCase().includes(this.selectedCategory.toLowerCase())
-          );
-        }
-      }
-    },
-    methods: {
-      selectCategory(categoryId) {
-        this.selectedCategory = categoryId;
-      },
-      goBack() {
-        // In a real app, this would use Vue Router or window history
-        console.log('Going back to home page');
-      }
-    }
-  }
-  </script>
+const isLive = now.value >= startTime;
+
+if (isLive) {
+  return { isLive: true, text: 'LIVE' };
+} else {
+  return { 
+    isLive: false, 
+    text: formatDistanceToNow(startTime) + ' left'
+  };
+}
+}
+// ==============================================================
+</script>
+
+<style scoped>
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.slide-fade-enter-active {
+transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+transform: translateX(20px);
+opacity: 0;
+}
+</style>
