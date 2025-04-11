@@ -6,13 +6,15 @@ export const useMainStore = defineStore('main', () => {
   const loading = ref(false);
   const error = ref(null);
   const contests = ref([]);
+  const page = ref(1);
+  const recordPerPage = ref(2);
   const contest = ref(null);
   const variant = ref({});
   const prizeContents = ref([]);
   const categories = ref([]);  
 
   async function fetchContests() {
-    const response = await api.get('/quiz')
+    const response = await api.get(`/quiz?page=${page.value}`)
     contests.value = response.data.data;
     console.log(contests.value);
   }
@@ -75,9 +77,31 @@ export const useMainStore = defineStore('main', () => {
       }
     }
 
+    async function fetchMoreContests(){
+      try{
+        loading.value = true;
+        const response = await api.get(`/quiz?page=${page.value+1}`);
+        page.value = page.value+1;
+        if (response.data.data && response.data.data.length > 0) {
+          contests.value = [...contests.value, ...response.data.data];
+        }
+        return {
+          success: response.data.success,
+          message: response.data.message
+        }
+      } catch (error) {
+          console.error("Error getting quizzes:", error);
+          const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+          return { success: false, message: errorMessage };
+      } finally {
+          loading.value = false;
+      }
+    }
+
     return {
         fetchCurrentContest,
         fetchContests,
+        fetchMoreContests,
         fetchCategories,
         getPrizeContents,
         fetchHomeBanners,
@@ -85,6 +109,9 @@ export const useMainStore = defineStore('main', () => {
         prizeContents,
         variant,
         contest,
+        loading,
+        page,
+        recordPerPage,
         contests,
         categories
     };

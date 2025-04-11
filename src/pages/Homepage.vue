@@ -87,7 +87,7 @@
   
         <!-- Contest Cards -->
         <div class="space-y-4">
-          <div v-for="(contest, index) in activeContests" :key="index"
+          <div v-for="(contest, index) in contests" :key="index"
             class="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200">
             <div @click="fetchContest(contest.node_id)" class="flex p-4">
               <!-- Contest Image -->
@@ -129,6 +129,15 @@
               </div>
             </div>
           </div>
+          <!-- Load More Button -->
+      <div class="mt-6 text-center">
+        <button @click="loadMoreContests" 
+                class="px-6 py-2 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                :disabled="mainStore.loading">
+          <span v-if="mainStore.loading">Loading...</span>
+          <span v-else>Load More</span>
+        </button>
+      </div>
         </div>
       </div>
     </div>
@@ -173,7 +182,7 @@ import { useToast } from 'vue-toastification';
   const authStore = useAuthStore();
   const transactionStore = useTransactionStore();
 
-  const { contests, categories, banners } = storeToRefs(mainStore);
+  const { contests, categories, banners, loading } = storeToRefs(mainStore);
   const { user } = storeToRefs(authStore);
   const { fundAction } = storeToRefs(transactionStore);
 
@@ -187,6 +196,10 @@ import { useToast } from 'vue-toastification';
   const fetchContest = async(nodeId) => {
     await mainStore.fetchCurrentContest(nodeId)
     router.push('/quiz/variants')
+  }
+
+  const loadMoreContests = () => {
+    const result = mainStore.fetchMoreContests();
   }
 
   onMounted(() => {
@@ -205,12 +218,6 @@ import { useToast } from 'vue-toastification';
   { text: 'How to Play', icon: 'gamepad', url: 'how_to_play' },
   { text: 'Terms & Conditions', icon: 'file-alt', url: 'terms' }
 ]);
-
-// Filter contests that are still active
-const activeContests = computed(() => {
-  const currentTime = Math.floor(Date.now() / 1000); // Get current Unix timestamp
-  return contests.value.filter(contest => contest.end_time > currentTime);
-});
 
 const navigateTo = (url) => {
   router.push(`/${url}`);
