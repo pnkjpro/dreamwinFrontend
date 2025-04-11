@@ -50,7 +50,7 @@
       <!-- Category Cards -->
       <div class="flex overflow-x-auto p-4 space-x-4 no-scrollbar">
         <div v-for="(category, index) in categories" :key="index" class="flex flex-col items-center">
-          <div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+          <div @click="getQuizzesByCategory(category.id)" class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
             <img :src="displayImage(category.icon)" :alt="category.name" class="w-full h-full object-cover" />
           </div>
           <p class="text-center font-bold text-sm mt-2 max-w-24">{{ category.name }}</p>
@@ -79,10 +79,6 @@
       <div class="p-4">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-2xl font-bold text-gray-700">Upcoming Contest</h2>
-          <a href="#" class="flex items-center text-gray-700">
-            View All
-            <font-awesome-icon icon="arrow-right" class="ml-2" />
-          </a>
         </div>
   
         <!-- Contest Cards -->
@@ -198,6 +194,11 @@ import { useToast } from 'vue-toastification';
     router.push('/quiz/variants')
   }
 
+  const getQuizzesByCategory = async(categoryId) => {
+    mainStore.fetchQuizzesByCategory(categoryId);
+    router.push('/category/quiz/list');
+  }
+
   const loadMoreContests = () => {
     const result = mainStore.fetchMoreContests();
   }
@@ -213,9 +214,9 @@ import { useToast } from 'vue-toastification';
   { text: 'My Lifelines', icon: 'phone', url: 'dashboard/lifeline'},
   { text: 'My Transactions', icon: 'cash-register', url: 'dashboard/transactions'},
   { text: 'My Contests', icon: 'gamepad', url: 'dashboard/my-contests'},
-  { text: 'Help', icon: 'question-circle', url: 'help' },
+  { text: 'Help & FAQs', icon: 'question-circle', url: 'faqs' },
   { text: 'About Us', icon: 'file-alt', url: 'aboutus' },
-  { text: 'How to Play', icon: 'gamepad', url: 'how_to_play' },
+  { text: 'How to Play', icon: 'gamepad', url: 'how-to-play' },
   { text: 'Terms & Conditions', icon: 'file-alt', url: 'terms' }
 ]);
 

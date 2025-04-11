@@ -6,6 +6,8 @@ export const useMainStore = defineStore('main', () => {
   const loading = ref(false);
   const error = ref(null);
   const contests = ref([]);
+  const catContests = ref([]);
+  const howVideos = ref([]);
   const page = ref(1);
   const recordPerPage = ref(2);
   const contest = ref(null);
@@ -31,6 +33,24 @@ export const useMainStore = defineStore('main', () => {
     const response = await api.get('/quiz/contest', {params:{node_id: nodeId}});
     contest.value = response.data.data;
     console.log(contest.value);
+  }
+
+  async function fetchQuizzesByCategory(categoryId){
+    try{
+      loading.value = true;
+      const response = await api.get(`/category/quiz/list?category_id=${categoryId}`)
+      catContests.value = response.data.data;
+      return {
+          success: response.data.success,
+          message: response.data.message
+        }
+    } catch (error) {
+        console.error("Error getting banners:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+    } finally {
+        loading.value = false;
+    }
   }
 
   function getPrizeContents(variantId){
@@ -98,6 +118,41 @@ export const useMainStore = defineStore('main', () => {
       }
     }
 
+    async function fetchHowVideos(){
+      try{
+        loading.value = true;
+        const response = await api.get('how/videos');
+        howVideos.value = response.data.data;
+        return {
+          success: response.data.success,
+          message: response.data.message
+        }
+      } catch (error) {
+          console.error("Error getting videos:", error);
+          const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+          return { success: false, message: errorMessage };
+      } finally {
+          loading.value = false;
+      }
+    }
+
+    async function updateHowVideo(payload){
+      try{
+        loading.value = true;
+        const response = api.post('admin/howVideos/update', payload);
+        return {
+          success: response.data.success,
+          message: response.data.message
+        }
+      } catch (error) {
+          console.error("Error updating videos:", error);
+          const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+          return { success: false, message: errorMessage };
+      } finally {
+          loading.value = false;
+      }
+    }
+
     return {
         fetchCurrentContest,
         fetchContests,
@@ -105,10 +160,15 @@ export const useMainStore = defineStore('main', () => {
         fetchCategories,
         getPrizeContents,
         fetchHomeBanners,
+        fetchQuizzesByCategory,
+        updateHowVideo,
+        fetchHowVideos,
         updateBanner,
         prizeContents,
         variant,
         contest,
+        catContests,
+        howVideos,
         loading,
         page,
         recordPerPage,

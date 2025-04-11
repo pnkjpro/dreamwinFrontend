@@ -161,8 +161,14 @@ const router = createRouter({
           path: 'banner/update',
           name: 'BannerUpdate',
           component: () => import('@/pages/Admin/HomeBanner.vue'),
-          meta: { guestOnly: true }
+          meta: { requiresAuth: true }
         },
+        {
+          path: 'howVideo/update',
+          name: 'HowVideoUpdate',
+          component: () => import('@/pages/Admin/HowVideos.vue'),
+          meta: { requiresAuth: true }
+        }
       ]
     },
     // ======================== Main Routes =========================
@@ -170,6 +176,12 @@ const router = createRouter({
       path: '/home',
       name: 'Home',
       component: () => import('@/pages/Homepage.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/category/quiz/list',
+      name: 'CategoryQuizzes',
+      component: () => import('@/pages/CategoryQuizzes.vue'),
       meta: { requiresAuth: true }
     },
     {
@@ -186,6 +198,11 @@ const router = createRouter({
       path: '/terms',
       name: 'Terms',
       component: () => import('@/pages/TermsNCondition.vue')
+    },
+    {
+      path: '/how-to-play',
+      name: 'HowToPlay',
+      component: () => import('@/pages/HowToPlay.vue')
     }
   ],
 })

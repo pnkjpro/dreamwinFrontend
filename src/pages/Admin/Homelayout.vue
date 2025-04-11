@@ -53,6 +53,7 @@ const menuItems = ref([
   { name: 'Fund Approval', path: '/admin/funds/approval' },
   { name: 'Quiz Creation', path: '/admin/quiz/create' },
   { name: 'Category Create', path: '/admin/category/create' },
+  { name: 'Update Banner', path: '/admin/banner/update' },
 ]);
 
 const toggleSidebar = () => {
