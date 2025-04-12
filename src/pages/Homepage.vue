@@ -205,6 +205,9 @@ import { useToast } from 'vue-toastification';
   }
 
   onMounted(() => {
+    if(contests.value.length > 0){
+      return;
+    }
     mainStore.fetchContests();
     mainStore.fetchCategories();
     mainStore.fetchHomeBanners();
