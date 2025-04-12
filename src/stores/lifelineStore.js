@@ -25,14 +25,21 @@ export const useLifelineStore = defineStore('lifeline', () => {
             error.value = null;
 
             const response = await api.post('/lifeline/use', lifelineData);
-            if(response.data.data.lifeline_type == 'skip_question' || response.data.data.lifeline_type == 'revive_game'){
+            if(response.data.data.lifeline_type == 'skip_question'){
                 if(response.data.data?.flag && response.data.data?.is_nextQuestion === false){
-                    console.log("hit inside lifleine");
+                    console.log("hit inside skip lifeline");
                     toast.success(response.data.data.message);
                     router.push('/quiz/play/finished');
-                    if(response.data.data.lifeline_type == 'revive_game'){
-                        response.data.success = false;
-                        response.data.message = response.data.data.message;
+                } else {
+                    question.value = { ...response.data.data };
+                }
+            } else if(response.data.data.lifeline_type == 'revive_game'){
+                if(response.data.data?.flag && response.data.data?.is_nextQuestion === false){
+                    console.log("hit inside revive");
+                    router.push('/quiz/play/finished');
+                    return {
+                        success: false,
+                        message: response.data.data.message
                     }
                     // window.location.href = '/quiz/play/finished'; //because router.push is not working in case of revive_game
                 } else {
