@@ -108,7 +108,7 @@
                 </div>
                 
                 <!-- Time indicator on its own row -->
-                <div class="mb-2">
+                <div class="mb-2 flex items-center">
                   <p v-if="getContestStatus(contest.start_time).isLive" class="text-red-500 font-bold flex items-center">
                     <span class="inline-block h-2 w-2 rounded-full bg-red-500 mr-2"></span>
                     LIVE
@@ -116,6 +116,7 @@
                   <p v-else class="text-blue-500 font-medium">
                     {{ getContestStatus(contest.start_time).text }}
                   </p>
+                  <span class="text-orange-400 font-bold mx-2">{{ contest.entry_fees == 0 ? 'Free' : '' }}</span>
                 </div>
 
                 <!-- Prize row -->
@@ -128,7 +129,7 @@
             </div>
           </div>
           <!-- Load More Button -->
-      <div class="mt-6 text-center">
+      <div v-if="hasMoreLoad" class="mt-6 text-center">
         <button @click="loadMoreContests" 
                 class="px-6 py-2 bg-orange-500 text-white rounded-lg shadow-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 :disabled="mainStore.loading">
@@ -171,9 +172,16 @@ import { useToast } from 'vue-toastification';
   const authStore = useAuthStore();
   const transactionStore = useTransactionStore();
 
-  const { contests, categories, banners, loading } = storeToRefs(mainStore);
+  const { contests, categories, banners, loading, totalCount } = storeToRefs(mainStore);
   const { user } = storeToRefs(authStore);
   const { fundAction } = storeToRefs(transactionStore);
+
+  const hasMoreLoad = computed(()=>{
+    if(totalCount.value>contests.value.length){
+      return true
+    }
+    return false
+  })
 
   const handleFunds = (fundType) => {
     fundAction.value = fundType;

@@ -5,6 +5,7 @@ import api from '@/plugins/axios';
 export const useMainStore = defineStore('main', () => {
   const loading = ref(false);
   const error = ref(null);
+  const totalCount = ref(0);
   const contests = ref([]);
   const catContests = ref([]);
   const howVideos = ref([]);
@@ -17,8 +18,10 @@ export const useMainStore = defineStore('main', () => {
   const categories = ref([]);  
 
   async function fetchContests() {
-    const response = await api.get(`/quiz?page=${page.value}`)
-    contests.value = response.data.data;
+    const response = await api.get(`/quiz`)
+    contests.value = response.data.data[0];
+    totalCount.value = response.data.data[1];
+    page.value = 1;
     console.log(contests.value);
   }
 
@@ -104,7 +107,7 @@ export const useMainStore = defineStore('main', () => {
         const response = await api.get(`/quiz?page=${page.value+1}`);
         page.value = page.value+1;
         if (response.data.data && response.data.data.length > 0) {
-          contests.value = [...contests.value, ...response.data.data];
+          contests.value = [...contests.value, ...response.data.data[0]];
         }
         return {
           success: response.data.success,
@@ -170,6 +173,7 @@ export const useMainStore = defineStore('main', () => {
         variant,
         contest,
         catContests,
+        totalCount,
         howVideos,
         loading,
         page,
