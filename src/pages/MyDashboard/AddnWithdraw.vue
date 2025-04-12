@@ -28,7 +28,7 @@
       </button>
     </div>
 
-    <!-- Add Fund Tab (remains the same) -->
+    <!-- Add Fund Tab (Updated with downloadable QR) -->
     <div v-if="activeTab === 'deposit'" class="p-4 flex flex-col gap-6">
         <div class="bg-white rounded-lg p-4 shadow-sm">
           <div class="text-lg font-medium mb-2">Add Funds to Your Account</div>
@@ -48,35 +48,34 @@
         
         <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col items-center">
           <div class="font-medium text-center mb-3">Scan QR Code to Make Payment</div>
-          <div class="bg-gray-100 p-3 rounded-lg w-56 h-56 mb-3 flex items-center justify-center">
-            <!-- SVG QR Code Placeholder -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="w-full h-full">
-              <rect x="0" y="0" width="200" height="200" fill="#fff" />
-              <g fill="#000">
-                <!-- Simple QR Code pattern - would be replaced with real QR -->
-                <rect x="20" y="20" width="30" height="30" />
-                <rect x="150" y="20" width="30" height="30" />
-                <rect x="20" y="150" width="30" height="30" />
-                <rect x="60" y="60" width="80" height="80" />
-                <rect x="60" y="20" width="10" height="10" />
-                <rect x="80" y="20" width="10" height="10" />
-                <rect x="110" y="20" width="10" height="10" />
-                <rect x="130" y="20" width="10" height="10" />
-                <rect x="20" y="60" width="10" height="10" />
-                <rect x="20" y="80" width="10" height="10" />
-                <rect x="20" y="110" width="10" height="10" />
-                <rect x="20" y="130" width="10" height="10" />
-                <rect x="150" y="60" width="10" height="10" />
-                <rect x="150" y="80" width="10" height="10" />
-                <rect x="150" y="110" width="10" height="10" />
-                <rect x="150" y="130" width="10" height="10" />
-                <rect x="60" y="150" width="10" height="10" />
-                <rect x="80" y="150" width="10" height="10" />
-                <rect x="110" y="150" width="10" height="10" />
-                <rect x="130" y="150" width="10" height="10" />
-              </g>
-            </svg>
+          <div class="bg-gray-100 p-3 rounded-lg w-84 h-84 mb-3 flex items-center justify-center relative">
+            <!-- QR Code with download overlay -->
+            <img ref="qrCodeImg" class="w-3/4" src="/images/QRcode.jpeg" alt="QR code"/>
+            <button 
+              @click="downloadQRCode" 
+              class="absolute bottom-3 right-3 bg-white rounded-full p-2 shadow-md"
+              title="Download QR Code"
+            >
+              <font-awesome-icon icon="download" class="text-gray-700" />
+            </button>
           </div>
+          
+          <!-- UPI ID Display & Copy -->
+          <div class="w-full mb-4">
+            <div class="text-sm font-medium text-gray-700 mb-1">UPI ID:</div>
+            <div class="flex w-full">
+              <div class="flex-1 bg-gray-100 p-2 rounded-l-md truncate">
+                dprasadpandey0@okhdfcbank
+              </div>
+              <button
+                @click="copyUpiId"
+                class="bg-blue-500 text-white px-3 rounded-r-md flex items-center justify-center"
+              >
+                <font-awesome-icon :icon="hasCopied ? 'check' : 'copy'" class="text-white" />
+              </button>
+            </div>
+          </div>
+          
           <p class="text-center text-gray-700 text-sm mb-4">
             Scan this QR to make payment and submit done button and your fund will be reflected in your account within 3 hours
           </p>
@@ -221,19 +220,21 @@ import { ref, computed, onMounted } from 'vue';
 import { useTransactionStore } from '@/stores/transactionStore';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faDownload, faCopy, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'vue-router';
 import { useToast } from "vue-toastification";
 
 // Register FontAwesome icons
-library.add(faArrowLeft);
+library.add(faArrowLeft, faDownload, faCopy, faCheck);
 
 // State for tab management
 const activeTab = ref('deposit');
 const router = useRouter();
 const toast = useToast();
+const qrCodeImg = ref(null);
+const hasCopied = ref(false);
 
 const transactionStore = useTransactionStore();
 const authStore = useAuthStore();
@@ -246,6 +247,7 @@ onMounted(() => {
     activeTab.value = 'withdraw';
   }
 });
+
 // Add Fund state
 const addFundAmount = ref('');
 
@@ -260,7 +262,7 @@ const availableBalance = computed(() => user.value.funds || 0);
 
 // Methods
 const submitAddFund = async() => {
-  if (addFundAmount.value) {
+  if (addFundAmount.value > 0) {
     const result = await transactionStore.addFunds(addFundAmount.value);
     if(result.success){
       toast.success(result.message);
@@ -318,5 +320,43 @@ const saveUPI = async() => {
 
 const navigateToBack = () => {
   router.back();
+};
+
+// Function to download QR code image
+const downloadQRCode = () => {
+  if (qrCodeImg.value) {
+    // Create a link element
+    const link = document.createElement('a');
+    // Set the download attribute with filename
+    link.download = 'payment_qr_code.jpeg';
+    // Set the href to the image src
+    link.href = qrCodeImg.value.src;
+    // Append to body, click, and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success('QR Code downloaded successfully');
+  } else {
+    toast.error('Could not download QR Code');
+  }
+};
+
+// Function to copy UPI ID to clipboard
+const copyUpiId = () => {
+  const upiId = 'dprasadpandey0@okhdfcbank';
+  navigator.clipboard.writeText(upiId)
+    .then(() => {
+      hasCopied.value = true;
+      toast.success('UPI ID copied to clipboard');
+      
+      // Reset the copy icon after 2 seconds
+      setTimeout(() => {
+        hasCopied.value = false;
+      }, 2000);
+    })
+    .catch(() => {
+      toast.error('Failed to copy UPI ID');
+    });
 };
 </script>

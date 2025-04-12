@@ -19,7 +19,7 @@
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
          <!-- Loading state row -->
-        <tr v-if="responses.length == 0" class="hover:bg-gray-50">
+        <tr v-if="quizStore.loading" class="hover:bg-gray-50">
           <td colspan="4" class="px-4 py-8 text-center">
             <div class="flex justify-center items-center space-x-2">
               <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -47,16 +47,16 @@
               <div class="mb-2">
                   <p 
                   @click="navigateTo(response.node_id, response.quiz_variant_id)"
-                  v-if="getContestStatus(response.quiz.start_time, response.quiz.end_time).isLive" 
+                  v-if="getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).isLive" 
                   class="text-red-500 font-bold flex items-center">
                     <span class="inline-block h-2 w-2 rounded-full bg-red-500 mr-2"></span>
                     LIVE
                   </p>
-                  <p v-else-if="getContestStatus(response.quiz.start_time, response.quiz.end_time).text === 'Show Result'" @click="showLeaderBoard(response.node_id)" class="text-blue-500 font-medium">
-                    {{ getContestStatus(response.quiz.start_time, response.quiz.end_time).text }}
+                  <p v-else-if="getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text === 'Show Result'" @click="showLeaderBoard(response.node_id)" class="text-blue-500 font-medium">
+                    {{ getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text }}
                   </p>
                   <p v-else class="text-blue-500 font-medium">
-                    {{ getContestStatus(response.quiz.start_time, response.quiz.end_time).text }}
+                    {{ getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text }}
                   </p>
                 </div>
           </td>
@@ -94,7 +94,7 @@
     const authStore = useAuthStore();
     const mainStore = useMainStore();
     const { user } = storeToRefs(authStore);
-    const { responses } = storeToRefs(quizStore);
+    const { responses, loading } = storeToRefs(quizStore);
     const { contest } = storeToRefs(mainStore);
 
 
@@ -118,14 +118,15 @@ onMounted(() => {
 });
 
 
-function getContestStatus(startTimestamp, endTimestamp) {
+function getContestStatus(startTimestamp, endTimestamp, overTimestamp) {
   const now = new Date();
   
   // Convert timestamps to Date objects
   const startTime = typeof startTimestamp === 'number' ? fromUnixTime(startTimestamp) : new Date(startTimestamp);
   const endTime = typeof endTimestamp === 'number' ? fromUnixTime(endTimestamp) : new Date(endTimestamp);
+  const quizOverTime = typeof endTimestamp === 'number' ? fromUnixTime(overTimestamp) : new Date(overTimestamp);
 
-  if (now >= endTime) {
+  if (now >= quizOverTime) {
     return { isLive: false, text: 'Show Result' }; // Contest has ended
   } else if (now >= startTime) {
     return { isLive: true, text: 'LIVE' }; // Contest is currently live
