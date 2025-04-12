@@ -13,27 +13,27 @@
         
         <!-- Revival Lifeline -->
         <div class="mb-8">
-          <div class="flex items-center justify-center mb-2">
+          <div v-if="!lifelineStore.loading" class="flex items-center justify-center mb-2">
             <div class="font-bold text-xl text-purple-600 mr-2">Revival Available:</div>
-            <div class="text-xl font-bold text-purple-600">{{ formattedTimeRemaining }}</div>
+            <div  class="text-xl font-bold text-purple-600">{{ formattedTimeRemaining }}</div>
           </div>
           
           <button 
             class="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full text-white font-bold text-xl hover:from-purple-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-300 flex items-center justify-center"
-            :class="{ 'opacity-50 cursor-not-allowed': timeRemaining <= 0 || !lifelines.revival }"
-            :disabled="disableRevival"
+            :class="{ 'opacity-50 cursor-not-allowed': timeRemaining <= 0 }"
+            :disabled="disableRevival || lifelineStore.loading"
             @click="handleLifeline(lifelines.revive.id)"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            Use Revival Lifeline
+            {{ lifelineStore.loading ? 'Reviving...' : 'Use Revival Lifeline' }}
           </button>
         </div>
         
         <button 
           class="w-full py-3 px-6 bg-gray-200 hover:bg-gray-300 rounded-full text-gray-700 font-bold text-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
-          @click="goToResults"
+          @click="navigateToHome()"
         >
           End Quiz
         </button>
@@ -69,7 +69,7 @@ import { useToast } from 'vue-toastification';
 
   
   // Revival timer
-  const initialTime = 60; // 30 seconds for revival
+  const initialTime = 120; // 30 seconds for revival
   const timeRemaining = ref(initialTime);
   let timerInterval = null;
   
@@ -114,10 +114,8 @@ import { useToast } from 'vue-toastification';
       toast.error("Unexpected Error Occured!");
     }
 }
-  
-  const goToResults = () => {
-    // Logic to go to results screen
-    console.log('Going to results screen');
-    // This would navigate to the results screen in a real implementation
-  };
+
+const navigateToHome = () => {
+  router.push('/home');
+}
   </script>

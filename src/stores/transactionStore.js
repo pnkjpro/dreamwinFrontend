@@ -66,6 +66,7 @@ export const useTransactionStore = defineStore('transaction', () => {
 
     async function joinGame(variantId){
         try{
+            loading.value = true
             const response = await api.post('/play/quiz/join', {
                 node_id: contest.value.node_id,
                 variant_id: variantId

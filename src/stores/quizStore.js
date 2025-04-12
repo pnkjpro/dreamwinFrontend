@@ -22,6 +22,7 @@ export const useQuizStore = defineStore('playQuiz', () => {
 
       async function playQuiz(){
         try{
+        loading.value = true
         const response = await api.post('/play', {
             node_id: contest.value.node_id,
             variant_id: variant.value.id
@@ -30,6 +31,7 @@ export const useQuizStore = defineStore('playQuiz', () => {
         if(response.data.success){
           question.value = {...response.data.data};
         }
+          loading.value = false
           return {
             success: response.data.success,
             message: response.data.message

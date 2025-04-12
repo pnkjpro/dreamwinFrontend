@@ -32,8 +32,12 @@
         <button disabled v-else-if="joinStatus == 'completed'" class="w-full bg-stone-400 text-white py-3 rounded-lg font-medium">
           Under Review!
         </button>
-        <button v-else="" @click="handleJoinGame(variant.id)" class="w-full bg-green-500 text-white py-3 rounded-lg font-medium">
-          JOIN ₹ {{ variant.entry_fee }}
+        <button v-else="" 
+        @click="handleJoinGame(variant.id)" 
+        class="w-full bg-green-500 text-white py-3 rounded-lg font-medium"
+        :disabled="transactionStore.loading"
+        >
+           {{ transactionStore.loading ? 'Joining...' : `JOIN ₹ ${variant.entry_fee}` }}
         </button>
       </div>
   
@@ -86,6 +90,7 @@ import { useAuthStore } from '@/stores/authStore';
   const transactionStore = useTransactionStore();
   const {contest, prizeContents, variant} = storeToRefs(mainStore);
   const { user } = storeToRefs(authStore);
+
   const handleJoinGame = async(variantId) => {
     const result = await transactionStore.joinGame(variant.value.id)
     if(result.success){

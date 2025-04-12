@@ -18,8 +18,12 @@
         <!-- Time indicator on its own row -->
           <div class="mb-2">
             <p v-if="getContestStatus(contest.start_time).isLive" class="text-red-500 font-bold flex items-center">
-              <button @click="handlePlayGame()" class="bg-green-400 hover:bg-gray-500 text-white font-medium px-8 py-1.5 text-sm mt-1 rounded">
-                START
+              <button 
+              @click="handlePlayGame()" 
+              class="bg-green-400 hover:bg-gray-500 text-white font-medium px-8 py-1.5 text-sm mt-1 rounded"
+              :disabled="quizStore.loading"
+              >
+                {{ quizStore.loading ? 'Starting...' :  'START'}}
             </button>
             </p>
             <p v-else class="text-blue-500 font-medium">
