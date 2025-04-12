@@ -11,23 +11,30 @@ export const useLifelineStore = defineStore('lifeline', () => {
     const error = ref(null);
     const router = useRouter();
     const toast = useToast();
+    const skip = ref(true);
+    const revive = ref(true);
+    const fiftyFifty = ref(true);
     const removedOption = ref([]);
     const authStore = useAuthStore();
     const quizStore = useQuizStore();
     const { question } = storeToRefs(quizStore);      
 
     async function useLifeline(lifelineData){
-        console.log("Lifeline Pinia Data: ", lifelineData);
         try{
             loading.value = true;
             error.value = null;
 
             const response = await api.post('/lifeline/use', lifelineData);
-            console.log("lifeline_type pinia: ",response.data.data.lifeline_type);
             if(response.data.data.lifeline_type == 'skip_question' || response.data.data.lifeline_type == 'revive_game'){
                 if(response.data.data?.flag && response.data.data?.is_nextQuestion === false){
+                    console.log("hit inside lifleine");
                     toast.success(response.data.data.message);
-                    router.push('/quiz/play/finished')
+                    router.push('/quiz/play/finished');
+                    if(response.data.data.lifeline_type == 'revive_game'){
+                        response.data.success = false;
+                        response.data.message = response.data.data.message;
+                    }
+                    // window.location.href = '/quiz/play/finished'; //because router.push is not working in case of revive_game
                 } else {
                     question.value = { ...response.data.data };
                 }
@@ -81,6 +88,9 @@ export const useLifelineStore = defineStore('lifeline', () => {
         error,
         loading,
         removedOption,
+        skip,
+        revive,
+        fiftyFifty,
         purchaseLifeline,
     }
 });

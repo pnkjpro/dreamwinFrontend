@@ -32,17 +32,17 @@
     <div class="w-full max-w-md mb-4 flex justify-center space-x-4">
       <button 
         class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full flex items-center justify-center"
-        :class="{ 'opacity-50 cursor-not-allowed': !lifelines.fiftyFifty }"
+        :class="{ 'opacity-50 cursor-not-allowed': !fiftyFifty }"
         @click="handleLifeline(lifelines.fiftyFifty.id)"
-        :disabled="!lifelines.fiftyFifty"
+        :disabled="!fiftyFifty"
       >
         <span class="text-sm">{{ lifelines.fiftyFifty.alias }}</span>
       </button>
       <button 
         class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full flex items-center justify-center"
-        :class="{ 'opacity-50 cursor-not-allowed': !lifelines.skip }"
+        :class="{ 'opacity-50 cursor-not-allowed': !skip }"
         @click="handleLifeline(lifelines.skip.id)"
-        :disabled="!lifelines.skip"
+        :disabled="!skip"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
@@ -83,6 +83,7 @@
 </template>
 
 <script setup>
+import lifeline from '@/config/lifeline';
 import { useLifelineStore } from '@/stores/lifelineStore';
 import { useMainStore } from '@/stores/mainStore';
 import { useQuizStore } from '@/stores/quizStore';
@@ -98,7 +99,7 @@ const lifelineStore = useLifelineStore();
 const mainStore = useMainStore();
 const { question } = storeToRefs(quizStore);
 const { contest } = storeToRefs(mainStore);
-const { removedOption } = storeToRefs(lifelineStore);
+const { removedOption, skip, revive, fiftyFifty } = storeToRefs(lifelineStore);
 const lifelines = inject('lifeline');
 
 const timeLeft = ref(contest.value.quiz_timer || 30);
@@ -163,7 +164,6 @@ watch(question, () => {
 const handleLifeline = async (lifelineId) => {
   // Pause the timer while lifeline is being used
   pauseTimer();
-  
   removedOption.value = [];
   const result = await lifelineStore.useLifeline({
     lifeline_id: lifelineId,
@@ -173,6 +173,16 @@ const handleLifeline = async (lifelineId) => {
   
   if(!result.success){
     toast.error(result.message);
+  } else {
+    // ===== disable lifeline used =======
+      if(lifelineId == 1){
+        fiftyFifty.value = false;
+      } else if (lifelineId == 2){
+        skip.value = false;
+      } else if(lifelineId == 3){
+        revive.value = false;
+      }
+    //========================================
   }
   
   // Resume the timer after lifeline has been processed

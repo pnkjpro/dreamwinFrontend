@@ -7,6 +7,19 @@
       </div>
 
       <div class="p-4">
+        <!-- Loading State -->
+        <div v-if="mainStore.loading" class="flex flex-col items-center justify-center py-8">
+          <div class="w-12 h-12 border-4 border-orange-300 border-t-orange-500 rounded-full animate-spin mb-4"></div>
+          <p class="text-gray-600">Loading contests...</p>
+        </div>
+
+        <!-- No Contests State -->
+        <div v-else-if="activeContests.length === 0" class="flex flex-col items-center justify-center py-12">
+          <font-awesome-icon icon="calendar-times" class="text-gray-400 text-5xl mb-4" />
+          <h3 class="text-lg font-medium text-gray-600 mb-2">No Active Contests</h3>
+          <p class="text-gray-500 text-center">There are no upcoming contests at this time. Please check back later!</p>
+        </div>
+
         <!-- Contest Cards -->
         <div class="space-y-4">
           <div v-for="(contest, index) in activeContests" :key="index"

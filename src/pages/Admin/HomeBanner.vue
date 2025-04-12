@@ -66,20 +66,10 @@
           <button
             type="submit"
             class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-700"
-            :disabled="isSubmitting"
+            :disabled="mainStore.loading"
           >
-            {{ isSubmitting ? 'Updating...' : 'Update Banner' }}
+            {{ mainStore.loading ? 'Updating...' : 'Update Banner' }}
           </button>
-        </div>
-        
-        <!-- Success Message -->
-        <div v-if="successMessage" class="p-3 bg-green-100 text-green-700 rounded">
-          {{ successMessage }}
-        </div>
-        
-        <!-- Error Message -->
-        <div v-if="errorMessage" class="p-3 bg-red-100 text-red-700 rounded">
-          {{ errorMessage }}
         </div>
       </form>
     </div>
@@ -88,9 +78,11 @@
   <script setup>
   import { ref, reactive, computed } from 'vue'
   import { useMainStore } from '@/stores/mainStore'
+import { useToast } from 'vue-toastification'
   
   // Get the main store
   const mainStore = useMainStore()
+  const toast = useToast();
   
   // Form data state
   const formData = reactive({
@@ -101,9 +93,6 @@
   
   // Component state
   const imagePreview = ref(null)
-  const isSubmitting = ref(false)
-  const successMessage = ref('')
-  const errorMessage = ref('')
   
   // Handle file input change
   const handleFileChange = (event) => {
@@ -131,40 +120,48 @@
       fileInput.value = ''
     }
   }
+
+  const resetForm = () => {
+    formData.title = ''
+    formData.banner_id = ''
+    clearImage()
+  }
   
   // Form submission handler
   const handleSubmit = async () => {
-    try {
-      isSubmitting.value = true
-      errorMessage.value = ''
-      
-      // Create form data to send
       const payload = new FormData()
       payload.append('title', formData.title)
       payload.append('banner_id', formData.banner_id)
       if (formData.image) {
-        payload.append('image', formData.image)
+        payload.append('banner_image', formData.image)
       }
       
-      // Call the store method to update the banner
-      await mainStore.updateBanner(payload)
-      
-      // Show success message
-      successMessage.value = 'Banner updated successfully!'
-      
-      // Reset form after short delay
-      setTimeout(() => {
-        formData.title = ''
-        formData.banner_id = ''
-        clearImage()
-        successMessage.value = ''
-      }, 3000)
-    } catch (error) {
-      console.error('Error updating banner:', error)
-      errorMessage.value = error.message || 'Failed to update banner. Please try again.'
-    } finally {
-      isSubmitting.value = false
+      const result = await mainStore.updateBanner(payload)
+      console.log("error messages: ", result.message);
+      if (!result.success) {
+        const messages = result.message;
+
+        if (typeof messages === 'object' && messages !== null && !Array.isArray(messages)) {
+          Object.values(messages).forEach((msgArray, index) => {
+            msgArray.forEach((msg, innerIndex) => {
+              setTimeout(() => toast.error(msg), (index + innerIndex) * 300);
+            });
+          });
+        } else if (Array.isArray(messages)) {
+          messages.forEach((msg, index) => {
+            setTimeout(() => toast.error(msg), index * 300);
+          });
+        } else {
+          toast.error(messages);
+        }
+
+      return;
+    } else {
+        toast.success(result.message);
+        resetForm();
     }
+      
+      
   }
   </script>
 

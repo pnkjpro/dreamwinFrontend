@@ -26,13 +26,25 @@
             required
           />
         </div>
+
+        <div class="form-group">
+          <label for="video_id" class="block mb-2 font-medium">Youtube Video Id</label>
+          <input
+            id="video_id"
+            v-model="formData.youtube_id"
+            type="text"
+            class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter Youtube Video Id"
+            required
+          />
+        </div>
         
         <!-- Youtube ID Dropdown -->
         <div class="form-group">
           <label for="youtubeId" class="block mb-2 font-medium">YouTube ID</label>
           <select
             id="youtubeId"
-            v-model="formData.youtube_id"
+            v-model="formData.video_id"
             class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
@@ -77,12 +89,37 @@
     description: '',
     youtube_id: ''
   })
+
+  const resetForm = () => {
+    formData.title = '',
+    formData.description = '',
+    formData.youtube_id = ''
+  }
   
   // Form submission handler
   const handleSubmit = async () => {
     const result = await mainStore.updateHowVideo(formData);
-    if(!result.success){
-        toast.error(result.message);
+    if (!result.success) {
+      const messages = result.message;
+
+      if (typeof messages === 'object' && messages !== null && !Array.isArray(messages)) {
+        Object.values(messages).forEach((msgArray, index) => {
+          msgArray.forEach((msg, innerIndex) => {
+            setTimeout(() => toast.error(msg), (index + innerIndex) * 300);
+          });
+        });
+      } else if (Array.isArray(messages)) {
+        messages.forEach((msg, index) => {
+          setTimeout(() => toast.error(msg), index * 300);
+        });
+      } else {
+        toast.error(messages);
+      }
+
+      return;
+    } else {
+      toast.success(result.message);
+      resetForm();
     }
   }
   </script>

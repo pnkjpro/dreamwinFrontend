@@ -143,31 +143,31 @@ const router = createRouter({
           path: 'funds/approval',
           name: 'FundsApproval',
           component: () => import('@/pages/Admin/FundApproval.vue'),
-          // meta: { requiresAuth: true }
+          meta: { requiresAdminAuth: true }
         },
         {
           path: 'category/create',
           name: 'CreateCategory',
           component: () => import('@/pages/Admin/CreateCategory.vue'),
-          meta: { requiresAuth: true }
+          meta: { requiresAdminAuth: true }
         },
         {
           path: 'quiz/create',
           name: 'CreateQuiz',
           component: () => import('@/pages/Admin/CreateExamsheet.vue'),
-          meta: { requiresAuth: true }
+          meta: { requiresAdminAuth: true }
         },
         {
           path: 'banner/update',
           name: 'BannerUpdate',
           component: () => import('@/pages/Admin/HomeBanner.vue'),
-          meta: { requiresAuth: true }
+          meta: { requiresAdminAuth: true }
         },
         {
           path: 'howVideo/update',
           name: 'HowVideoUpdate',
           component: () => import('@/pages/Admin/HowVideos.vue'),
-          meta: { requiresAuth: true }
+          meta: { requiresAdminAuth: true }
         }
       ]
     },
@@ -241,9 +241,12 @@ router.beforeResolve(async (to, from, next) => {
   
   
   const isAuthenticated = !!authStore.user;
+  const isAdmin = authStore.user?.is_admin || 0;
 
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ path: '/auth/login' });
+  } else if (to.meta.requiresAdminAuth && isAuthenticated && !isAdmin){
+    next({ name: 'Home'});
   } else if (to.meta.guestOnly && isAuthenticated) {
     next({ path: '/home' });
   } else {

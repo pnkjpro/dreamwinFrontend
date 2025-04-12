@@ -51,10 +51,6 @@ import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
   
   // Quiz data
-  const currentQuestion = ref(67);
-  const totalQuestions = ref(100);
-  const points = ref(5);
-  const players = ref(100);
   const disableRevival = ref(false);
   const router = useRouter();
   const toast = useToast();
@@ -98,22 +94,17 @@ import { useToast } from 'vue-toastification';
   });
   
   const handleLifeline = async(lifelineId) => {
-    try{
-        const result = await lifelineStore.useLifeline({
-          lifeline_id: lifelineId,
-          node_id: contest.value.node_id,
-          question_id: question.value.id
-        });
-        if(!result.success){
-          toast.error(result.message);
-        }
-        if(result.success){
-          router.push('/quiz/play');
-        }
-    } catch(err){
-      toast.error("Unexpected Error Occured!");
+    const result = await lifelineStore.useLifeline({
+      lifeline_id: lifelineId,
+      node_id: contest.value.node_id,
+      question_id: question.value.id
+    });
+    if(!result.success){
+      toast.error(result.message);
+    } else {
+      router.push('/quiz/play');
     }
-}
+  }
 
 const navigateToHome = () => {
   router.push('/home');

@@ -89,7 +89,9 @@
       <!-- Form Actions -->
       <div class="form-actions">
         <button type="button" @click="resetForm" class="btn-cancel">Cancel</button>
-        <button type="submit" class="btn-save">Save Category</button>
+        <button type="submit" class="btn-save"
+        :disabled="adminStore.loading"
+        >{{ adminStore.loading ? 'Saving...' : 'Save Category'}}</button>
       </div>
     </form>
   </div>
@@ -100,6 +102,7 @@ import { ref } from 'vue'
 import { useAdminStore } from '@/stores/adminStore'
 import { storeToRefs } from 'pinia';
 import { object } from 'yup';
+import { useToast } from 'vue-toastification';
 
 const initialCategory = {
       name: '',
@@ -113,11 +116,12 @@ const initialCategory = {
 const category = ref({...initialCategory});
 
 const resetForm = () => {
-  Object.assign(category, JSON.parse(JSON.stringify(initialCategory)));
+  Object.assign(category.value, JSON.parse(JSON.stringify(initialCategory)));
 }
 
 const adminStore = useAdminStore();
 const { } = storeToRefs(adminStore);
+const toast = useToast();
 
 const handleBannerUpload = (event) => {
   const file = event.target.files[0];
@@ -136,7 +140,6 @@ const handleIconUpload = (event) => {
 }
 
 const handleCreateCategory = async() => {
-  try {
     const formData = new FormData();
     formData.append('name', category.value.name);
     formData.append('description', category.value.description);
@@ -151,12 +154,27 @@ const handleCreateCategory = async() => {
     }
 
     const result = await adminStore.createCategory(formData);
-    if (result.success) {
-      resetForm();
+    if (!result.success) {
+    const messages = result.message;
+
+    if (typeof messages === 'object' && messages !== null && !Array.isArray(messages)) {
+      Object.values(messages).forEach((msgArray, index) => {
+        msgArray.forEach((msg, innerIndex) => {
+          setTimeout(() => toast.error(msg), (index + innerIndex) * 300);
+        });
+      });
+    } else if (Array.isArray(messages)) {
+      messages.forEach((msg, index) => {
+        setTimeout(() => toast.error(msg), index * 300);
+      });
+    } else {
+      toast.error(messages);
     }
-  } catch (error) {
-    console.error('Error creating category:', error);
+    return
   }
+  toast.success(result.message);
+  resetForm();
+    
 }
 
 </script>

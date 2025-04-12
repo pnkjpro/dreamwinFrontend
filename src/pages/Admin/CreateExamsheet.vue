@@ -126,6 +126,19 @@
           />
         </div>
       </div>
+      <div class="form-group">
+        <label for="quiztimer">Quiz Timer</label>
+          <input
+            type="number"
+            id="quizTimer"
+            v-model.number="quizInfo.quiz_timer"
+            placeholder="Quiz Timer in Seconds"
+            class="form-control"
+            min="0"
+            required
+          />
+          <span style="font-size: 14px; color:darkgrey">Quiz Timer in Seconds</span>
+      </div>
 
       <!-- Form Actions -->
       <div class="form-actions">
@@ -332,8 +345,8 @@
         <button type="submit" class="btn-save">
           Add Question
         </button>
-        <button type="button" @click="createQuiz" class="btn-primary" :disabled="quiz.length === 0">
-          Finish & Create Quiz
+        <button type="button" @click="createQuiz" class="btn-primary" :disabled="quiz.length === 0 || adminStore.loading">
+          {{ adminStore.loading ? 'Creating Quiz...' : 'Finish & Create Quiz'}}
         </button>
       </div>
       
@@ -389,7 +402,8 @@ const initialQuizInfo = {
   quizContents: {},
   spot_limit: 100,
   entry_fees: 0,
-  prize_money: 0
+  prize_money: 0,
+  quiz_timer: 0
 };
 
 
@@ -587,6 +601,7 @@ const createQuiz = async() => {
   formData.append("spot_limit", quizInfo.value.spot_limit);
   formData.append("entry_fees", quizInfo.value.entry_fees);
   formData.append("prize_money", quizInfo.value.prize_money);
+  formData.append("quiz_timer", quizInfo.value.quiz_timer);
 
   // Append the banner image if exists
   if (quizInfo.value.banner_image) {
@@ -619,8 +634,24 @@ const createQuiz = async() => {
   });
 
   const result = await adminStore.createQuiz(formData);
-  if (!result.success){
-    toast.error(result.message);
+  if (!result.success) {
+    const messages = result.message;
+
+    if (typeof messages === 'object' && messages !== null && !Array.isArray(messages)) {
+      Object.values(messages).forEach((msgArray, index) => {
+        msgArray.forEach((msg, innerIndex) => {
+          setTimeout(() => toast.error(msg), (index + innerIndex) * 300);
+        });
+      });
+    } else if (Array.isArray(messages)) {
+      messages.forEach((msg, index) => {
+        setTimeout(() => toast.error(msg), index * 300);
+      });
+    } else {
+      toast.error(messages);
+    }
+
+    return;
   } else {
     toast.success(result.message);
     resetQuiz();

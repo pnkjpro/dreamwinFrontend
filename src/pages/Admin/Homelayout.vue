@@ -54,6 +54,7 @@ const menuItems = ref([
   { name: 'Quiz Creation', path: '/admin/quiz/create' },
   { name: 'Category Create', path: '/admin/category/create' },
   { name: 'Update Banner', path: '/admin/banner/update' },
+  { name: 'Update HowVideo', path: '/admin/howVideo/update' },
 ]);
 
 const toggleSidebar = () => {

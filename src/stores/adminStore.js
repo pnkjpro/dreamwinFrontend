@@ -29,17 +29,17 @@ export const useAdminStore = defineStore('admin', () => {
     try{
         loading.value = true;
         const response = await api.post('/admin/quiz/create', finalQuizData);
+        loading.value = true;
         return {
             success: response.data.success,
             message: response.data.message
         }
         
     } catch (error) {
+        loading.value = true;
         console.error("Error using Lifeline:", error);
         const errorMessage = error.response?.data?.message || "An unexpected error occurred";
         return { success: false, message: errorMessage };
-    } finally {
-        loading.value = false;
     }
   }
 
@@ -100,7 +100,8 @@ export const useAdminStore = defineStore('admin', () => {
     createQuiz,
     fetchTransactions,
     statusApproval,
-    allTransactions
+    allTransactions,
+    loading
   }
 
 })

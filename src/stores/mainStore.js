@@ -69,17 +69,17 @@ export const useMainStore = defineStore('main', () => {
     async function updateBanner(payload){
       try{
         loading.value = true;
-        const response = api.post('admin/banner/update', payload);
+        const response = await api.post('admin/banner/update', payload);
+        loading.value = false
         return {
           success: response.data.success,
           message: response.data.message
         }
       } catch (error) {
+          loading.value = false;
           console.error("Error updating banner:", error);
           const errorMessage = error.response?.data?.message || "An unexpected error occurred";
           return { success: false, message: errorMessage };
-      } finally {
-          loading.value = false;
       }
     }
 
@@ -143,17 +143,17 @@ export const useMainStore = defineStore('main', () => {
     async function updateHowVideo(payload){
       try{
         loading.value = true;
-        const response = api.post('admin/howVideos/update', payload);
+        const response = await api.post('admin/howVideos/update', payload);
+        loading.value = false;
         return {
           success: response.data.success,
           message: response.data.message
         }
       } catch (error) {
+          loading.value = false;
           console.error("Error updating videos:", error);
           const errorMessage = error.response?.data?.message || "An unexpected error occurred";
           return { success: false, message: errorMessage };
-      } finally {
-          loading.value = false;
       }
     }
 
