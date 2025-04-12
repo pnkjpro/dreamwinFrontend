@@ -120,7 +120,8 @@
       });
   }
   
-  const shareMessage = `Hey! Use my referral code ${user.value.refer_code} to sign up and we'll both get rewards!`;
+  const shareMessage = `Hey! Use my referral code ${user.value.refer_code} to sign up!
+   follow this link to join now https://www.himpri.com/register?refer_code=${user.value.refer_code}`;
   
   const shareViaWhatsApp = () => {
     const encodedMessage = encodeURIComponent(shareMessage);

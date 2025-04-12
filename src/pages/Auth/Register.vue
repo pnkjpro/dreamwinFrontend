@@ -200,13 +200,30 @@ if(route.query.refer_code){
 const handleRegistration = async () => {
   const isValid = await validateForm();
   if (!isValid) return;
+
   const result = await authStore.register(form);
-  if(!result.success){
-    toast.error(result.message);
-  } else {
-    navigateToHome();
+
+  if (!result.success) {
+    const messages = result.message;
+
+    if (typeof messages === 'object' && messages !== null && !Array.isArray(messages)) {
+      Object.values(messages).forEach((msgArray, index) => {
+        msgArray.forEach((msg, innerIndex) => {
+          setTimeout(() => toast.error(msg), (index + innerIndex) * 300);
+        });
+      });
+    } else if (Array.isArray(messages)) {
+      messages.forEach((msg, index) => {
+        setTimeout(() => toast.error(msg), index * 300);
+      });
+    } else {
+      toast.error(messages);
+    }
+
+    return;
   }
-    
+
+  navigateToHome();
 };
 
 const navigateToHome = () => {

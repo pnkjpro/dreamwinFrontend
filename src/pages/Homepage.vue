@@ -26,7 +26,7 @@
         </div>
         <div class="bg-white p-4 rounded-lg text-gray-700 mb-4">
           <p class="flex items-center font-bold">
-            <font-awesome-icon icon="wallet" class="mr-2" /> My Balance <span class="ml-auto text-red-500">₹ {{ user.funds }}</span>
+            <font-awesome-icon icon="wallet" class="mr-2" /> My Balance <span class="ml-auto text-red-500">₹ {{ user.funds || 0 }}</span>
           </p>
           <div class="flex mt-2">
             <button @click="handleFunds('withdraw')" class="flex-1 py-2 bg-gray-200 rounded-lg mr-2">WITHDRAW</button>
@@ -60,8 +60,10 @@
       <!-- Promotion Cards -->
       <div class="px-4 overflow-x-auto flex space-x-4 no-scrollbar">
         <div v-for="(banner, index) in banners" :key="index" 
-             class="flex-shrink-0 w-64 bg-orange-400 rounded-lg p-6 text-white">
-             <img :src="displayImage(banner.banner_path)" :alt="banner.title" class="w-full h-full object-cover" />
+            class="flex-shrink-0 w-64 h-32 rounded-lg overflow-hidden shadow-lg">
+          <img :src="displayImage(banner.banner_path)" 
+              :alt="banner.title" 
+              class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" />
         </div>
       </div>
   
@@ -165,15 +167,6 @@ import { useToast } from 'vue-toastification';
   const menuOpen = ref(false);
   const currentIndex = ref(0);
 
-  
-  
-  // Promotions
-  const promotions = ref([
-    { title: 'Unleash Your Competitive Spirit in Special Event!' },
-    { title: 'Explore Today\'s Top Picks of Engaging Quizzes!' },
-    { title: 'Conquer the Weekly Challenges!' }
-  ]);
-
   const mainStore = useMainStore();
   const authStore = useAuthStore();
   const transactionStore = useTransactionStore();
@@ -207,6 +200,7 @@ import { useToast } from 'vue-toastification';
     mainStore.fetchContests();
     mainStore.fetchCategories();
     mainStore.fetchHomeBanners();
+    mainStore.fetchHowVideos();
   })
 
   const menuItems = ref([

@@ -9,6 +9,7 @@ export const useMainStore = defineStore('main', () => {
   const catContests = ref([]);
   const howVideos = ref([]);
   const page = ref(1);
+  const banners = ref([]);
   const recordPerPage = ref(2);
   const contest = ref(null);
   const variant = ref({});
@@ -164,6 +165,7 @@ export const useMainStore = defineStore('main', () => {
         updateHowVideo,
         fetchHowVideos,
         updateBanner,
+        banners,
         prizeContents,
         variant,
         contest,
