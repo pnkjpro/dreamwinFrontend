@@ -139,6 +139,19 @@
           />
           <span style="font-size: 14px; color:darkgrey">Quiz Timer in Seconds</span>
       </div>
+      <div class="form-group">
+        <label for="winners">Total Winners</label>
+          <input
+            type="number"
+            id="quizTimer"
+            v-model.number="quizInfo.winners"
+            placeholder="Enter total winners"
+            class="form-control"
+            min="0"
+            required
+          />
+          <span style="font-size: 14px; color:darkgrey">All variants should contain same number of winners</span>
+      </div>
 
       <!-- Form Actions -->
       <div class="form-actions">
@@ -403,7 +416,8 @@ const initialQuizInfo = {
   spot_limit: 100,
   entry_fees: 0,
   prize_money: 0,
-  quiz_timer: 0
+  quiz_timer: 0,
+  winners: 0
 };
 
 
@@ -517,6 +531,11 @@ const saveCurrentVariant = () => {
     return;
   }
 
+  if (Object.keys(currentVariant.value.prize_contents).length != quizInfo.value.winners){
+    toast.error("Variant winners should be same as winners");
+    return;
+  }
+
   // Validate prize distribution
   const totalPrizeDistribution = Object.values(currentVariant.value.prize_contents).reduce((sum, amount) => sum + amount, 0);
   if (totalPrizeDistribution > currentVariant.value.prize) {
@@ -602,6 +621,7 @@ const createQuiz = async() => {
   formData.append("entry_fees", quizInfo.value.entry_fees);
   formData.append("prize_money", quizInfo.value.prize_money);
   formData.append("quiz_timer", quizInfo.value.quiz_timer);
+  formData.append("winners", quizInfo.value.winners);
 
   // Append the banner image if exists
   if (quizInfo.value.banner_image) {

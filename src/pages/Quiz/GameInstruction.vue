@@ -5,16 +5,10 @@
       <font-awesome-icon icon="arrow-left" class="mr-2" />
     </div>
 
-    <!-- Want to crack quiz section -->
-    <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
-      <h2 class="font-bold text-base">WANT TO CRACK QUIZ</h2>
-      <span class="text-blue-500 text-xs">Click Here to Know</span>
-    </div>
-
     <!-- Sport Quiz Card -->
     <div class="m-4">
       <div class="border border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center">
-        <h1 class="text-3xl font-semibold text-gray-600">SPORT QUIZ</h1>
+        <h1 class="text-3xl font-semibold text-gray-600">{{ contest.title }}</h1>
         <!-- Time indicator on its own row -->
           <div class="mb-2">
             <p v-if="getContestStatus(contest.start_time).isLive" class="text-red-500 font-bold flex items-center">

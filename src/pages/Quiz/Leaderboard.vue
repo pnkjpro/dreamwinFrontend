@@ -53,12 +53,12 @@
           </h2>
           
           <div class="text-sm bg-gray-100 px-3 py-1 rounded-full text-gray-600">
-            Top 10 Players
+            Top {{ leaderboard.topPlayers.length }} Players
           </div>
         </div>
         
         <div class="space-y-3">
-          <div v-for="(player, index) in leaderboard?.topPlayers" :key="player.id" 
+          <div v-for="(player, index) in formattedTopPlayers" :key="player.id" 
                class="flex items-center py-3 px-4 rounded-xl"
                :class="{
                  'bg-amber-100 border-l-4 border-amber-500': player.isUser,
@@ -81,6 +81,11 @@
             <div class="ml-3 flex-grow">
               <div class="font-bold text-gray-800">{{ player.name }}</div>
             </div>
+
+            <!-- Time info -->
+            <div class="ml-3 flex-grow">
+              <div class="font-bold text-gray-800">{{ player.durationFormatted }}</div>
+            </div>
             
             <!-- Score -->
             <div class="font-bold text-lg"
@@ -94,34 +99,40 @@
         </div>
         
       </div>
+      <button @click="navigateTo()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+        Back To My Contest
+      </button>
     </div>
   </template>
   
   <script setup>
   import { ref, computed, onMounted } from 'vue';
   import { useQuizStore } from '@/stores/quizStore';
-  import { useAuthStore } from '@/stores/authStore';
-  import { useMainStore } from '@/stores/mainStore';
   import { useRouter } from 'vue-router';
   import { useToast } from 'vue-toastification';
   import { storeToRefs } from 'pinia';
+  import { intervalToDuration } from 'date-fns';
 
   const router = useRouter();
   const toast = useToast();
-
   const quizStore = useQuizStore();
-  const authStore = useAuthStore();
-  const mainStore = useMainStore();
-
-  const { user } = storeToRefs(authStore);
   const { leaderboard } = storeToRefs(quizStore);
 
-  onMounted(() => {
-   quizStore.getLeaderboard(1000);
-});
-  
-  // User data
-  const userScore = ref(75);
-  const userRank = ref(8);
-  const averageScore = ref(62);
+  const formatDuration = (seconds) => {
+    const duration = intervalToDuration({ start: 0, end: seconds * 1000 });
+    const mins = duration.minutes ?? 0;
+    const secs = duration.seconds ?? 0;
+    return `${mins}m ${secs}s`;
+  };
+
+  const formattedTopPlayers = computed(() => {
+    return leaderboard.value.topPlayers.map(player => ({
+      ...player,
+      durationFormatted: formatDuration(player.duration)
+    }));
+  });
+
+  const navigateTo = () => {
+    router.back();
+  };
   </script>

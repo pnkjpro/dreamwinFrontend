@@ -14,6 +14,7 @@
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction Type</th>
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+          <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
         </tr>
@@ -42,6 +43,9 @@
           </td>
           <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
             {{ transaction.amount }}
+          </td>
+          <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
+            {{ transaction.description || '' }}
           </td>
           <td class="px-4 py-4 whitespace-nowrap">
             <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"

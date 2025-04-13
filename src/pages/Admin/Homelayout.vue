@@ -55,6 +55,7 @@ const menuItems = ref([
   { name: 'Category Create', path: '/admin/category/create' },
   { name: 'Update Banner', path: '/admin/banner/update' },
   { name: 'Update HowVideo', path: '/admin/howVideo/update' },
+  { name: 'Leaderboard', path: '/admin/leaderboard/list' },
 ]);
 
 const toggleSidebar = () => {

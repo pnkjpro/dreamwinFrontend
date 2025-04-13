@@ -7,7 +7,7 @@
 
     <!-- Title -->
     <div class="p-4 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-700">SPORT QUIZ</h1>
+      <h1 class="text-2xl font-bold text-gray-700">{{ contest.title }}</h1>
     </div>
 
     <!-- Banner Image -->

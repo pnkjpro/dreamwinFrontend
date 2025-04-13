@@ -5,6 +5,8 @@ import api from '@/plugins/axios';
 export const useAdminStore = defineStore('admin', () => {
   const loading = ref(false);
   const error = ref(null);
+  const leaderboards = ref([]);
+  const currentLeaderboard = ref([]);
   const allTransactions = ref([]);
 
   async function createCategory(formData){
@@ -95,12 +97,74 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
+  const listAdminLeaderboards = async () => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const response = await api.get('/admin/list/leaderboards')
+        leaderboards.value = response.data.data
+        return {
+            success: response.data.success,
+            message: response.data.message
+        }
+    } catch (error) {
+        console.error("Error using Lifeline:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+    } finally {
+        loading.value = false;
+    }
+  }
+  
+  /**
+   * Get details for a specific quiz leaderboard
+   * @param {Object} params - Request parameters
+   * @param {number} params.quiz_id - ID of the quiz to fetch leaderboard for
+   * @returns {Promise} Result object with success status and data
+   */
+  const showAdminLeaderboard = async (payload) => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const response = await api.post('/admin/show/leaderboard', payload)
+      
+        currentLeaderboard.value = response.data.data
+        return {
+            success: response.data.success,
+            message: response.data.message
+        }
+    } catch (error) {
+        console.error("Error using Lifeline:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+    } finally {
+        loading.value = false;
+    }
+  }
+  
+  /**
+   * Reset leaderboard state
+   */
+  const resetLeaderboardState = () => {
+    leaderboards.value = []
+    currentLeaderboard.value = []
+    error.value = null
+  }
+
+
   return {
     createCategory,
     createQuiz,
     fetchTransactions,
     statusApproval,
+    listAdminLeaderboards,
+    showAdminLeaderboard,
+    resetLeaderboardState,
     allTransactions,
+    leaderboards,
+    currentLeaderboard,
     loading
   }
 

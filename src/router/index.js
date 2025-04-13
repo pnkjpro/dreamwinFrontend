@@ -168,6 +168,12 @@ const router = createRouter({
           name: 'HowVideoUpdate',
           component: () => import('@/pages/Admin/HowVideos.vue'),
           meta: { requiresAdminAuth: true }
+        },
+        {
+          path: 'leaderboard/list',
+          name: 'AdminLeaderboard',
+          component: () => import('@/pages/Admin/AdminLeaderboard.vue'),
+          meta: { requiresAdminAuth: true }
         }
       ]
     },
