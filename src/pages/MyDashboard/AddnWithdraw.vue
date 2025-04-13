@@ -158,6 +158,7 @@
             placeholder="Enter amount to withdraw"
             :max="availableBalance"
           />
+          <span style="font-size: 13px; color:darkcyan">Minimum Rs 50 can be withdrawn</span>
         </div>
         
         <div class="mb-4">

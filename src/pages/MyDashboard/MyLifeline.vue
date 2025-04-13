@@ -122,33 +122,6 @@
           />
         </div>
         
-        <div class="mb-4 p-3 bg-gray-100 rounded-lg" v-if="selectedLifeline && purchaseQuantity > 0">
-          <div class="flex justify-between text-sm mb-2">
-            <span>Price per lifeline:</span>
-            <span>₹ {{ getLifelinePrice(selectedLifeline) }}</span>
-          </div>
-          <div class="flex justify-between text-sm mb-2">
-            <span>Quantity:</span>
-            <span>× {{ purchaseQuantity }}</span>
-          </div>
-          <div class="border-t border-gray-300 my-2"></div>
-          <!-- <div class="flex justify-between font-bold">
-            <span>Total:</span>
-            <span>₹ {{ getTotalPrice() }}</span>
-          </div> -->
-        </div>
-        
-        <div v-if="errorMessage" class="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
-          {{ errorMessage }}
-          <router-link 
-            v-if="insufficientFunds" 
-            to="/add-fund" 
-            class="text-blue-600 underline ml-1"
-          >
-            Add funds to continue
-          </router-link>
-        </div>
-        
         <button 
           class="bg-orange-500 text-white py-2 px-6 rounded-lg font-medium w-full"
           @click="handlePurchaseLifeline"
@@ -229,12 +202,4 @@ const navigateTo = (link) => {
 // Purchase form state
 const selectedLifeline = ref('');
 const purchaseQuantity = ref(1);
-
-//   onBeforeRouteLeave((to, from, next) => {
-//   if (!confirm("Are you sure you want to leave the game, huh?")) {
-//     next(false); // Cancel navigation
-//   } else {
-//     next(); // Allow navigation
-//   }
-// });
 </script>
