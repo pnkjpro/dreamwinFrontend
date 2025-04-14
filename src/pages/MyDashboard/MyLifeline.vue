@@ -40,7 +40,7 @@
           <div class="text-sm text-gray-600">Removes two incorrect options</div>
           <div class="mt-1.5 flex items-center">
             <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-              ₹ {{ 29 }} each
+              ₹ {{ lifelineDetails[0].cost }} each
             </span>
             <span class="ml-3 text-xs text-green-600 font-medium">
               Available: {{ lifelines[0]?.quantity || 0 }}
@@ -59,7 +59,7 @@
           <div class="text-sm text-gray-600">Skip the current question without penalty</div>
           <div class="mt-1.5 flex items-center">
             <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-              ₹ 49 each
+              ₹ {{ lifelineDetails[1].cost }} each
             </span>
             <span class="ml-3 text-xs text-green-600 font-medium">
               Available: {{ lifelines[1]?.quantity || 0 }}
@@ -78,7 +78,7 @@
           <div class="text-sm text-gray-600">This lifeline continues your game when failed</div>
           <div class="mt-1.5 flex items-center">
             <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-              ₹ 99 each
+              ₹ {{ lifelineDetails[2].cost }} each
             </span>
             <span class="ml-3 text-xs text-green-600 font-medium">
               Available: {{ lifelines[2]?.quantity || 0 }}
@@ -142,7 +142,7 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, watch } from 'vue';
+import { ref, computed, onMounted, inject, watch } from 'vue';
 import { useMainStore } from '@/stores/mainStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useLifelineStore } from '@/stores/lifelineStore';
@@ -172,7 +172,7 @@ const authStore = useAuthStore();
 const lifelineStore = useLifelineStore();
 const transactionStore = useTransactionStore();
 const { user } = storeToRefs(authStore);
-
+const { lifelineDetails } = storeToRefs(lifelineStore);
 const lifelines = computed(() => user.value.lifelines || 0);
 
 const handlePurchaseLifeline = async() => {
@@ -194,6 +194,10 @@ const handlePurchaseLifeline = async() => {
 const navigateToBack = () => {
   router.back();
 }
+
+onMounted(()=>{
+  lifelineStore.fetchLifeline();
+})
 
 const navigateTo = (link) => {
   router.push(`/${link}`)

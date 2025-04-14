@@ -143,6 +143,22 @@ export const useAdminStore = defineStore('admin', () => {
         loading.value = false;
     }
   }
+
+  async function updateLifelineCost(payload){
+    try{
+        loading.value = true;
+        const response = await api.post('/admin/lifeline/update', payload)
+        return {
+            success: response.data.success,
+            message: response.data.message
+        }
+    } catch (error) {
+        console.error("Error using Lifeline:", error);
+        return { success: false, message: 'Error updating Lifeline' };
+    } finally {
+        loading.value = false;
+    }
+  }
   
   /**
    * Reset leaderboard state
@@ -162,6 +178,7 @@ export const useAdminStore = defineStore('admin', () => {
     listAdminLeaderboards,
     showAdminLeaderboard,
     resetLeaderboardState,
+    updateLifelineCost,
     allTransactions,
     leaderboards,
     currentLeaderboard,

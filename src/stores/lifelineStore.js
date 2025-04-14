@@ -11,6 +11,7 @@ export const useLifelineStore = defineStore('lifeline', () => {
     const error = ref(null);
     const router = useRouter();
     const toast = useToast();
+    const lifelineDetails = ref([]);
     const skip = ref(true);
     const revive = ref(true);
     const fiftyFifty = ref(true);
@@ -90,14 +91,34 @@ export const useLifelineStore = defineStore('lifeline', () => {
         }
     }
 
+    async function fetchLifeline(){
+        try{
+            const response = await api.get('/lifeline/list');
+            lifelineDetails.value = response.data.data;
+            loading.value = false;
+            return {
+                success: response.data.success,
+                message: response.data.message
+            }
+        } catch (error) {
+            loading.value = false;
+            console.error("Error Purchasing Lifeline:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+            return { success: false, message: errorMessage };
+        }
+    }
+
     return {
         useLifeline,
+        fetchLifeline,
+        purchaseLifeline,
         error,
         loading,
+        lifelineDetails,
         removedOption,
         skip,
         revive,
         fiftyFifty,
-        purchaseLifeline,
     }
 });

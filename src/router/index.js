@@ -164,6 +164,12 @@ const router = createRouter({
           meta: { requiresAdminAuth: true }
         },
         {
+          path: 'lifeline/update',
+          name: 'LifelineUpdate',
+          component: () => import('@/pages/Admin/LifelineUpdate.vue'),
+          meta: { requiresAdminAuth: true }
+        },
+        {
           path: 'howVideo/update',
           name: 'HowVideoUpdate',
           component: () => import('@/pages/Admin/HowVideos.vue'),
