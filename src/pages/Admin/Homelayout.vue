@@ -17,6 +17,10 @@
               {{ item.name }}
             </router-link>
           </li>
+        <button style="padding-left: 20px;" @click="handleLogout" :disabled="authStore.loading">
+          <span v-if="authStore.loading">Logging out...</span>
+          <span v-else>Logout</span>
+        </button>
         </ul>
       </div>
     </div>
@@ -42,10 +46,14 @@
 </template>
 
 <script setup>
+import { useAdminStore } from '@/stores/adminStore';
+import { useAuthStore } from '@/stores/authStore';
 import { ref, onMounted, onUnmounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
+const authStore = useAuthStore();
 const route = useRoute();
+const router = useRouter();
 const isSidebarOpen = ref(true);
 const isMobile = ref(false);
 
@@ -61,6 +69,15 @@ const menuItems = ref([
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
+};
+
+const handleLogout = async () => {
+  const result = await authStore.logout();
+  if (!result.success) {
+    toast.error(result.message);
+  } else {
+    router.push('/auth/login');
+  }
 };
 
 const toggleSidebarIfMobile = () => {

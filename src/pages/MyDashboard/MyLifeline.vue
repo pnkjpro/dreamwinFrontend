@@ -101,9 +101,9 @@
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
             <option value="">Select a lifeline to purchase</option>
-            <option value="1">50:50 Lifeline (₹ 29)</option>
-            <option value="2">Skip Lifeline (₹ 49)</option>
-            <option value="3">Revive Game (₹ 99)</option>
+            <option value="1">50:50 Lifeline (₹ {{ lifelineDetails[0].cost }})</option>
+            <option value="2">Skip Lifeline (₹ {{ lifelineDetails[1].cost }})</option>
+            <option value="3">Revive Game (₹ {{ lifelineDetails[2].cost }})</option>
           </select>
         </div>
         
