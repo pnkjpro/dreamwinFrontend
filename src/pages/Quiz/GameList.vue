@@ -35,7 +35,7 @@
             <div class="font-medium">Prize Pool</div>
             <div class="flex items-center">
               <font-awesome-icon icon="trophy" class="mr-2 text-gray-700" />
-              <span class="font-bold">Prize ₹ 50,000</span>
+              <span class="font-bold">Prize ₹ {{ variant.prize }}</span>
             </div>
           </div>
           <div class="text-right">
@@ -51,7 +51,7 @@
           <div class="text-gray-500">Total spot: {{ variant.slot_limit }}</div>
         </div>
         <div class="flex justify-between text-xs mt-1">
-          <div>1 st prize - ₹ {{ variant.prize }}</div>
+          <div>1 st prize - ₹ {{ variant?.prize_contents['1'] || '...' }}</div>
           <div class="text-gray-500">Guaranteed</div>
         </div>
       </div>
