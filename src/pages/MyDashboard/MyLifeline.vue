@@ -40,7 +40,7 @@
           <div class="text-sm text-gray-600">Removes two incorrect options</div>
           <div class="mt-1.5 flex items-center">
             <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-              ₹ {{ lifelineDetails[0].cost }} each
+              ₹ {{ lifelineDetails[0]?.cost || '...' }} each
             </span>
             <span class="ml-3 text-xs text-green-600 font-medium">
               Available: {{ lifelines[0]?.quantity || 0 }}
@@ -59,7 +59,7 @@
           <div class="text-sm text-gray-600">Skip the current question without penalty</div>
           <div class="mt-1.5 flex items-center">
             <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-              ₹ {{ lifelineDetails[1].cost }} each
+              ₹ {{ lifelineDetails[1]?.cost || '...' }} each
             </span>
             <span class="ml-3 text-xs text-green-600 font-medium">
               Available: {{ lifelines[1]?.quantity || 0 }}
@@ -78,7 +78,7 @@
           <div class="text-sm text-gray-600">This lifeline continues your game when failed</div>
           <div class="mt-1.5 flex items-center">
             <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-              ₹ {{ lifelineDetails[2].cost }} each
+              ₹ {{ lifelineDetails[2]?.cost || '...' }} each
             </span>
             <span class="ml-3 text-xs text-green-600 font-medium">
               Available: {{ lifelines[2]?.quantity || 0 }}
@@ -101,9 +101,9 @@
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
             <option value="">Select a lifeline to purchase</option>
-            <option value="1">50:50 Lifeline (₹ {{ lifelineDetails[0].cost }})</option>
-            <option value="2">Skip Lifeline (₹ {{ lifelineDetails[1].cost }})</option>
-            <option value="3">Revive Game (₹ {{ lifelineDetails[2].cost }})</option>
+            <option value="1">50:50 Lifeline (₹ {{ lifelineDetails[0]?.cost || '...' }})</option>
+            <option value="2">Skip Lifeline (₹ {{ lifelineDetails[1]?.cost || '...' }})</option>
+            <option value="3">Revive Game (₹ {{ lifelineDetails[2]?.cost || '...' }})</option>
           </select>
         </div>
         

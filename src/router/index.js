@@ -247,9 +247,9 @@ router.beforeResolve(async (to, from, next) => {
     }
   }
 
-  if (!from.name && to.name !== 'Home' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
-    return next({ name: 'Home' });
-  }
+  // if (!from.name && to.name !== 'Home' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
+  //   return next({ name: 'Home' });
+  // }
   
   
   const isAuthenticated = !!authStore.user;
