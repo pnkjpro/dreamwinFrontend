@@ -29,16 +29,42 @@
 
     <!-- Instructions -->
     <div class="px-4 mb-4">
-      <h3 class="font-bold text-base mb-3">QUESTION PAPER INSTRUCTIONS!</h3>
-      <ol class="space-y-1 text-sm ml-5 list-decimal">
-        <li>1 Question at one time</li>
-        <li>It Consist of {{ totalQuestions }} Question</li>
-        <li>Each question contains 1 marks</li>
-        <li>You can use only 3 lifelines</li>
-        <li>You can use only 1 lifeline per question</li>
-        <li>Refreshing the page will submit the Quiz</li>
-        <li>You cannot solve or correct previous question, once submitted cant be change</li>
-      </ol>
+      <h3 class="font-bold text-base mb-3">📢 QUIZ INSTRUCTIONS – PLEASE READ CAREFULLY</h3>
+      <div class="space-y-3 text-sm">
+        <div>
+          <p class="font-semibold">Stable Internet Connection Required</p>
+          <p>Make sure you are in a good network area while attempting the quiz. Do not refresh the page during the quiz — refreshing will lead to auto-submission of your test.</p>
+        </div>
+        
+        <div>
+          <p class="font-semibold">Use of Lifelines</p>
+          <p>You can use the following lifelines during the quiz:</p>
+          <ul class="ml-5 list-disc space-y-1 mt-1">
+            <li>50-50: Eliminates two incorrect options.</li>
+            <li>Skip the Question: Skip one question without elimination.</li>
+            <li>Revive the Game: Get a second chance after a wrong answer.</li>
+          </ul>
+        </div>
+        
+        <div>
+          <p class="font-semibold">Lifeline Usage Rule</p>
+          <p>You can use one lifeline once during the entire quiz. Choose wisely!</p>
+        </div>
+        
+        <div>
+          <p class="font-semibold">Quiz Format</p>
+          <ul class="ml-5 list-disc space-y-1 mt-1">
+            <li>The quiz consists of {{ totalQuestions }} questions.</li>
+            <li>If you answer even one question incorrectly, you will be eliminated from the game.</li>
+            <li>All questions will have a timer displayed on the screen.</li>
+          </ul>
+        </div>
+        
+        <div>
+          <p class="font-semibold">Important Tip</p>
+          <p>Use your lifeline before selecting an incorrect answer to stay in the game!</p>
+        </div>
+      </div>
     </div>
 
     <!-- YouTube Video Embed -->
