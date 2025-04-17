@@ -32,24 +32,24 @@
         
         .back-button {
             position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+            left: 15px;
+            top: 15px;
             color: white;
-            background: none;
+            background-color: rgba(255, 255, 255, 0.2);
             border: none;
-            font-size: 18px;
-            cursor: pointer;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
-            padding: 5px 10px;
-            border-radius: 4px;
-            background-color: rgba(255, 255, 255, 0.2);
+            justify-content: center;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
         
         .back-button:hover {
             background-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(-3px);
         }
         
         h1 {
@@ -191,7 +191,7 @@ const navigateToBack = () => {
     <div class="container">
         <header>
             <button class="back-button" onclick="window.history.back()">
-                <i class="fas fa-arrow-left"></i> Back
+                <i class="fas fa-arrow-left"></i>
             </button>
             <h1>Terms and Conditions</h1>
             <p class="subtitle">Please read these terms carefully before using Himpri.com</p>

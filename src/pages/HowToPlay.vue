@@ -2,8 +2,11 @@
     <div class="min-h-screen bg-orange-500 text-white p-6">
       <!-- Back button at the top -->
       <div class="mb-6">
-        <button @click="goBack" class="flex items-center bg-white text-orange-600 px-4 py-2 rounded-lg font-bold hover:bg-orange-200 transition-colors">
+        <!-- <button @click="goBack" class="flex items-center bg-white text-orange-600 px-4 py-2 rounded-lg font-bold hover:bg-orange-200 transition-colors">
           <span class="mr-2">←</span> Back
+        </button> -->
+        <button class="back-button" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i>
         </button>
       </div>
   
@@ -38,6 +41,8 @@
   import { useMainStore } from '@/stores/mainStore';
     import { storeToRefs } from 'pinia';
     import { useRouter } from 'vue-router';
+    import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
   
   const mainStore = useMainStore();
   const { howVideos } = storeToRefs(mainStore);
@@ -61,4 +66,26 @@
     height: 100%;
     width: 100%;
   }
+
+  .back-button {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(-3px);
+        }
   </style>
