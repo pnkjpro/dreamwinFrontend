@@ -169,6 +169,22 @@ export const useAdminStore = defineStore('admin', () => {
     error.value = null
   }
 
+  const updateCategorySorting = async (categories) => {
+    loading.value = true;
+    try {
+      const response = await api.post('/admin/categories/update-order', { categories });
+      loading.value = false;
+      return response.data;
+    } catch (error) {
+      loading.value = false;
+      console.error('Error updating categories order:', error);
+      return { 
+        success: false, 
+        message: error.response?.data?.message || 'Failed to update category order' 
+      };
+    }
+  };
+
 
   return {
     createCategory,
@@ -179,6 +195,7 @@ export const useAdminStore = defineStore('admin', () => {
     showAdminLeaderboard,
     resetLeaderboardState,
     updateLifelineCost,
+    updateCategorySorting,
     allTransactions,
     leaderboards,
     currentLeaderboard,

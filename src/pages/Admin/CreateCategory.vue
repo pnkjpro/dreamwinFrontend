@@ -42,51 +42,6 @@
         </div>
       </div>
       
-      <!-- Icon Color Field -->
-      <!-- <div class="form-group">
-        <label for="icon_color">Icon Color</label>
-        <div class="color-picker">
-          <input 
-            id="icon_color"
-            v-model="category.icon_color"
-            type="text"
-            class="form-control"
-          />
-          <input 
-            type="color"
-            v-model="category.icon_color"
-            class="color-input"
-          />
-        </div>
-      </div> -->
-      
-      <!-- Banner Image Field -->
-      <!-- <div class="form-group">
-        <label for="banner_image">Banner Image</label>
-        <div class="file-field">
-          <input 
-            id="banner_image"
-            type="file"
-            @change="handleBannerUpload"
-            class="file-input"
-            accept="image/*"
-          />
-          <span class="file-name">{{ category.banner_image || 'No file chosen' }}</span>
-        </div>
-      </div> -->
-      
-      <!-- Display Order Field
-      <div class="form-group">
-        <label for="display_order">Display Order</label>
-        <input 
-          id="display_order"
-          v-model="category.display_order"
-          type="number"
-          class="form-control"
-          min="1"
-        />
-      </div> -->
-      
       <!-- Form Actions -->
       <div class="form-actions">
         <button type="button" @click="resetForm" class="btn-cancel">Cancel</button>
@@ -96,14 +51,35 @@
       </div>
     </form>
   </div>
+  <h2 class="form-title mt-10">Reorder Categories</h2>
+<div class="sortable-list">
+  <div
+    v-for="(cat, index) in sortableCategories"
+    :key="cat.id"
+    class="sortable-item"
+  >
+    <span>{{ index + 1 }}. {{ cat.name }}</span>
+    <div class="sort-controls">
+      <button @click="moveUp(index)" :disabled="index === 0">⬆️</button>
+      <button @click="moveDown(index)" :disabled="index === sortableCategories.length - 1">⬇️</button>
+    </div>
+  </div>
+</div>
+
+<!-- Save Order Button -->
+<div class="form-actions">
+  <button class="btn-save" @click="updateSorting">Save Order</button>
+</div>
+
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, watch, onMounted, ref } from 'vue'
 import { useAdminStore } from '@/stores/adminStore'
 import { storeToRefs } from 'pinia';
 import { object } from 'yup';
 import { useToast } from 'vue-toastification';
+import { useMainStore } from '@/stores/mainStore';
 
 const initialCategory = {
       name: '',
@@ -121,8 +97,50 @@ const resetForm = () => {
 }
 
 const adminStore = useAdminStore();
+const mainStore = useMainStore();
+const { categories } = storeToRefs(mainStore);
 const { } = storeToRefs(adminStore);
 const toast = useToast();
+
+
+// =================== update sorting ==================
+const sortableCategories = ref([]);
+
+watch(categories, (newVal) => {
+  sortableCategories.value = Array.isArray(newVal) ? [...newVal] : [];
+}, { immediate: true });
+
+const moveUp = (index) => {
+  if (index > 0) {
+    const items = sortableCategories.value;
+    [items[index - 1], items[index]] = [items[index], items[index - 1]];
+  }
+}
+
+const moveDown = (index) => {
+  if (index < sortableCategories.value.length - 1) {
+    const items = sortableCategories.value;
+    [items[index], items[index + 1]] = [items[index + 1], items[index]];
+  }
+}
+
+const updateSorting = async () => {
+  const sortedPayload = sortableCategories.value.map((cat, idx) => ({
+    id: cat.id,
+    display_order: idx + 1
+  }));
+
+  const result = await adminStore.updateCategorySorting(sortedPayload);
+  if (result.success) {
+    toast.success("Category order updated!");
+    mainStore.fetchCategories();
+  } else {
+    toast.error("Failed to update sorting.");
+  }
+};
+
+
+// =====================================================
 
 const handleBannerUpload = (event) => {
   const file = event.target.files[0];
@@ -131,6 +149,10 @@ const handleBannerUpload = (event) => {
     category.value.banner_image = file.name;
   }
 }
+
+onMounted(()=>{
+  mainStore.fetchCategories();
+})
 
 const handleIconUpload = (event) => {
   const file = event.target.files[0];
@@ -195,6 +217,23 @@ const handleCreateCategory = async() => {
   margin-bottom: 24px;
   color: #333;
   font-size: 1.5rem;
+}
+.sortable-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #f9f9f9;
+  margin-bottom: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.sort-controls button {
+  margin-left: 4px;
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .form-group {
