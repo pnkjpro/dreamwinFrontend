@@ -56,6 +56,8 @@
         <div v-if="imagePreview" class="image-preview">
           <img :src="imagePreview" alt="Banner preview" />
         </div>
+        <span class="text-xs text-blue-500">Note: Banner size 256x144 and should not exceed 200 Kb for better frontload.</span>
+
       </div>
       
       <div class="form-group date-time-group">

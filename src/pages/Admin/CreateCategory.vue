@@ -38,11 +38,12 @@
             accept="image/*"
           />
           <span class="file-name">{{ category.icon || 'No file chosen' }}</span>
+          <span class="text-xs text-blue-500">Note: Icon size 200x200 and should not exceed 200 Kb for better frontload.</span>
         </div>
       </div>
       
       <!-- Icon Color Field -->
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="icon_color">Icon Color</label>
         <div class="color-picker">
           <input 
@@ -57,10 +58,10 @@
             class="color-input"
           />
         </div>
-      </div>
+      </div> -->
       
       <!-- Banner Image Field -->
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="banner_image">Banner Image</label>
         <div class="file-field">
           <input 
@@ -72,7 +73,7 @@
           />
           <span class="file-name">{{ category.banner_image || 'No file chosen' }}</span>
         </div>
-      </div>
+      </div> -->
       
       <!-- Display Order Field
       <div class="form-group">
@@ -108,8 +109,8 @@ const initialCategory = {
       name: '',
       description: '',
       icon: '',
-      icon_color: '#007bff',
-      banner_image: '',
+      // icon_color: '#007bff',
+      // banner_image: '',
       display_order: 1
     }
 
@@ -143,15 +144,15 @@ const handleCreateCategory = async() => {
     const formData = new FormData();
     formData.append('name', category.value.name);
     formData.append('description', category.value.description);
-    formData.append('icon_color', category.value.icon_color);
+    // formData.append('icon_color', category.value.icon_color);
     
     if (category.value.iconFile) {
       formData.append('icon', category.value.iconFile);
     }
     
-    if (category.value.bannerFile) {
-      formData.append('banner_image', category.value.bannerFile);
-    }
+    // if (category.value.bannerFile) {
+    //   formData.append('banner_image', category.value.bannerFile);
+    // }
 
     const result = await adminStore.createCategory(formData);
     if (!result.success) {
