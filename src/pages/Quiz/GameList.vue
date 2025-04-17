@@ -28,8 +28,8 @@
 
     <!-- Contest Cards -->
     <div class="px-4 space-y-4">
-      <!-- First Contest Card -->
-      <div v-for="variant in contest.quiz_variants" class="bg-white rounded-lg shadow-sm p-4">
+      <!-- Contest Cards -->
+      <div v-for="variant in contest.quiz_variants" :key="variant.id" class="bg-white rounded-lg shadow-sm p-4">
         <div @click="navigateTo(variant.id)" class="flex justify-between mb-2">
           <div>
             <div class="font-medium">Prize Pool</div>
@@ -45,72 +45,24 @@
             </button>
           </div>
         </div>
-        <div class="h-1 w-full bg-red-500 mb-1"></div>
+        
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+          <div 
+            class="bg-red-500 h-2 rounded-full" 
+            :style="`width: ${calculateProgress(variant)}%`"
+          ></div>
+        </div>
+        
         <div class="flex justify-between text-xs">
-          <div class="text-red-500">5 spot left</div>
+          <div class="text-red-500">{{ variant.slot_limit - variant.user_responses_count }} spot left</div>
           <div class="text-gray-500">Total spot: {{ variant.slot_limit }}</div>
         </div>
         <div class="flex justify-between text-xs mt-1">
-          <div>1 st prize - ₹ {{ variant?.prize_contents['1'] || '...' }}</div>
+          <div>1st prize - ₹ {{ variant?.prize_contents['1'] || '...' }}</div>
           <div class="text-gray-500">Guaranteed</div>
         </div>
       </div>
-
-      <!-- Second Contest Card -->
-      <!-- <div class="bg-white rounded-lg shadow-sm p-4">
-        <div class="flex justify-between mb-2">
-          <div>
-            <div class="font-medium">Prize Pool</div>
-            <div class="flex items-center">
-              <font-awesome-icon icon="trophy" class="mr-2 text-gray-700" />
-              <span class="font-bold">Prize ₹ 20,000</span>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="text-gray-500 text-sm">Entry Fee</div>
-            <button class="bg-green-500 text-white px-3 py-1 rounded-lg">
-              ₹ 51
-            </button>
-          </div>
-        </div>
-        <div class="h-1 w-full bg-red-500 mb-1"></div>
-        <div class="flex justify-between text-xs">
-          <div class="text-red-500">20 spot left</div>
-          <div class="text-gray-500">Total spot: 100</div>
-        </div>
-        <div class="flex justify-between text-xs mt-1">
-          <div>1 st prize - ₹ 10000</div>
-          <div class="text-gray-500">Guaranteed</div>
-        </div>
-      </div> -->
-
-      <!-- Third Contest Card -->
-      <!-- <div class="bg-white rounded-lg shadow-sm p-4">
-        <div class="flex justify-between mb-2">
-          <div>
-            <div class="font-medium">Prize Pool</div>
-            <div class="flex items-center">
-              <font-awesome-icon icon="trophy" class="mr-2 text-gray-700" />
-              <span class="font-bold">Prize ₹ 5000</span>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="text-gray-500 text-sm">Entry Fee</div>
-            <button class="bg-green-500 text-white px-3 py-1 rounded-lg">
-              ₹ 21
-            </button>
-          </div>
-        </div>
-        <div class="h-1 w-full bg-red-500 mb-1"></div>
-        <div class="flex justify-between text-xs">
-          <div class="text-red-500">10 spot left</div>
-          <div class="text-gray-500">Total spot: 100</div>
-        </div>
-        <div class="flex justify-between text-xs mt-1">
-          <div>1 st prize - ₹ 2500</div>
-          <div class="text-gray-500">Guaranteed</div>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
@@ -141,11 +93,23 @@ const displayImage = (imagePath) => {
   return path;
 }
 
+// Calculate progress percentage for progress bar
+const calculateProgress = (variant) => {
+  const slotsOccupied = variant.user_responses_count;
+  const totalSlots = variant.slot_limit;
+  
+  if (!totalSlots) return 0;
+  
+  // Calculate percentage of slots filled
+  const percentage = (slotsOccupied / totalSlots) * 100;
+  return Math.max(0, Math.min(100, percentage)); // Ensure value is between 0-100
+}
+
 const config = inject('config');
 // const fallbackImage = config.FALLBACK_IMAGE;
 
 const navigateTo = (variantId) => {
-  console.log("gamelist variantId",variantId);
+  console.log("gamelist variantId", variantId);
   mainStore.getPrizeContents(variantId);
   router.push('/quiz/variant/details');
 }

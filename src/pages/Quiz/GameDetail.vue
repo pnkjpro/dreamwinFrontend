@@ -10,10 +10,16 @@
         <div class="bg-white rounded-xl p-4 shadow-sm">
           <div class="text-gray-500 text-sm">Prize Pool</div>
           <div class="text-3xl font-bold my-1">₹ {{ variant.prize }}</div>
-          <div class="h-1 bg-red-500 w-full my-1"></div>
+           <!-- Progress Bar -->
+          <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+            <div 
+              class="bg-red-500 h-2 rounded-full" 
+              :style="`width: ${calculateProgress(variant)}%`"
+            ></div>
+          </div>
           <div class="flex justify-between text-xs">
-            <div class="text-red-500">5 spot left</div>
-            <div class="text-gray-500">Total Spot : {{ variant.slot_limit }}</div>
+            <div class="text-red-500">{{ variant.slot_limit - variant.user_responses_count }} spot left</div>
+            <div class="text-gray-500">Total spot: {{ variant.slot_limit }}</div>
           </div>
         </div>
       </div>
@@ -99,6 +105,18 @@ import { useAuthStore } from '@/stores/authStore';
     }else{
       toast.error(result.message);
     }
+  }
+
+  // Calculate progress percentage for progress bar
+  const calculateProgress = (variant) => {
+    const slotsOccupied = variant.user_responses_count;
+    const totalSlots = variant.slot_limit;
+    
+    if (!totalSlots) return 0;
+    
+    // Calculate percentage of slots filled
+    const percentage = (slotsOccupied / totalSlots) * 100;
+    return Math.max(0, Math.min(100, percentage)); // Ensure value is between 0-100
   }
 
   // =================== Know Join Status ==================
