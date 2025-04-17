@@ -18,7 +18,7 @@
           <div class="text-xl font-bold">₹ {{ user.funds }}</div>
         </div>
         <button 
-          @click="navigateTo('/dashboard/funds')" 
+          @click="navigateTo('dashboard/funds')" 
           class="bg-orange-500 text-white px-4 py-1.5 rounded-lg text-sm font-medium"
         >
           Add Funds
