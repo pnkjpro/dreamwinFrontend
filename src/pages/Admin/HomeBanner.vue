@@ -58,6 +58,8 @@
             <option value="1">Banner 1</option>
             <option value="2">Banner 2</option>
             <option value="3">Banner 3</option>
+            <option value="4">Banner 4</option>
+            <option value="5">Banner 5</option>
           </select>
         </div>
         
