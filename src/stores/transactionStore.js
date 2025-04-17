@@ -89,6 +89,7 @@ export const useTransactionStore = defineStore('transaction', () => {
 
     async function getTransactions() {
         try {
+            loading.value = true;
             const response = await api.get('/funds/transaction/list');
             transactions.value = response.data.data;
             console.log("pinia: ",transactions.value);

@@ -21,7 +21,7 @@
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <!-- Loading state row -->
-        <tr v-if="transactions.length == 0" class="hover:bg-gray-50">
+        <tr v-if="transactionStore.loading" class="hover:bg-gray-50">
           <td colspan="4" class="px-4 py-8 text-center">
             <div class="flex justify-center items-center space-x-2">
               <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -31,6 +31,11 @@
               <span class="text-sm text-gray-600">Loading transactions...</span>
             </div>
           </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
         </tr>
         <tr v-for="(transaction, index) in transactions" :key="transaction.id" class="hover:bg-gray-50">
           <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
