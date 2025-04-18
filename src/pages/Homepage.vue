@@ -205,7 +205,8 @@ import {
   faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, 
   faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt,
   faPlus, faArrowUp, faTrophy, faClock, faChevronDown, faTimes,
-  faLayerGroup, faStar, faPhone
+  faLayerGroup, faStar, faPhone,
+  faHistory
 } from '@fortawesome/free-solid-svg-icons';
 import { useToast } from 'vue-toastification';
 
@@ -214,7 +215,7 @@ library.add(
   faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, 
   faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt,
   faPlus, faArrowUp, faTrophy, faClock, faChevronDown, faTimes,
-  faLayerGroup, faStar, faPhone
+  faLayerGroup, faStar, faPhone, faHistory
 );
   
 const avatar = ref('/api/placeholder/80/80');
@@ -278,6 +279,7 @@ const menuItems = ref([
   { text: 'My Lifelines', icon: 'phone', url: 'dashboard/lifeline'},
   { text: 'My Transactions', icon: 'cash-register', url: 'dashboard/transactions'},
   { text: 'My Contests', icon: 'gamepad', url: 'dashboard/my-contests'},
+  { text: 'Lifeline History', icon: 'history', url: 'dashboard/lifeline-history'},
   { text: 'Help & FAQs', icon: 'question-circle', url: 'faqs' },
   { text: 'About Us', icon: 'file-alt', url: 'aboutus' },
   { text: 'How to Play', icon: 'gamepad', url: 'how-to-play' },

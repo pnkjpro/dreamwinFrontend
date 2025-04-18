@@ -72,6 +72,12 @@ const router = createRouter({
           meta: { requiresAuth:true }
         },
         {
+          path: 'lifeline-history',
+          name: 'LifelineHistory',
+          component: () => import('@/pages/MyDashboard/LifelineHistory.vue'),
+          meta: { requiresAuth:true }
+        },
+        {
           path: 'refernearn',
           name: 'MyReferral',
           component: () => import('@/pages/MyDashboard/MyReferral.vue'),

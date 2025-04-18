@@ -7,6 +7,8 @@ import api from "@/plugins/axios";
 export const useTransactionStore = defineStore('transaction', () => {
     const loading = ref(false);
     const transactions = ref([]);
+    const lifeline_transactions = ref([]);
+    const lifeline_histories = ref([]);
     const error = ref(null);
     const fundAction = ref("");
     const mainStore = useMainStore();
@@ -107,15 +109,58 @@ export const useTransactionStore = defineStore('transaction', () => {
             return { success: false, message: errorMessage };
         }
     }
+    async function getLifelineTransactions() {
+        try {
+            loading.value = true;
+            const response = await api.get('/lifeline/transaction/list');
+            lifeline_transactions.value = response.data.data;
+
+            loading.value = false;
+            return {
+                success: response.data.success,
+                message: response.data.message
+            }
+        } catch (error) {
+            loading.value = false;
+            console.error("Error Joining Game:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+            return { success: false, message: errorMessage };
+        }
+    }
+
+    async function getLifelineHistories() {
+        try {
+            loading.value = true;
+            const response = await api.get('/lifeline/history/list');
+            lifeline_histories.value = response.data.data;
+
+            loading.value = false;
+            return {
+                success: response.data.success,
+                message: response.data.message
+            }
+        } catch (error) {
+            loading.value = false;
+            console.error("Error Joining Game:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+            return { success: false, message: errorMessage };
+        }
+    }
 
     return {
-        fundAction,
+        getTransactions,
+        getLifelineTransactions,
+        getLifelineHistories,
+        withdrawFunds,
         addFunds,
+        joinGame,
+        fundAction,
         loading,
         error,
-        withdrawFunds,
-        joinGame,
-        getTransactions,
-        transactions
+        transactions,
+        lifeline_transactions,
+        lifeline_histories
     };
 });
