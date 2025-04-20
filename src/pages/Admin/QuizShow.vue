@@ -15,6 +15,12 @@
       <div v-else>
         <!-- Header Section -->
         <header class="bg-white shadow rounded-lg p-6 mb-6">
+          <button 
+            @click="navigateToBack()" 
+            class="bg-blue-500 hover:bg-blue-600 text-white px-4 mb-4 py-2 rounded-md flex items-center"
+          >
+            <span class="mr-2">Back To Quiz List</span>
+          </button>
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
               <h1 class="text-2xl font-bold text-gray-800">{{ usersByquiz.title }}</h1>
@@ -277,13 +283,14 @@
   import { ref, computed, onMounted } from 'vue';
   import { useAdminStore } from '@/stores/adminStore';
 import { storeToRefs } from 'pinia';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
   
   const adminStore = useAdminStore();
   const { usersByquiz } = storeToRefs(adminStore);
   const loading = ref(true);
   const error = ref(null);
   const route = useRoute();
+  const router = useRouter();
   const selectedUser = ref(null);
   
   // Fetch quiz data on component mount
@@ -370,5 +377,9 @@ import { useRoute } from 'vue-router';
     
     const correctOption = question.options.find(o => o.id === question.correctAnswerId);
     return correctOption ? correctOption.option : 'Unknown';
+  }
+
+  const navigateToBack = () => {
+    router.back();
   }
   </script>

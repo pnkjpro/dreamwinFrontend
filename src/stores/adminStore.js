@@ -246,15 +246,24 @@ export const useAdminStore = defineStore('admin', () => {
         return { success: false, message: errorMessage };
     }
   }
-  async function showQuizList(page){
+  async function showQuizList(page =1, category=''){
     try{
       loading.value = true;
-      const response = await api.get(`/admin/quiz/list?page=${page}`);
-      quizList.value = response.data.data;
+      const params = { page };
+      if (category) {
+        params.category = category;
+      }
+      const response = await api.get(`/admin/quiz/list`, {params});
+      if (page === 1) {
+        quizList.value = response.data.data.quizzes;
+      } else {
+        quizList.value = [...quizList.value, ...response.data.data.quizzes];
+      }
       loading.value = false;
       return {
           success: response.data.success,
-          message: response.data.message
+          message: response.data.message,
+          pagination:  response.data.data.totalCount > quizList.value.length ? true : false
       }
       
     } catch (error) {
