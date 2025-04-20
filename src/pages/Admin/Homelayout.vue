@@ -64,6 +64,8 @@ const menuItems = ref([
   { name: 'Update Banner', path: '/admin/banner/update' },
   { name: 'Update HowVideo', path: '/admin/howVideo/update' },
   { name: 'Update Lifeline', path: '/admin/lifeline/update' },
+  { name: 'Quizzes', path: '/admin/quiz/list'},
+  { name: 'Users', path: '/admin/user/list'},
   { name: 'Leaderboard', path: '/admin/leaderboard/list' },
 ]);
 

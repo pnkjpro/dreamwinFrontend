@@ -6,6 +6,10 @@ export const useAdminStore = defineStore('admin', () => {
   const loading = ref(false);
   const error = ref(null);
   const leaderboards = ref([]);
+  const userList = ref([]);
+  const quizList = ref([]);
+  const quizzesByuser = ref([]);
+  const usersByquiz = ref([]);
   const currentLeaderboard = ref([]);
   const allTransactions = ref([]);
 
@@ -183,7 +187,83 @@ export const useAdminStore = defineStore('admin', () => {
         message: error.response?.data?.message || 'Failed to update category order' 
       };
     }
-  };
+  }
+
+  async function showUsersByQuiz(nodeId){
+    try{
+      loading.value = true;
+      console.log("pinia node id: ",nodeId)
+      const response = await api.get(`/admin/show/quiz/users?node_id=${nodeId}`);
+      usersByquiz.value = response.data.data;
+      loading.value = false;
+      return {
+          success: response.data.success,
+          message: response.data.message
+      }
+      
+    } catch (error) {
+        loading.value = false;
+        console.error("Error showing users of quiz:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+    }
+  }
+
+  async function showQuizzesByUser(userId){
+    try{
+      loading.value = true;
+      const response = await api.get('/admin/show/user/quizzes', {user_id: userId});
+      quizzesByuser.value = response.data.data;
+      loading.value = false;
+      return {
+          success: response.data.success,
+          message: response.data.message
+      }
+      
+    } catch (error) {
+        loading.value = false;
+        console.error("Error showing quizzes by user:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+    }
+  }
+
+  async function showUserList(){
+    try{
+      loading.value = true;
+      const response = await api.get('/admin/user/list');
+      userList.value = response.data.data;
+      loading.value = false;
+      return {
+          success: response.data.success,
+          message: response.data.message
+      }
+      
+    } catch (error) {
+        loading.value = false;
+        console.error("Error showing user list:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+    }
+  }
+  async function showQuizList(page){
+    try{
+      loading.value = true;
+      const response = await api.get(`/admin/quiz/list?page=${page}`);
+      quizList.value = response.data.data;
+      loading.value = false;
+      return {
+          success: response.data.success,
+          message: response.data.message
+      }
+      
+    } catch (error) {
+        loading.value = false;
+        console.error("Error showing user list:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+    }
+  }
 
 
   return {
@@ -196,6 +276,14 @@ export const useAdminStore = defineStore('admin', () => {
     resetLeaderboardState,
     updateLifelineCost,
     updateCategorySorting,
+    showUsersByQuiz,
+    showQuizzesByUser,
+    showUserList,
+    showQuizList,
+    quizzesByuser,
+    usersByquiz,
+    userList,
+    quizList,
     allTransactions,
     leaderboards,
     currentLeaderboard,

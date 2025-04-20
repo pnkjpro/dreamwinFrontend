@@ -186,7 +186,25 @@ const router = createRouter({
           name: 'AdminLeaderboard',
           component: () => import('@/pages/Admin/AdminLeaderboard.vue'),
           meta: { requiresAdminAuth: true }
-        }
+        },
+        {
+          path: 'user/list',
+          name: 'UserList',
+          component: () => import('@/pages/Admin/UserList.vue'),
+          meta: { requiresAdminAuth: true }
+        },
+        {
+          path: 'quiz/list',
+          name: 'QuizList',
+          component: () => import('@/pages/Admin/QuizList.vue'),
+          meta: { requiresAdminAuth: true }
+        },
+        {
+          path: 'quiz/show/:node_id',
+          name: 'QuizShow',
+          component: () => import('@/pages/Admin/QuizShow.vue'),
+          meta: { requiresAdminAuth: true }
+        },
       ]
     },
     // ======================== Main Routes =========================
