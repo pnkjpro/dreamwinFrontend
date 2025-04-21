@@ -63,14 +63,14 @@
         </div>
       </div>
 
-      <h1 class="text-4xl font-bold text-gray-800 mb-8">
+      <h1 class="text-2xl font-bold text-gray-800 mb-8">
         {{ question.id }}. {{ question.question }}
       </h1>
 
       <!-- Answer Options -->
       <div v-for="(option, index) in question.options" class="space-y-4">
         <button 
-          class="w-full py-4 px-6 border-2 border-rose-400 rounded-full text-rose-500 font-bold text-2xl hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-300"
+          class="w-full py-4 px-6 border-2 border-rose-400 rounded-full text-rose-500 font-bold text-xl hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-300"
           :disabled="removedOption[index] !== undefined"
           :class="{ 'opacity-50 cursor-not-allowed': removedOption[index] !== undefined }"
           @click="handleNextQuestion(option.id)"

@@ -1,5 +1,9 @@
-/* @import "./base.css"; */
-/* src/assets/main.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-nunito;
+  }
+}
