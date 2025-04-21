@@ -3,6 +3,7 @@ import { useAuthStore } from '../stores/authStore';
 import AdminLayout from '@/pages/Admin/Homelayout.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import { loadTawk, showTawk, hideTawk } from '@/utils/tawk'
 
 // Configure NProgress
 NProgress.configure({ 
@@ -33,13 +34,13 @@ const router = createRouter({
           path: 'login',
           name: 'Login',
           component: () => import('@/pages/Auth/Login.vue'),
-          meta: { guestOnly: true }
+          meta: { guestOnly: true, showChatbot: true }
         },
         {
           path: 'register',
           name: 'Register',
           component: () => import('@/pages/Auth/Register.vue'),
-          meta: { guestOnly: true }
+          meta: { guestOnly: true, showChatbot: true }
         }
       ]
     },
@@ -212,7 +213,7 @@ const router = createRouter({
       path: '/home',
       name: 'Home',
       component: () => import('@/pages/Homepage.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, showChatbot: true }
     },
     {
       path: '/category/quiz/list',
@@ -250,12 +251,25 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
-// Hide progress bar when route is completely loaded
-router.afterEach(() => {
-  // Complete the progress bar
+// ✅ Combined and proper afterEach with access to `to`
+router.afterEach((to) => {
+  // Complete NProgress
   setTimeout(() => {
     NProgress.done()
-  }, 100) // Small delay to make the transition look smoother
+  }, 100)
+
+  console.log('[Chatbot]', to.path, 'Chatbot Enabled:', to.meta.showChatbot)
+
+   // Load Tawk only once
+  loadTawk()
+
+  if (to.meta.showChatbot) {
+    console.log('[Chatbot] Showing Tawk')
+    showTawk()
+  } else {
+    console.log('[Chatbot] Hiding Tawk')
+    hideTawk()
+  }
 })
 
 // Authentication check

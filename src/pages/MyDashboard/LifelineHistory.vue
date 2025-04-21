@@ -54,7 +54,7 @@
       <div v-if="lifeline_histories.length === 0" class="py-8 text-center text-gray-500">
         No lifeline history available.
       </div>
-      <div v-if="hasMoreLoad" class="mt-6 text-center">
+      <div v-if="hasMoreLoad" class="my-4 text-center">
       <button @click="fetchLifelineHistory" 
       class="px-8 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-full shadow-lg hover:from-red-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all transform hover:scale-105"
       :disabled="transactionStore.loading">
