@@ -14,7 +14,7 @@
           </button>
         </div>
   
-        <div v-if="adminStore.loading" class="flex justify-center items-center py-12">
+        <div v-if="adminStore.loading && !userList.length" class="flex justify-center items-center py-12">
           <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
         
@@ -47,11 +47,28 @@
               </tbody>
             </table>
           </div>
-          
           <div class="mt-6 flex justify-between items-center">
             <div class="text-sm text-gray-500">
               Showing <span class="font-medium">{{ userList.length }}</span> users
             </div>
+          </div>
+            <!-- Load More Button -->
+          <div v-if="hasMoreLoad" class="mt-6 text-center">
+            <button @click="fetchUserList" 
+            class="px-8 py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-full shadow-lg hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all transform hover:scale-105"
+            :disabled="adminStore.loading">
+              <span v-if="adminStore.loading" class="flex items-center justify-center">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Loading...
+              </span>
+              <span v-else class="flex items-center justify-center">
+                Load More
+                <font-awesome-icon icon="chevron-down" class="ml-2" />
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -66,7 +83,8 @@
   const adminStore = useAdminStore();
   
   // State
-  const totalUsers = ref(0);
+  const hasMoreLoad = ref(true);
+  const page = ref(1);
   const toast = useToast();
   
   // Computed properties
@@ -74,11 +92,16 @@
   
   // Methods
   const fetchUserList = async() => {
-      const result = await adminStore.showUserList();
+      const result = await adminStore.showUserList(page.value);
       if(!result.success){
         toast.error("failed to get users");
+      } else {
+        if(result.pagination){
+          page.value = page.value + 1;
+        } else {
+          hasMoreLoad.value = false;
+        }
       }
-      totalUsers.value = userList.value.length;
     
   };
   

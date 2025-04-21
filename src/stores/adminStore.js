@@ -49,15 +49,21 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  async function fetchTransactions(){
+  async function fetchTransactions(page = 1){
     try{
         loading.value = true;
-        const response = await api.get('/admin/transaction/list/all');
-        allTransactions.value = [...response.data.data];
-        console.log(allTransactions.value);
+        const params = { page };
+        const response = await api.get(`/admin/transaction/list/all`, {params});
+        if(page === 1){
+          allTransactions.value = [...response.data.data.transactions]
+        } else {
+          allTransactions.value = [...allTransactions.value, ...response.data.data.transactions];
+        }
+        console.log(response.data.data.totalCount > allTransactions.value.length ? true : false);
         return {
             success: response.data.success,
-            message: response.data.message
+            message: response.data.message,
+            pagination: response.data.data.totalCount > allTransactions.value.length ? true : false
         }
     } catch (error) {
         console.error("Error using Lifeline:", error);
@@ -101,16 +107,22 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  const listAdminLeaderboards = async () => {
+  const listAdminLeaderboards = async (page = 1) => {
     loading.value = true
     error.value = null
     
     try {
-      const response = await api.get('/admin/list/leaderboards')
-        leaderboards.value = response.data.data
+      const params = {page}
+      const response = await api.get(`/admin/list/leaderboards`, {params})
+      if(page === 1){
+        leaderboards.value = response.data.data.leaderboards;
+      } else {
+        leaderboards.value = [...leaderboards.value, ...response.data.data.leaderboards];
+      }
         return {
             success: response.data.success,
-            message: response.data.message
+            message: response.data.message,
+            pagination: response.data.data.totalCount > leaderboards.value.length ? true : false
         }
     } catch (error) {
         console.error("Error using Lifeline:", error);
@@ -228,15 +240,21 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  async function showUserList(){
+  async function showUserList(page = 1){
     try{
       loading.value = true;
-      const response = await api.get('/admin/user/list');
-      userList.value = response.data.data;
+      const params = { page }
+      const response = await api.get(`/admin/user/list`, {params});
+      if(page === 1){
+        userList.value = [...response.data.data.users];
+      } else {
+        userList.value = [...userList.value, ...response.data.data.users]
+      }
       loading.value = false;
       return {
           success: response.data.success,
-          message: response.data.message
+          message: response.data.message,
+          pagination: response.data.data.totalCount > userList.value.length ? true : false
       }
       
     } catch (error) {

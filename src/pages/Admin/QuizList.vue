@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <div v-if="adminStore.loading" class="flex justify-center items-center py-12">
+      <div v-if="adminStore.loading && !quizList.length" class="flex justify-center items-center py-12">
         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
       
@@ -89,8 +89,8 @@
         <!-- Load More Button -->
         <div v-if="hasMoreLoad" class="mt-6 text-center">
           <button @click="fetchQuizList" 
-                  class="px-8 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-full shadow-lg hover:from-red-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all transform hover:scale-105"
-                  :disabled="adminStore.loading">
+          class="px-8 py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-full shadow-lg hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all transform hover:scale-105"
+          :disabled="adminStore.loading">
             <span v-if="adminStore.loading" class="flex items-center justify-center">
               <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

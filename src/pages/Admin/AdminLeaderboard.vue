@@ -8,7 +8,7 @@
           <h3>Available Leaderboards</h3>
         </div>
         
-        <div v-if="adminStore.loading" class="loading-indicator">
+        <div v-if="adminStore.loading && !leaderboards.length" class="loading-indicator">
           <p>Loading leaderboards...</p>
         </div>
         
@@ -26,10 +26,27 @@
             <h4 class="quiz-title">{{ leaderboard.title }}</h4>
             <div class="card-meta">
               <span class="top-rank-label">Top Rank</span>
-              <span class="top-rank-value">{{ leaderboard.top_rank }}</span>
+              <span class="top-rank-value">{{ leaderboard.top_user_name }}</span>
             </div>
             <button class="view-btn">View Details</button>
           </div>
+        </div>
+        <div v-if="hasMoreLoad" class="mt-6 text-center">
+          <button @click="fetchLeaderboards" 
+                  class="px-8 py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-full shadow-lg hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all transform hover:scale-105"
+                  :disabled="adminStore.loading">
+            <span v-if="adminStore.loading" class="flex items-center justify-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Loading...
+            </span>
+            <span v-else class="flex items-center justify-center">
+              Load More
+              <font-awesome-icon icon="chevron-down" class="ml-2" />
+            </span>
+          </button>
         </div>
       </div>
       
@@ -85,15 +102,23 @@
   const adminStore = useAdminStore();
   const { leaderboards, currentLeaderboard } = storeToRefs(adminStore);
   const toast = useToast();
+  const page = ref(1);
+  const hasMoreLoad = ref(true);
   
   const selectedQuiz = ref(null);
   const selectedQuizTitle = ref('');
   
   // Load initial leaderboard list
   const fetchLeaderboards = async () => {
-      const result = await adminStore.listAdminLeaderboards();
+      const result = await adminStore.listAdminLeaderboards(page.value);
       if(!result.success){
         toast.error(result.message);
+      } else {
+        if(result.pagination){
+          page.value = page.value + 1;
+        } else {
+          hasMoreLoad.value = false;
+        }
       }
   };
   
