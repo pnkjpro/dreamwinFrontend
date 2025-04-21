@@ -235,17 +235,42 @@ library.add(
   faLayerGroup, faStar, faPhone, faHistory
 );
   
-const avatar = ref('/api/placeholder/80/80');
-
 const router = useRouter();
 const toast = useToast();
 const config = inject('config');
-// const fallbackImage = config.FALLBACK_IMAGE;
 
 // Video preloader settings
-const showPreloader = ref(true);
+const showPreloader = ref(false);
 const videoSource = ref('/videos/himpri_intro.mp4'); // Replace with actual path to your 2-sec video
 const videoTimeout = ref(null);
+const SESSION_KEY = 'hasShownIntroVideo';
+
+// Check if we've shown the intro video in this session
+const checkPreloaderStatus = () => {
+  const hasShownVideo = localStorage.getItem(SESSION_KEY);
+  if (!hasShownVideo) {
+    showPreloader.value = true;
+    // Set a fallback timeout to hide preloader after 3 seconds
+    // in case the video doesn't trigger the ended event
+    videoTimeout.value = setTimeout(() => {
+      hidePreloader();
+    }, 3000);
+  }
+};
+
+const hidePreloader = () => {
+  showPreloader.value = false;
+  // Mark that we've shown the video for this session
+  localStorage.setItem(SESSION_KEY, 'true');
+  if (videoTimeout.value) {
+    clearTimeout(videoTimeout.value);
+  }
+};
+
+const onVideoEnded = () => {
+  // Hide preloader when video ends
+  hidePreloader();
+};
 
 const menuOpen = ref(false);
 const currentIndex = ref(0);
@@ -257,14 +282,6 @@ const transactionStore = useTransactionStore();
 const { contests, categories, banners, loading, totalCount } = storeToRefs(mainStore);
 const { user } = storeToRefs(authStore);
 const { fundAction } = storeToRefs(transactionStore);
-
-const onVideoEnded = () => {
-  // Hide preloader when video ends
-  showPreloader.value = false;
-  if (videoTimeout.value) {
-    clearTimeout(videoTimeout.value);
-  }
-}
 
 const hasMoreLoad = computed(()=>{
   if(totalCount.value>contests.value.length){
@@ -295,11 +312,8 @@ const loadMoreContests = () => {
 }
 
 onMounted(() => {
-  // Set a fallback timeout to hide preloader after 3 seconds
-  // in case the video doesn't trigger the ended event
-  videoTimeout.value = setTimeout(() => {
-    showPreloader.value = false;
-  }, 3000);
+  // Check if we should show the preloader
+  checkPreloaderStatus();
   
   if(contests.value.length > 0){
     return;
