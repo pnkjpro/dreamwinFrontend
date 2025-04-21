@@ -216,6 +216,11 @@ const router = createRouter({
       meta: { requiresAuth: true, showChatbot: true }
     },
     {
+      path: '/intro',
+      name: 'Intro',
+      component: () => import('@/pages/IntroVideo.vue')
+    },    
+    {
       path: '/category/quiz/list',
       name: 'CategoryQuizzes',
       component: () => import('@/pages/CategoryQuizzes.vue'),
