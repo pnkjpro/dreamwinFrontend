@@ -77,17 +77,22 @@ export const useQuizStore = defineStore('playQuiz', () => {
       }
       }
 
-      async function getUserResponses(){
+      async function getUserResponses(page=1){
         try{
           loading.value = true;
-          const response = await api.get('/quiz/responses/list');
-          responses.value = response.data.data;
-          console.log("pinia: ",responses.value);
+          const params = {page}
+          const response = await api.get(`/quiz/responses/list`, {params});
+          if(page === 1){
+            responses.value = response.data.data.responses;
+          } else {
+            responses.value = [...responses.value, ...response.data.data.responses]
+          }
 
           loading.value = false;
           return {
               success: response.data.success,
-              message: response.data.message
+              message: response.data.message,
+              pagination: response.data.data.totalCount > responses.value.length ? true : false
           }
       } catch (error) {
           loading.value = false;
