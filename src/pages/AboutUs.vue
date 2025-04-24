@@ -15,14 +15,14 @@
                 <p>At Himpri, we blend learning with entertainment, creating a space where fun meets purpose. Whether you're a student, a quiz enthusiast, or someone who simply enjoys learning new things, our platform gives you a thrilling way to test your skills, compete with others, and win attractive cash prizes—all from the comfort of your mobile or desktop.</p>
             </div>
             
-            <div class="section founders-section">
+            <!-- <div class="section founders-section">
                 <h2>Our Founders</h2>
                 <p>Himpri was launched by two visionary brothers, <strong>Mr. Devi Prasad Pandey</strong> and <strong>Mr. Jagdamba Prasad Pandey</strong>, who shared a common dream—to build a platform that promotes knowledge, curiosity, and smart play.</p>
                 
                 <p>Coming from humble beginnings, they understood the value of education and innovation, and aimed to create an opportunity where people, especially youth from remote areas, could earn through what they know.</p>
                 
                 <p>Their commitment to transparency, fair play, and digital inclusion drives everything we do at Himpri.</p>
-            </div>
+            </div> -->
             
             <div class="mission-vision">
                 <div class="mission">

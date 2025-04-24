@@ -15,7 +15,7 @@ export const useTransactionStore = defineStore('transaction', () => {
     const { contest } = storeToRefs(mainStore);  
     const authStore = useAuthStore();
 
-    async function addFunds(fund) {
+    async function addFunds(fund, transaction_id) {
         try {
             loading.value = true;
             if (!fund || isNaN(fund) || fund <= 0) {
@@ -24,7 +24,8 @@ export const useTransactionStore = defineStore('transaction', () => {
     
             const response = await api.post('/funds/transaction', { 
                 action: "deposit", 
-                amount: fund 
+                amount: fund,
+                transaction_id: transaction_id
             });
     
             loading.value = false;

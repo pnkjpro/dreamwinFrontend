@@ -82,6 +82,18 @@
             />
           </div>
           <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2" for="transaction-id">
+              Transaction ID:
+            </label>
+            <input 
+              type="text" 
+              id="transaction-id" 
+              v-model="transactionId" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              placeholder="Enter transaction id"
+            />
+          </div>
+          <!-- <div class="mb-4">
           <label class="block text-gray-700 text-sm font-medium mb-2" for="account-number">
             From UPI ID:
           </label>
@@ -115,7 +127,9 @@
                 <span v-else>Save</span>
             </button>
           </div>
-        </div>
+        </div> -->
+
+
         </div>
         
         <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col items-center">
@@ -152,9 +166,9 @@
             Scan this QR to make payment and submit done button and your fund will be reflected in your account within 3 hours
           </p>
           <button 
-            class="bg-green-500 text-white py-2 px-6 rounded-lg font-medium w-full"
+            class="bg-green-500 text-white py-2 px-6 rounded-lg font-medium w-full disabled:bg-gray-400 disabled:cursor-not-allowed"
             @click="submitAddFund"
-            :disabled="transactionStore.loading"
+            :disabled="transactionStore.loading || !transactionId || !addFundAmount"
           >
           <div v-if="transactionStore.loading" class="flex items-center justify-center">
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -323,6 +337,7 @@ onMounted(() => {
 
 // Add Fund state
 const addFundAmount = ref('');
+const transactionId = ref('');
 
 // Withdraw Fund state
 const withdrawAmount = ref('');
@@ -336,13 +351,14 @@ const availableBalance = computed(() => user.value.funds || 0);
 // Methods
 const submitAddFund = async() => {
   if (addFundAmount.value > 0) {
-    const result = await transactionStore.addFunds(addFundAmount.value);
+    const result = await transactionStore.addFunds(addFundAmount.value, transactionId.value);
     if(result.success){
       toast.success(result.message);
     }else{
       toast.error(result.message);
     }
     addFundAmount.value = '';
+    transactionId.value = '';
   } else {
     toast.error('Please enter an amount');
   }
