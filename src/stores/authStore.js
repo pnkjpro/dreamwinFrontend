@@ -2,11 +2,16 @@ import { defineStore } from 'pinia';
 import { ref, reactive } from 'vue';
 import axios from 'axios';
 import api from '@/plugins/axios';
+import { useToast } from 'vue-toastification';
+import { useRouter } from 'vue-router';
 
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null);
   const loading = ref(false);
+  const toast = useToast();
+  const verifyEmail = ref('');
+  const router = useRouter();
   const error = ref(null);
   const token = ref(localStorage.getItem('authToken'));
 
@@ -31,9 +36,10 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true;
     try {
       const response = await api.post('/users/create', userData.value);
-      user.value = response.data.data.user;
-      token.value = response.data.data.token;
-      localStorage.setItem('authToken', response.data.data.token);
+      verifyEmail.value = response.data.data.email;
+      // user.value = response.data.data.user;
+      // token.value = response.data.data.token;
+      // localStorage.setItem('authToken', response.data.data.token);
       loading.value = false;
       return {
           success: response.data.success,
@@ -52,21 +58,30 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await axios.get(`${import.meta.env.BASE_API}/sanctum/csrf-cookie`);
       const response = await api.post('/users/login', credentials);
-      user.value = response.data.data.user;
-      token.value = response.data.data.token;
-      localStorage.setItem('authToken', response.data.data.token);
-      loading.value = false;
-            return {
-                success: response.data.success,
-                message: response.data.message
-            }
-        } catch (error) {
-            loading.value = false;
-            console.error("Error login user:", error);
-            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
-
-            return { success: false, message: errorMessage };
+      if(response.data.data?.user?.email_verified_at == null){
+        const result = await sendOtp(response.data.data.user.email);
+        if(!result.success){
+          toast.error(result.message);
+          return;
         }
+      } else {
+        user.value = response.data.data.user;
+        token.value = response.data.data.token;
+        localStorage.setItem('authToken', response.data.data.token);
+      }
+      loading.value = false;
+      return {
+          success: response.data.success,
+          message: response.data.message,
+          isVerified: response.data.data?.user?.email_verified_at == null ? false : true
+      }
+    } catch (error) {
+        loading.value = false;
+        console.error("Error login user:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+        return { success: false, message: errorMessage };
+    }
   }
 
   async function logout() {
@@ -127,12 +142,57 @@ export const useAuthStore = defineStore('auth', () => {
         }
   }
 
+  async function sendOtp(email){
+    try{
+      loading.value = true;
+      const response = await api.post('/users/otp/send', {email: email});
+      verifyEmail.value = email;
+      loading.value = false;
+      return {
+        success: response.data.success,
+        message: response.data.message
+      }
+    } catch (error) {
+        loading.value = false;
+        console.error("Error sending OTP:", error);
+        const errorMessage = error.response?.data?.message || "Error sending OTP";
+
+        return { success: false, message: errorMessage };
+    }
+  }
+
+  async function verifyOtp(body){
+    try{
+      loading.value = true;
+      const response = await api.post('/users/otp/verify', body);
+      if(response.data.success){
+        user.value = response.data.data.user;
+        token.value = response.data.data.token;
+        localStorage.setItem('authToken', response.data.data.token);
+      }
+      loading.value = false;
+      return {
+        success: response.data.success,
+        message: response.data.message
+      }
+    } catch (error) {
+        loading.value = false;
+        console.error("Error sending OTP:", error);
+        const errorMessage = error.response?.data?.message || "Error sending OTP";
+
+        return { success: false, message: errorMessage };
+    }
+  }
+
   return { 
     user, 
     loading, 
     error, 
     token,
-    register, 
+    verifyEmail,
+    register,
+    sendOtp,
+    verifyOtp, 
     login, 
     logout, 
     fetchUser,

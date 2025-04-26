@@ -41,6 +41,18 @@ const router = createRouter({
           name: 'Register',
           component: () => import('@/pages/Auth/Register.vue'),
           meta: { guestOnly: true, showChatbot: true }
+        },
+        {
+          path: 'password/reset',
+          name: 'ResetPassword',
+          component: () => import('@/pages/Auth/ResetPassword.vue'),
+          meta: { guestOnly: true }
+        },
+        {
+          path: 'otp/verify',
+          name: 'OtpVerify',
+          component: () => import('@/pages/Auth/VerifyOtp.vue'),
+          meta: { guestOnly: true }
         }
       ]
     },

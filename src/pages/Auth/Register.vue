@@ -119,7 +119,7 @@
     </div>
     
     <!-- Register Option -->
-    <div @click="navigateToLogin" class="mt-8 mb-12 text-white text-lg">
+    <div @click="navigateTo('/auth/login')" class="mt-8 mb-12 text-white text-lg">
       Already have an account? <span class="text-orange-400 font-bold">Login Now</span>
     </div>
   </div>
@@ -223,15 +223,11 @@ const handleRegistration = async () => {
     return;
   }
 
-  navigateToHome();
+  navigateTo('/auth/otp/verify');
 };
 
-const navigateToHome = () => {
-  router.push('/home');
-}
-
-const navigateToLogin = () => {
-  router.push('/auth/login');
+const navigateTo = (path) => {
+  router.push(path);
 }
 
 const showPassword = ref(false);

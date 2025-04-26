@@ -61,7 +61,7 @@
                 <span class="ml-2 text-gray-700">Stay Logged In</span>
               </label>
             </div>
-            <!-- <a href="#" class="text-purple-500 hover:underline">Forgot Password?</a> -->
+            <a href="#" @click="navigateTo('/auth/password/reset')" class="text-purple-500 hover:underline">Forgot Password?</a>
           </div>
           
           <button 
@@ -100,7 +100,7 @@
       </div> -->
       
       <!-- Register Option -->
-      <div @click="navigateToRegister" class="mt-8 mb-12 text-white text-lg">
+      <div @click="navigateTo('/auth/register')" class="mt-8 mb-12 text-white text-lg">
         Don't you have an account? <span class="text-orange-400 font-bold">Register Now</span>
       </div>
     </div>
@@ -137,18 +137,27 @@
   
   const handleLogin = async() => {
     const result = await authStore.login({login: email.value, password: password.value})
+    console.log("loign result", result);
     if(!result.success){
       toast.error(result.message);
     } else {
-      navigateToHome();
+      if(result.isVerified){
+        navigateTo('/home');
+      } else {
+        navigateTo('/auth/otp/verify');
+      }
     }
   };
 
-  const navigateToRegister = () => {
-    router.push('/auth/register');
-  }
+  // const navigateToRegister = () => {
+  //   router.push('/auth/register');
+  // }
 
-  const navigateToHome = () => {
-  router.push("/home");
-}
+//   const navigateToHome = () => {
+//   router.push("/home");
+// }
+
+  const navigateTo = (path) => {
+    router.push(path);
+  }
   </script>
