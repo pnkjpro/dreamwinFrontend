@@ -61,7 +61,7 @@
                 <span class="ml-2 text-gray-700">Stay Logged In</span>
               </label>
             </div>
-            <a href="#" @click="navigateTo('/auth/password/reset')" class="text-purple-500 hover:underline">Forgot Password?</a>
+            <div @click="navigateTo('/auth/password/forgot')" class="text-purple-500 hover:underline">Forgot Password?</div>
           </div>
           
           <button 
@@ -129,6 +129,7 @@
   const toast = useToast();
 
   const authStore = useAuthStore();
+  const { verificationLabel } = storeToRefs(authStore);
   
   // Methods
   const togglePassword = () => {
@@ -137,25 +138,17 @@
   
   const handleLogin = async() => {
     const result = await authStore.login({login: email.value, password: password.value})
-    console.log("loign result", result);
     if(!result.success){
       toast.error(result.message);
     } else {
       if(result.isVerified){
         navigateTo('/home');
       } else {
+         verificationLabel.value = 'verify_email';
         navigateTo('/auth/otp/verify');
       }
     }
   };
-
-  // const navigateToRegister = () => {
-  //   router.push('/auth/register');
-  // }
-
-//   const navigateToHome = () => {
-//   router.push("/home");
-// }
 
   const navigateTo = (path) => {
     router.push(path);

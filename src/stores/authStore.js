@@ -11,6 +11,7 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false);
   const toast = useToast();
   const verifyEmail = ref('');
+  const verificationLabel = ref('');
   const router = useRouter();
   const error = ref(null);
   const token = ref(localStorage.getItem('authToken'));
@@ -37,6 +38,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await api.post('/users/create', userData.value);
       verifyEmail.value = response.data.data.email;
+      verificationLabel.value = 'verify_email';
       // user.value = response.data.data.user;
       // token.value = response.data.data.token;
       // localStorage.setItem('authToken', response.data.data.token);
@@ -59,7 +61,8 @@ export const useAuthStore = defineStore('auth', () => {
       await axios.get(`${import.meta.env.BASE_API}/sanctum/csrf-cookie`);
       const response = await api.post('/users/login', credentials);
       if(response.data.data?.user?.email_verified_at == null){
-        const result = await sendOtp(response.data.data.user.email);
+        verificationLabel.value = 'verify_email';
+        const result = await sendOtp({email: response.data.data.user.email, label: verificationLabel.value});
         if(!result.success){
           toast.error(result.message);
           return;
@@ -111,7 +114,6 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await api.get('/users/user');
       user.value = response.data.user;
-      console.log("fetched user data", user.value);
       return user.value;
     } catch (err) {
       user.value = null;
@@ -142,11 +144,11 @@ export const useAuthStore = defineStore('auth', () => {
         }
   }
 
-  async function sendOtp(email){
+  async function sendOtp(body){
     try{
       loading.value = true;
-      const response = await api.post('/users/otp/send', {email: email});
-      verifyEmail.value = email;
+      const response = await api.post('/users/otp/send', body);
+      verifyEmail.value = body.email;
       loading.value = false;
       return {
         success: response.data.success,
@@ -184,15 +186,35 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function resetPassword(body){
+    try{
+      loading.value = true;
+      const response = await api.post('/users/password/reset', body);
+      loading.value = false;
+      return {
+        success: response.data.success,
+        message: response.data.message
+      }
+    } catch (error) {
+        loading.value = false;
+        console.error("Error sending OTP:", error);
+        const errorMessage = error.response?.data?.message || "Error sending OTP";
+
+        return { success: false, message: errorMessage };
+    }
+  }
+
   return { 
     user, 
     loading, 
     error, 
     token,
     verifyEmail,
+    verificationLabel,
     register,
     sendOtp,
     verifyOtp, 
+    resetPassword,
     login, 
     logout, 
     fetchUser,

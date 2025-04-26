@@ -85,7 +85,7 @@
       
       <!-- Back Option -->
       <div @click="goBack" class="mt-8 mb-12 text-white text-lg cursor-pointer">
-        <span class="text-orange-400 font-bold">← Back to login</span>
+        <span class="text-orange-400 font-bold">← Back to Login</span>
       </div>
     </div>
   </template>
@@ -101,7 +101,7 @@ import { storeToRefs } from 'pinia';
   const toast = useToast();
   const route = useRoute();
   const authStore = useAuthStore();
-  const { verifyEmail } = storeToRefs(authStore);
+  const { verifyEmail, verificationLabel } = storeToRefs(authStore);
   
   // OTP inputs
   const otpLength = 6;
@@ -159,37 +159,40 @@ import { storeToRefs } from 'pinia';
       
       if (!verifyEmail.value) {
         toast.error('Email is missing. Please go back to login.');
-        router.push('/auth/password/reset')
+        router.push('/auth/password/forgot')
         return;
       }
       
-      const result = await authStore.verifyOtp({otp: otp, email: verifyEmail.value});
+      const result = await authStore.verifyOtp({otp: otp, email: verifyEmail.value, label: verificationLabel.value});
       if(!result.success){
         toast.error(result.message);
         return;
       }
-      
-      router.push({ name: 'Home' });
+      if(verificationLabel.value === 'reset_password'){
+        router.push({ name: 'ResetPassword' });
+      } else {
+        router.push({ name: 'Home' });
+      }
   };
   
   // Resend OTP
   const resendOTP = async () => {
       if (!verifyEmail.value) {
         toast.error('Email is missing. Please go back to login.');
-        router.push('/auth/password/reset');
+        router.push('/auth/password/forgot');
         return;
       }
-      // const result = await authStore.sendOtp(verifyEmail.value);
-      // if(!result.success){
-      //   toast.error(result.message);
-      //   return;
-      // }
-      // startCountdown();
+      const result = await authStore.sendOtp({email: verifyEmail.value, label: verificationLabel.value});
+      if(!result.success){
+        toast.error(result.message);
+        return;
+      }
+      startCountdown();
   };
   
   // Go back to login page
   const goBack = () => {
-    router.push({ name: 'ResetPassword' });
+    router.push({ name: 'Login' });
   };
   
   // Focus first input on mount

@@ -43,10 +43,16 @@ const router = createRouter({
           meta: { guestOnly: true, showChatbot: true }
         },
         {
+          path: 'password/forgot',
+          name: 'ForgotPassword',
+          component: () => import('@/pages/Auth/ForgotPassword.vue'),
+          // meta: { guestOnly: true }
+        },
+        {
           path: 'password/reset',
           name: 'ResetPassword',
           component: () => import('@/pages/Auth/ResetPassword.vue'),
-          meta: { guestOnly: true }
+          meta: { requiresAuth: true }
         },
         {
           path: 'otp/verify',
@@ -302,9 +308,9 @@ router.beforeResolve(async (to, from, next) => {
     }
   }
 
-  if (!from.name && to.name !== 'Home' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
-    return next({ name: 'Home' });
-  }
+  // if (!from.name && to.name !== 'Home' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
+  //   return next({ name: 'Home' });
+  // }
   
   
   const isAuthenticated = !!authStore.user;
