@@ -151,7 +151,7 @@
             <div class="text-sm font-medium text-gray-700 mb-1">UPI ID:</div>
             <div class="flex w-full">
               <div class="flex-1 bg-gray-100 p-2 rounded-l-md truncate">
-                dprasadpandey0@okhdfcbank
+                7985890675@okbizaxis
               </div>
               <button
                 @click="copyUpiId"
@@ -433,7 +433,7 @@ const downloadQRCode = () => {
 
 // Function to copy UPI ID to clipboard
 const copyUpiId = () => {
-  const upiId = 'dprasadpandey0@okhdfcbank';
+  const upiId = '7985890675@okbizaxis';
   navigator.clipboard.writeText(upiId)
     .then(() => {
       hasCopied.value = true;

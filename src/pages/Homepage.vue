@@ -239,16 +239,33 @@ const router = useRouter();
 const toast = useToast();
 const config = inject('config');
 
+const menuOpen = ref(false);
+const currentIndex = ref(0);
+
+const mainStore = useMainStore();
+const authStore = useAuthStore();
+const transactionStore = useTransactionStore();
+
+const { contests, categories, banners, loading, totalCount, hasShownVideo } = storeToRefs(mainStore);
+const { user } = storeToRefs(authStore);
+const { fundAction } = storeToRefs(transactionStore);
+
+const hasMoreLoad = computed(()=>{
+  if(totalCount.value>contests.value.length){
+    return true
+  }
+  return false
+})
+
+// ================ load intro video =========================
 // Video preloader settings
 const showPreloader = ref(false);
 const videoSource = ref('/videos/himpri_intro.mp4'); // Replace with actual path to your 2-sec video
 const videoTimeout = ref(null);
-const SESSION_KEY = 'hasShownIntroVideo';
 
 // Check if we've shown the intro video in this session
 const checkPreloaderStatus = () => {
-  const hasShownVideo = localStorage.getItem(SESSION_KEY);
-  if (!hasShownVideo) {
+  if (!hasShownVideo.value) {
     showPreloader.value = true;
     // Set a fallback timeout to hide preloader after 3 seconds
     // in case the video doesn't trigger the ended event
@@ -261,7 +278,7 @@ const checkPreloaderStatus = () => {
 const hidePreloader = () => {
   showPreloader.value = false;
   // Mark that we've shown the video for this session
-  localStorage.setItem(SESSION_KEY, 'true');
+  hasShownVideo.value = true;
   if (videoTimeout.value) {
     clearTimeout(videoTimeout.value);
   }
@@ -271,24 +288,7 @@ const onVideoEnded = () => {
   // Hide preloader when video ends
   hidePreloader();
 };
-
-const menuOpen = ref(false);
-const currentIndex = ref(0);
-
-const mainStore = useMainStore();
-const authStore = useAuthStore();
-const transactionStore = useTransactionStore();
-
-const { contests, categories, banners, loading, totalCount } = storeToRefs(mainStore);
-const { user } = storeToRefs(authStore);
-const { fundAction } = storeToRefs(transactionStore);
-
-const hasMoreLoad = computed(()=>{
-  if(totalCount.value>contests.value.length){
-    return true
-  }
-  return false
-})
+// ===========================================================
 
 const handleFunds = (fundType) => {
   fundAction.value = fundType;
