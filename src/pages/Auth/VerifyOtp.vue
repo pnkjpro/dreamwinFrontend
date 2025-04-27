@@ -26,7 +26,7 @@
     <!-- OTP Verification Form -->
     <div class="bg-white rounded-3xl p-8 w-11/12 max-w-md shadow-lg">
       <h1 class="text-4xl font-bold text-center text-gray-800 mb-2">Verify OTP</h1>
-      <p class="text-xl text-center text-gray-700 mb-8">Please enter the OTP sent to your email</p>
+      <p class="text-xl text-center text-gray-700 mb-8">Please enter the OTP sent to your email, check Spam Folder also.</p>
       
       <form @submit.prevent="verifyOTP">
         <div class="mb-6">
