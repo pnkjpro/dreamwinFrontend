@@ -62,8 +62,8 @@
                 <td class="py-3 px-4 text-gray-800">{{ quiz.spot_limit }}</td>
                 <td class="py-3 px-4 text-gray-800">{{ quiz.entry_fees }}</td>
                 <td class="py-3 px-4 text-gray-800">{{ quiz.prize_money }}</td>
-                <td class="py-3 px-4 text-gray-800">{{ quiz.start_time }}</td>             
-                <td class="py-3 px-4 text-gray-800">{{ quiz.end_time }}</td>
+                <td class="py-3 px-4 text-gray-800">{{ useHelperStore().formatDate(quiz.start_time) }}</td>             
+                <td class="py-3 px-4 text-gray-800">{{ useHelperStore().formatDate(quiz.end_time) }}</td>
                 <td class="py-3 px-4 text-gray-800">{{ quiz.category.name }}</td>             
                 <td class="py-3 px-4 text-gray-800">{{ quiz.quiz_timer }}</td>             
                 <td class="py-3 px-4 text-gray-800">{{ quiz.winners }}</td>             
@@ -116,6 +116,7 @@ import { useToast } from "vue-toastification";
 import { useRouter } from 'vue-router';
 import { useMainStore } from '@/stores/mainStore';
 import { storeToRefs } from 'pinia';
+import { useHelperStore } from '@/stores/helperStore';
 
 const adminStore = useAdminStore();
 const mainStore = useMainStore();

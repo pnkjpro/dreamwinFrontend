@@ -76,15 +76,15 @@
             <div class="space-y-3">
               <div>
                 <p class="text-sm font-medium text-gray-500">Start Time</p>
-                <p class="text-gray-900">{{ formatDate(usersByquiz.start_time) }}</p>
+                <p class="text-gray-900">{{ useHelperStore().formatDate(usersByquiz.start_time) }}</p>
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-500">End Time</p>
-                <p class="text-gray-900">{{ formatDate(usersByquiz.end_time) }}</p>
+                <p class="text-gray-900">{{ useHelperStore().formatDate(usersByquiz.end_time) }}</p>
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-500">Quiz Over At</p>
-                <p class="text-gray-900">{{ formatDate(usersByquiz.quiz_over_at) }}</p>
+                <p class="text-gray-900">{{ useHelperStore().formatDate(usersByquiz.quiz_over_at) }}</p>
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-500">Duration</p>
@@ -282,8 +282,10 @@
   <script setup>
   import { ref, computed, onMounted } from 'vue';
   import { useAdminStore } from '@/stores/adminStore';
-import { storeToRefs } from 'pinia';
-import { useRoute, useRouter } from 'vue-router';
+  import { storeToRefs } from 'pinia';
+  import { useRoute, useRouter } from 'vue-router';
+  import { useHelperStore } from '@/stores/helperStore';
+
   
   const adminStore = useAdminStore();
   const { usersByquiz } = storeToRefs(adminStore);
@@ -314,19 +316,6 @@ import { useRoute, useRouter } from 'vue-router';
     const totalScore = completedResponses.reduce((sum, response) => sum + response.score, 0);
     return totalScore / completedResponses.length;
   });
-  
-  // Helper functions
-  function formatDate(timestamp) {
-    if (!timestamp) return '--';
-    const date = new Date(timestamp * 1000);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  }
   
   function calculateDuration(startTime, endTime) {
     if (!startTime || !endTime || startTime === 0 || endTime === 0) return '--';
