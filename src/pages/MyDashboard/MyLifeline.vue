@@ -43,7 +43,7 @@
               ₹ {{ lifelineDetails[0]?.cost || '...' }} each
             </span>
             <span class="ml-3 text-xs text-green-600 font-medium">
-              Available: {{ lifelines[0]?.quantity || 0 }}
+              Available: {{ lifelineMap[1]?.quantity || 0 }}
             </span>
           </div>
         </div>
@@ -62,7 +62,7 @@
               ₹ {{ lifelineDetails[1]?.cost || '...' }} each
             </span>
             <span class="ml-3 text-xs text-green-600 font-medium">
-              Available: {{ lifelines[1]?.quantity || 0 }}
+              Available: {{ lifelineMap[2]?.quantity || 0 }}
             </span>
           </div>
         </div>
@@ -81,7 +81,7 @@
               ₹ {{ lifelineDetails[2]?.cost || '...' }} each
             </span>
             <span class="ml-3 text-xs text-green-600 font-medium">
-              Available: {{ lifelines[2]?.quantity || 0 }}
+              Available: {{ lifelineMap[3]?.quantity || 0 }}
             </span>
           </div>
         </div>
@@ -202,6 +202,14 @@ onMounted(()=>{
 const navigateTo = (link) => {
   router.push(`/${link}`)
 }
+
+const lifelineMap = computed(() => {
+  return lifelines.value.reduce((acc, item) => {
+    acc[item.lifeline_id] = item;
+    return acc;
+  }, {});
+});
+
 
 // Purchase form state
 const selectedLifeline = ref('');

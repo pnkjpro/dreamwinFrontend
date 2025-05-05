@@ -365,7 +365,7 @@ const submitAddFund = async() => {
 };
 
 const requestWithdrawal = async() => {
-  if (withdrawAmount.value > 50 && withdrawAmount.value <= availableBalance.value) {
+  if (withdrawAmount.value >= 50 && withdrawAmount.value <= availableBalance.value) {
     const result = await transactionStore.withdrawFunds(withdrawAmount.value);
     if(result.success){
       toast.success(result.message);
