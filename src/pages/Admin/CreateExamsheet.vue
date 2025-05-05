@@ -645,7 +645,7 @@ const createQuiz = async() => {
 
   // Append quiz questions
   quiz.value.forEach((question, i) => {
-    formData.append(`quizContents[${i}][id]`, question.id);
+    formData.append(`quizContents[${i}][id]`, i+1);
     formData.append(`quizContents[${i}][question]`, question.question);
     
     question.options.forEach((option, j) => {

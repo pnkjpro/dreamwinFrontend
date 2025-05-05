@@ -83,7 +83,7 @@
           </div>
           <div class="mb-4">
             <label class="block text-gray-700 text-sm font-medium mb-2" for="transaction-id">
-              Transaction ID:
+              Transaction ID/UTR Number:
             </label>
             <input 
               type="text" 
