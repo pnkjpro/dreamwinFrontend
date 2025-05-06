@@ -213,6 +213,12 @@ const router = createRouter({
           meta: { requiresAdminAuth: true }
         },
         {
+          path: 'bot/list',
+          name: 'BotList',
+          component: () => import('@/pages/Admin/BotManagement.vue'),
+          meta: { requiresAdminAuth: true }
+        },
+        {
           path: 'quiz/list',
           name: 'QuizList',
           component: () => import('@/pages/Admin/QuizList.vue'),
