@@ -71,7 +71,7 @@
           <button 
             type="submit" 
             class="bg-blue-500 text-white py-2 px-6 rounded-lg font-medium w-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="transactionStore.loading || amount < 100"
+            :disabled="transactionStore.loading || amount < 1"
           >
             <div v-if="transactionStore.loading" class="flex items-center justify-center">
               <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
