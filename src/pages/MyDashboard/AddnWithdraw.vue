@@ -33,7 +33,7 @@
       <div class="payment-container bg-white rounded-lg p-4 shadow-sm">
         <div class="text-lg font-medium mb-4">Make Payment</div>
         
-        <form @submit.prevent="createOrder" v-if="!showPaymentSuccess">
+        <form @submit.prevent="createOrder" v-if="!transactionStore.showPaymentSuccess">
           <div class="mb-4">
             <label class="block text-gray-700 text-sm font-medium mb-2" for="amount">
               Amount (₹)
@@ -71,9 +71,9 @@
           <button 
             type="submit" 
             class="bg-blue-500 text-white py-2 px-6 rounded-lg font-medium w-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="isProcessing || amount < 100"
+            :disabled="transactionStore.loading || amount < 100"
           >
-            <div v-if="isProcessing" class="flex items-center justify-center">
+            <div v-if="transactionStore.loading" class="flex items-center justify-center">
               <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -85,11 +85,11 @@
         </form>
         
         <!-- Payment Success Message -->
-        <div v-if="showPaymentSuccess" class="payment-success text-center p-6">
+        <div v-if="transactionStore.showPaymentSuccess" class="payment-success text-center p-6">
           <div class="success-icon mb-4 text-5xl text-green-500">✓</div>
           <h3 class="text-xl font-bold mb-2">Payment Successful!</h3>
           <p class="mb-2">Your payment has been processed successfully.</p>
-          <p class="mb-4 text-gray-600">Payment ID: {{ paymentDetails.razorpay_payment_id }}</p>
+          <p class="mb-4 text-gray-600">Payment ID: {{ paymentDetails.order_id }}</p>
           <button 
             class="bg-blue-500 text-white py-2 px-6 rounded-lg font-medium"
             @click="resetPayment"
@@ -271,36 +271,19 @@ const createOrder = async () => {
     toast.error("Amount should not be less than Rs 100");
     return;
   }
-  
-  isProcessing.value = true;
   error.value = '';
-  
-  try {
-    const result = await transactionStore.payWithRazorpay(amount.value);
-    
-    if (!result.success) {
-      error.value = result.message;
-      toast.error(result.message);
-    } else {
-      // Mock successful payment for demo
-      paymentDetails.value = {
-        razorpay_payment_id: 'pay_' + Math.random().toString(36).substr(2, 9),
-        ...result.data
-      };
-      showPaymentSuccess.value = true;
-      toast.success("Payment is successfully processed");
-    }
-  } catch (err) {
-    error.value = err.message || "Payment failed. Please try again.";
-    toast.error(error.value);
-  } finally {
-    isProcessing.value = false;
+  const result = await transactionStore.payWithRazorpay(amount.value);
+  if (!result.success) {
+    toast.error(result.message);
+  } else {
+    paymentDetails.value.order_id = result.data.order_id;
+    toast.success("Payment is successfully processed");
   }
 };
 
 // Reset payment form
 const resetPayment = () => {
-  showPaymentSuccess.value = false;
+  transactionStore.showPaymentSuccess = false;
   paymentDetails.value = {};
   amount.value = 100;
   error.value = '';

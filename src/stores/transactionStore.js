@@ -11,6 +11,7 @@ export const useTransactionStore = defineStore('transaction', () => {
     const lifeline_transactions = ref([]);
     const lifeline_histories = ref([]);
     const error = ref(null);
+    const showPaymentSuccess = ref(false);
     const toast = useToast();
     const fundAction = ref("");
     const mainStore = useMainStore();
@@ -75,7 +76,8 @@ export const useTransactionStore = defineStore('transaction', () => {
             loading.value = false;
             return {
                 success: response.data.success,
-                message: response.data.message
+                message: response.data.message,
+                data: response.data.data.order_id
             }
         } catch (error) {
             loading.value = false;
@@ -94,7 +96,8 @@ export const useTransactionStore = defineStore('transaction', () => {
                 razorpay_order_id: razorpayResponse.razorpay_order_id,
                 razorpay_signature: razorpayResponse.razorpay_signature
               });
-            if(result.data.success){
+            if(response.data.success){
+                showPaymentSuccess.value = true;
                 toast.success(response.data.message);
             } else {
                 toast.error(response.data.message);
@@ -251,6 +254,7 @@ export const useTransactionStore = defineStore('transaction', () => {
         error,
         transactions,
         lifeline_transactions,
+        showPaymentSuccess,
         lifeline_histories
     };
 });
