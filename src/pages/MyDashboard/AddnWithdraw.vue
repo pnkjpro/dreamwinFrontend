@@ -43,7 +43,7 @@
               id="amount" 
               v-model="amount" 
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              min="100" 
+              min="1" 
               placeholder="Enter amount"
               required
             />
@@ -267,7 +267,7 @@ const quickAmounts = [50, 100, 200, 500, 1000, 2000];
 
 // Create Razorpay order
 const createOrder = async () => {
-  if (amount.value < 100) {
+  if (amount.value < 1) {
     toast.error("Amount should not be less than Rs 100");
     return;
   }
