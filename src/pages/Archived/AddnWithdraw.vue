@@ -28,83 +28,159 @@
       </button>
     </div>
 
-    <!-- Add Fund Tab (Razorpay Integration) -->
+    <!-- Add Fund Tab (Updated with downloadable QR) -->
     <div v-if="activeTab === 'deposit'" class="p-4 flex flex-col gap-6">
-      <div class="payment-container bg-white rounded-lg p-4 shadow-sm">
-        <div class="text-lg font-medium mb-4">Make Payment</div>
-        
-        <form @submit.prevent="createOrder" v-if="!showPaymentSuccess">
+        <div v-if="!user.upi_id" class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-4">
+          <div class="flex items-center">
+            <div class="ml-3">
+              <p class="text-yellow-700 font-medium">
+                Please add your UPI ID to enable Add funds
+              </p>
+              <div class="mt-2">
+                <div class="mb-4">
+                  <label class="block text-gray-700 text-sm font-medium mb-2" for="upi-id">
+                    UPI ID
+                  </label>
+                  <input 
+                    type="text" 
+                    id="upi-id" 
+                    v-model="newUpiId" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="Enter your UPI ID"
+                  />
+                </div>
+                <button 
+                  class="bg-orange-500 text-white py-2 px-6 rounded-lg font-medium w-full"
+                  @click="updateUpiId"
+                  :disabled="authStore.loading"
+                >
+                  <div v-if="authStore.loading" class="flex items-center justify-center">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Updating UPI ID...
+                  </div>
+                  <span v-else>Update UPI ID</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else class="bg-white rounded-lg p-4 shadow-sm">
+          <div class="text-lg font-medium mb-2">Add Funds to Your Account</div>
           <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-medium mb-2" for="amount">
-              Amount (₹)
+            <label class="block text-gray-700 text-sm font-medium mb-2" for="payment-amount">
+              Payment Amount (₹)
             </label>
             <input 
               type="number" 
-              id="amount" 
-              v-model="amount" 
+              id="payment-amount" 
+              v-model="addFundAmount" 
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              min="100" 
               placeholder="Enter amount"
-              required
             />
-            <span class="text-xs text-gray-500 mt-1 block">Minimum amount: ₹100</span>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2" for="transaction-id">
+              Transaction ID/UTR Number:
+            </label>
+            <input 
+              type="text" 
+              id="transaction-id" 
+              v-model="transactionId" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              placeholder="Enter transaction id"
+            />
+          </div>
+          <!-- <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-medium mb-2" for="account-number">
+            From UPI ID:
+          </label>
+          <div class="flex items-center gap-2">
+            <input 
+              type="text" 
+              id="account-number" 
+              v-model="upi_id" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              :disabled="!isEditingUPI"
+            />
+            <button 
+              v-if="!isEditingUPI" 
+              class="text-blue-500 underline" 
+              @click="isEditingUPI = true"
+            >
+              Edit
+            </button>
+            <button 
+              v-if="isEditingUPI" 
+              class="bg-green-500 text-white px-4 py-1 rounded" 
+              @click="saveUPI"
+            >
+            <div v-if="authStore.loading" class="flex items-center justify-center">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Saving...
+                </div>
+                <span v-else>Save</span>
+            </button>
+          </div>
+        </div> -->
+
+
+        </div>
+        
+        <div class="bg-white rounded-lg p-4 shadow-sm flex flex-col items-center">
+          <div class="font-medium text-center mb-3">Scan QR Code to Make Payment</div>
+          <div class="bg-gray-100 p-3 rounded-lg w-84 h-84 mb-3 flex items-center justify-center relative">
+            <!-- QR Code with download overlay -->
+            <img ref="qrCodeImg" class="w-3/4" src="/images/QRcode.jpeg" alt="QR code"/>
+            <button 
+              @click="downloadQRCode" 
+              class="absolute bottom-3 right-3 bg-white rounded-full p-2 shadow-md"
+              title="Download QR Code"
+            >
+              <font-awesome-icon icon="download" class="text-gray-700" />
+            </button>
           </div>
           
-          <!-- Quick Amount Options -->
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-medium mb-2">
-              Quick Options:
-            </label>
-            <div class="flex flex-wrap gap-2">
-              <button 
-                type="button"
-                v-for="(value, index) in quickAmounts" 
-                :key="index"
-                @click="amount = value"
-                class="px-4 py-2 border border-gray-300 rounded-md hover:bg-orange-100 hover:border-orange-300 transition-colors"
+          <!-- UPI ID Display & Copy -->
+          <div class="w-full mb-4">
+            <div class="text-sm font-medium text-gray-700 mb-1">UPI ID:</div>
+            <div class="flex w-full">
+              <div class="flex-1 bg-gray-100 p-2 rounded-l-md truncate">
+                7985890675@okbizaxis
+              </div>
+              <button
+                @click="copyUpiId"
+                class="bg-blue-500 text-white px-3 rounded-r-md flex items-center justify-center"
               >
-                ₹{{ value }}
+                <font-awesome-icon :icon="hasCopied ? 'check' : 'copy'" class="text-white" />
               </button>
             </div>
           </div>
           
+          <p class="text-center text-gray-700 text-sm mb-4">
+            Scan this QR to make payment and submit done button and your fund will be reflected in your account within 3 hours
+          </p>
           <button 
-            type="submit" 
-            class="bg-blue-500 text-white py-2 px-6 rounded-lg font-medium w-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="isProcessing || amount < 100"
+            class="bg-green-500 text-white py-2 px-6 rounded-lg font-medium w-full disabled:bg-gray-400 disabled:cursor-not-allowed"
+            @click="submitAddFund"
+            :disabled="transactionStore.loading || !transactionId || !addFundAmount"
           >
-            <div v-if="isProcessing" class="flex items-center justify-center">
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Processing...
-            </div>
-            <span v-else>Pay Now</span>
+          <div v-if="transactionStore.loading" class="flex items-center justify-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Requesting Add Funds
+          </div>
+          <span v-else>Done</span>
           </button>
-        </form>
-        
-        <!-- Payment Success Message -->
-        <div v-if="showPaymentSuccess" class="payment-success text-center p-6">
-          <div class="success-icon mb-4 text-5xl text-green-500">✓</div>
-          <h3 class="text-xl font-bold mb-2">Payment Successful!</h3>
-          <p class="mb-2">Your payment has been processed successfully.</p>
-          <p class="mb-4 text-gray-600">Payment ID: {{ paymentDetails.razorpay_payment_id }}</p>
-          <button 
-            class="bg-blue-500 text-white py-2 px-6 rounded-lg font-medium"
-            @click="resetPayment"
-          >
-            Make Another Payment
-          </button>
-        </div>
-        
-        <!-- Error Message -->
-        <div v-if="error" class="mt-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded">
-          {{ error }}
         </div>
       </div>
-    </div>
-
     <!-- Withdraw Fund Tab -->
     <div v-if="activeTab === 'withdraw'" class="p-4 flex flex-col gap-4">
       <div class="bg-white rounded-lg p-4 shadow-sm">
@@ -244,6 +320,8 @@ library.add(faArrowLeft, faDownload, faCopy, faCheck);
 const activeTab = ref('deposit');
 const router = useRouter();
 const toast = useToast();
+const qrCodeImg = ref(null);
+const hasCopied = ref(false);
 
 const transactionStore = useTransactionStore();
 const authStore = useAuthStore();
@@ -257,54 +335,9 @@ onMounted(() => {
   }
 });
 
-// Razorpay integration state
-const amount = ref(100);
-const isProcessing = ref(false);
-const error = ref('');
-const showPaymentSuccess = ref(false);
-const paymentDetails = ref({});
-const quickAmounts = [50, 100, 200, 500, 1000, 2000];
-
-// Create Razorpay order
-const createOrder = async () => {
-  if (amount.value < 100) {
-    toast.error("Amount should not be less than Rs 100");
-    return;
-  }
-  
-  isProcessing.value = true;
-  error.value = '';
-  
-  try {
-    const result = await transactionStore.payWithRazorpay(amount.value);
-    
-    if (!result.success) {
-      error.value = result.message;
-      toast.error(result.message);
-    } else {
-      // Mock successful payment for demo
-      paymentDetails.value = {
-        razorpay_payment_id: 'pay_' + Math.random().toString(36).substr(2, 9),
-        ...result.data
-      };
-      showPaymentSuccess.value = true;
-      toast.success("Payment is successfully processed");
-    }
-  } catch (err) {
-    error.value = err.message || "Payment failed. Please try again.";
-    toast.error(error.value);
-  } finally {
-    isProcessing.value = false;
-  }
-};
-
-// Reset payment form
-const resetPayment = () => {
-  showPaymentSuccess.value = false;
-  paymentDetails.value = {};
-  amount.value = 100;
-  error.value = '';
-};
+// Add Fund state
+const addFundAmount = ref('');
+const transactionId = ref('');
 
 // Withdraw Fund state
 const withdrawAmount = ref('');
@@ -316,6 +349,21 @@ const isEditingUPI = ref(false);
 const availableBalance = computed(() => user.value.funds || 0);
 
 // Methods
+const submitAddFund = async() => {
+  if (addFundAmount.value > 0) {
+    const result = await transactionStore.addFunds(addFundAmount.value, transactionId.value);
+    if(result.success){
+      toast.success(result.message);
+    }else{
+      toast.error(result.message);
+    }
+    addFundAmount.value = '';
+    transactionId.value = '';
+  } else {
+    toast.error('Please enter an amount');
+  }
+};
+
 const requestWithdrawal = async() => {
   if (withdrawAmount.value >= 50 && withdrawAmount.value <= availableBalance.value) {
     const result = await transactionStore.withdrawFunds(withdrawAmount.value);
@@ -362,19 +410,42 @@ const saveUPI = async() => {
 const navigateToBack = () => {
   router.back();
 };
-</script>
 
-<style scoped>
-.success-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background-color: #d1fae5;
-  margin: 0 auto;
-  color: #10b981;
-  font-size: 32px;
-}
-</style>
+// Function to download QR code image
+const downloadQRCode = () => {
+  if (qrCodeImg.value) {
+    // Create a link element
+    const link = document.createElement('a');
+    // Set the download attribute with filename
+    link.download = 'payment_qr_code.jpeg';
+    // Set the href to the image src
+    link.href = qrCodeImg.value.src;
+    // Append to body, click, and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success('QR Code downloaded successfully');
+  } else {
+    toast.error('Could not download QR Code');
+  }
+};
+
+// Function to copy UPI ID to clipboard
+const copyUpiId = () => {
+  const upiId = '7985890675@okbizaxis';
+  navigator.clipboard.writeText(upiId)
+    .then(() => {
+      hasCopied.value = true;
+      toast.success('UPI ID copied to clipboard');
+      
+      // Reset the copy icon after 2 seconds
+      setTimeout(() => {
+        hasCopied.value = false;
+      }, 2000);
+    })
+    .catch(() => {
+      toast.error('Failed to copy UPI ID');
+    });
+};
+</script>

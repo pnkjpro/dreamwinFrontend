@@ -3,6 +3,7 @@ import { useAuthStore } from "./authStore";
 import { ref } from "vue";
 import { useMainStore } from "./mainStore";
 import api from "@/plugins/axios";
+import { useToast } from "vue-toastification";
 
 export const useTransactionStore = defineStore('transaction', () => {
     const loading = ref(false);
@@ -10,10 +11,12 @@ export const useTransactionStore = defineStore('transaction', () => {
     const lifeline_transactions = ref([]);
     const lifeline_histories = ref([]);
     const error = ref(null);
+    const toast = useToast();
     const fundAction = ref("");
     const mainStore = useMainStore();
-    const { contest } = storeToRefs(mainStore);  
     const authStore = useAuthStore();
+    const { contest } = storeToRefs(mainStore);  
+    const { user } = storeToRefs(authStore);
 
     async function addFunds(fund, transaction_id) {
         try {
@@ -41,6 +44,74 @@ export const useTransactionStore = defineStore('transaction', () => {
             return { success: false, message: errorMessage };
         }
     }
+
+    async function payWithRazorpay(payload){
+        try{
+            loading.value = true;
+            const response = await api.post('/razorpay/order/create', { amount: payload }); // ₹500
+          console.log("response data:",response.data.data);
+            const options = {
+              key: response.data.data.key,
+              amount: response.data.data.amount,
+              currency: response.data.data.currency,
+              name: 'Himpri',
+              description: 'Order Payment',
+              order_id: response.data.data.order_id,
+              handler: function (razorpayResponse) {
+                verifyRazorPayment(razorpayResponse);
+              },
+              prefill: {
+                name: user.value.name,
+                email: user.value.email,
+                contact: user.value.mobile
+              },
+              theme: {
+                color: '#3399cc'
+              }
+            };
+          
+            const rzp = new Razorpay(options);
+            rzp.open();
+            loading.value = false;
+            return {
+                success: response.data.success,
+                message: response.data.message
+            }
+        } catch (error) {
+            loading.value = false;
+            console.error("Error Adding Fund:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+            return { success: false, message: errorMessage };
+        }
+      };
+
+      async function verifyRazorPayment(razorpayResponse){
+        try{
+            loading.value = true;
+            const response = await api.post('razorpay/payment/verify', {
+                razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+                razorpay_order_id: razorpayResponse.razorpay_order_id,
+                razorpay_signature: razorpayResponse.razorpay_signature
+              });
+            if(result.data.success){
+                toast.success(response.data.message);
+            } else {
+                toast.error(response.data.message);
+            }
+            loading.value = false;
+            return {
+                success: response.data.success,
+                message: response.data.message
+            }
+        } catch (error) {
+            loading.value = false;
+            console.error("Error Adding Fund:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+            return { success: false, message: errorMessage };
+        }
+      }
     
 
     async function withdrawFunds(fund){
@@ -171,6 +242,7 @@ export const useTransactionStore = defineStore('transaction', () => {
         getTransactions,
         getLifelineTransactions,
         getLifelineHistories,
+        payWithRazorpay,
         withdrawFunds,
         addFunds,
         joinGame,
