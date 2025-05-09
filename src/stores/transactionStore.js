@@ -98,6 +98,7 @@ export const useTransactionStore = defineStore('transaction', () => {
               });
             if(response.data.success){
                 showPaymentSuccess.value = true;
+                authStore.fetchUser();
                 toast.success(response.data.message);
             } else {
                 toast.error(response.data.message);
