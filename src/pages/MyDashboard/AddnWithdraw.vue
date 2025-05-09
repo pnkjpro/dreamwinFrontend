@@ -89,7 +89,7 @@
           <div class="success-icon mb-4 text-5xl text-green-500">✓</div>
           <h3 class="text-xl font-bold mb-2">Payment Successful!</h3>
           <p class="mb-2">Your payment has been processed successfully.</p>
-          <p class="mb-4 text-gray-600">Payment ID: {{ paymentDetails.order_id }}</p>
+          <p class="mb-4 text-gray-600">Payment ID: {{ order_id }}</p>
           <button 
             class="bg-blue-500 text-white py-2 px-6 rounded-lg font-medium"
             @click="resetPayment"
@@ -259,10 +259,8 @@ onMounted(() => {
 
 // Razorpay integration state
 const amount = ref(100);
-const isProcessing = ref(false);
 const error = ref('');
-const showPaymentSuccess = ref(false);
-const paymentDetails = ref({});
+const order_id = ref("");
 const quickAmounts = [50, 100, 200, 500, 1000, 2000];
 
 // Create Razorpay order
@@ -276,7 +274,7 @@ const createOrder = async () => {
   if (!result.success) {
     toast.error(result.message);
   } else {
-    paymentDetails.value.order_id = result.data.order_id;
+    order_id.value = result.order_id;
     toast.success("Payment is successfully processed");
   }
 };
@@ -284,9 +282,9 @@ const createOrder = async () => {
 // Reset payment form
 const resetPayment = () => {
   transactionStore.showPaymentSuccess = false;
-  paymentDetails.value = {};
   amount.value = 100;
   error.value = '';
+  order_id.value = '';
 };
 
 // Withdraw Fund state

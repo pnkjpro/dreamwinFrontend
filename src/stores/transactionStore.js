@@ -77,7 +77,7 @@ export const useTransactionStore = defineStore('transaction', () => {
             return {
                 success: response.data.success,
                 message: response.data.message,
-                data: response.data.data.order_id
+                order_id: response.data.data.order_id
             }
         } catch (error) {
             loading.value = false;
