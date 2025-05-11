@@ -221,10 +221,12 @@ export const useTransactionStore = defineStore('transaction', () => {
             loading.value = true;
             const params = {page}
             const response = await api.get(`/lifeline/history/list`, {params});
-            if(page === 1){
-                lifeline_histories.value = response.data.data.lifeline_histories;
-            } else {
-                lifeline_histories.value = [...lifeline_histories.value, ...response.data.data.lifeline_histories];
+            if(response.data.data.totalCount > 0){
+                if(page === 1){
+                    lifeline_histories.value = response.data.data.lifeline_histories;
+                } else {
+                    lifeline_histories.value = [...lifeline_histories.value, ...response.data.data.lifeline_histories];
+                }
             }
 
             loading.value = false;
