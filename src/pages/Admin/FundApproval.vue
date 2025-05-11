@@ -26,7 +26,7 @@
               <th>UPI ID</th>
               <th>Action</th>
               <th>Amount</th>
-              <th>Transaction ID</th>
+              <th>RazorPay ID</th>
               <th>Description</th>
               <th>Status</th>
               <th>Actions</th>
@@ -43,7 +43,7 @@
               <td>{{ request.upi_id }}</td>
               <td style="text-transform: capitalize;">{{ request.action }}</td>
               <td>₹{{ request.amount }}</td>
-              <td>{{ request.transaction_id }}</td>
+              <td>{{ request.razorpay_order_id }}</td>
               <td>{{ request.description }}</td>
               <td>
                 <span class="status-badge" :class="'status-' + request.approved_status">
