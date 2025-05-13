@@ -154,9 +154,9 @@ function getContestStatus(startTimestamp, endTimestamp, overTimestamp) {
   const now = new Date();
   
   // Convert timestamps to Date objects
-  const startTime = typeof startTimestamp === 'number' ? fromUnixTime(startTimestamp) : new Date(startTimestamp);
-  const endTime = typeof endTimestamp === 'number' ? fromUnixTime(endTimestamp) : new Date(endTimestamp);
-  const quizOverTime = typeof endTimestamp === 'number' ? fromUnixTime(overTimestamp) : new Date(overTimestamp);
+  const startTime = fromUnixTime(Number(startTimestamp));
+  const endTime = fromUnixTime(Number(endTimestamp));
+  const quizOverTime = fromUnixTime(Number(overTimestamp));
 
   if (now >= quizOverTime) {
     return { isLive: false, text: 'Show Result' }; // Contest has ended

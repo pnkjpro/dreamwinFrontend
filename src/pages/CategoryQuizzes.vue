@@ -127,10 +127,7 @@
   // If it's in milliseconds, you don't need fromUnixTime
   // If it's in seconds (standard Unix timestamp), use fromUnixTime
   
-  const startTime = typeof unixTimestamp === 'number' ? 
-    fromUnixTime(unixTimestamp) : 
-    new Date(unixTimestamp);
-    
+  const startTime = fromUnixTime(Number(unixTimestamp))
   const isLive = now.value >= startTime;
   
   if (isLive) {
