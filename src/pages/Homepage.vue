@@ -94,7 +94,7 @@
                 :style="`box-shadow: 0 10px 15px -3px rgba(${220 + (index * 5) % 35}, ${(80 + index * 10) % 120}, ${50}, 0.4)`">
               <img :src="displayImage(category.icon)" :alt="category.name" class="w-full h-full object-cover" />
             </div>
-            <p class="text-center font-medium text-sm mt-2 max-w-24 text-red-800">{{ category.name }}</p>
+            <p class="text-center font-bold text-sm mt-2 max-w-24 text-black-800">{{ category.name }}</p>
           </div>
         </div>
       </div>
@@ -151,14 +151,14 @@
               <div class="w-3/4 pl-4 flex flex-col justify-between">
                 <!-- Category Badge -->
                 <div class="text-center mb-2">
-                  <span class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-4 py-1 rounded-full text-xs font-medium inline-block shadow-sm">
+                  <span class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-4 py-1 rounded-full text-sm font-bold inline-block shadow-sm">
                     {{ contest.category.name }}
                   </span>
                 </div>
 
                 <!-- Title -->
                 <div class="mb-2">
-                  <h3 class="text-md font-bold text-red-900 truncate">{{ contest.title }}</h3>
+                  <h3 class="text-md font-bold text-black-900 truncate">{{ contest.title }}</h3>
                 </div>
                 
                 <!-- Time indicator on its own row -->
