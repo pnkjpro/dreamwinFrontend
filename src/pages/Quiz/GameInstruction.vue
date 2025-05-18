@@ -72,7 +72,7 @@
       <div class="relative w-full overflow-hidden" style="padding-top: 56.25%;">
         <iframe 
           class="absolute top-0 left-0 w-full h-full"
-          src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+          src="https://www.youtube.com/embed/3uFyxKX6EmY" 
           title="Tech Quiz Live"
           frameborder="0" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 

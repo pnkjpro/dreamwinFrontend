@@ -176,7 +176,7 @@
 
                 <!-- Prize row -->
                 <div class="flex items-center bg-gradient-to-r from-yellow-400 to-orange-300 p-2 rounded-lg shadow-sm">
-                  <span class="text-red-900 font-bold text-sm">MEGA PRIZE</span>
+                  <span class="text-red-900 font-bold text-sm">PRIZE POOL</span>
                   <font-awesome-icon icon="trophy" class="text-red-600 mx-2" />
                   <span class="text-red-900 font-medium">₹ {{ contest.prize_money }}</span>
                 </div>

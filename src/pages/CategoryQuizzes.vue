@@ -57,7 +57,7 @@
   
                 <!-- Prize row -->
                 <div class="flex items-center">
-                  <span class="text-orange-400 font-bold mr-2">MEGA PRIZE</span>
+                  <span class="text-orange-400 font-bold mr-2">PRIZE POOL</span>
                   <font-awesome-icon icon="trophy" class="text-gray-600 mx-2" />
                   <span class="text-gray-600">Prize ₹ {{ contest.prize_money }}</span>
                 </div>
