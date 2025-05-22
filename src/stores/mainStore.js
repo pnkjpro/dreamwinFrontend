@@ -17,6 +17,13 @@ export const useMainStore = defineStore('main', () => {
   const variant = ref({});
   const prizeContents = ref([]);
   const categories = ref([]);  
+  const referredUsers = ref([]);
+  const referredMetaData = ref({
+    claimedRewards: 0,
+    pendingRewards: 0,
+    totalReferred: 0,
+    referEarned: 0
+  });
 
   async function fetchContests() {
     const response = await api.get(`/quiz`)
@@ -123,6 +130,32 @@ export const useMainStore = defineStore('main', () => {
       }
     }
 
+    async function fetchReferredUsers(referPage){
+      try{
+        loading.value = true;
+        const response = await api.get(`users/refer/list?page=${referPage.value+1}`);
+        // page.value = page.value+1;
+        referredMetaData.value.claimedRewards = response.data.data.claimed_rewards;
+        referredMetaData.value.pendingRewards = response.data.data.pending_rewards;
+        referredMetaData.value.referEarned = response.data.data.refer_earned;
+        referredMetaData.value.totalReferred = response.data.data.total_referred;
+        if (response.data.data && response.data.data.referred_users.length > 0) {
+          referredUsers.value = [...referredUsers.value, ...response.data.data.referred_users];
+        }
+        // console.log("pinia referred users2:", response.data.data.referred_users);
+        loading.value = false
+        return {
+          success: response.data.success,
+          message: response.data.message
+        }
+      } catch (error) {
+          loading.value = false;
+          console.error("Error updating banner:", error);
+          const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+          return { success: false, message: errorMessage };
+      }
+    }
+
     async function fetchHowVideos(){
       try{
         loading.value = true;
@@ -169,6 +202,7 @@ export const useMainStore = defineStore('main', () => {
         updateHowVideo,
         fetchHowVideos,
         updateBanner,
+        fetchReferredUsers,
         banners,
         prizeContents,
         hasShownVideo,
@@ -181,6 +215,8 @@ export const useMainStore = defineStore('main', () => {
         page,
         recordPerPage,
         contests,
-        categories
+        categories,
+        referredUsers,
+        referredMetaData
     };
 });

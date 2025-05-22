@@ -148,39 +148,69 @@
               </div>
 
               <!-- Contest Details -->
-              <div class="w-3/4 pl-4 flex flex-col justify-between">
+            <div class="w-3/4 pl-4 flex flex-col h-full">
+              <!-- Top Section -->
+              <div class="flex-shrink-0">
                 <!-- Category Badge -->
                 <div class="text-center mb-2">
-                  <span class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-4 py-1 rounded-full text-sm font-bold inline-block shadow-sm">
+                  <span class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold inline-block shadow-sm">
                     {{ contest.category.name }}
                   </span>
                 </div>
 
                 <!-- Title -->
                 <div class="mb-2">
-                  <h3 class="text-md font-bold text-black-900 truncate">{{ contest.title }}</h3>
+                  <h3 class="text-sm font-bold text-gray-900 line-clamp-2 leading-tight">{{ contest.title }}</h3>
                 </div>
                 
-                <!-- Time indicator on its own row -->
-                <div class="mb-2 flex items-center">
-                  <p v-if="getContestStatus(contest.start_time).isLive" class="text-white font-bold flex items-center bg-red-500 px-3 py-0.5 rounded-full shadow-sm">
-                    <span class="inline-block h-2 w-2 rounded-full bg-white mr-2 animate-ping"></span>
-                    LIVE
-                  </p>
-                  <p v-else class="text-orange-600 font-medium flex items-center">
-                    <font-awesome-icon icon="clock" class="mr-2" />
-                    {{ getContestStatus(contest.start_time).text }}
-                  </p>
-                  <span v-if="contest.entry_fees == 0" class="text-white font-bold ml-auto px-3 py-0.5 bg-gradient-to-r from-green-500 to-teal-500 rounded-full shadow-sm">FREE</span>
-                </div>
-
-                <!-- Prize row -->
-                <div class="flex items-center bg-gradient-to-r from-yellow-400 to-orange-300 p-2 rounded-lg shadow-sm">
-                  <span class="text-red-900 font-bold text-sm">PRIZE POOL</span>
-                  <font-awesome-icon icon="trophy" class="text-red-600 mx-2" />
-                  <span class="text-red-900 font-medium">₹ {{ contest.prize_money }}</span>
+                <!-- Time indicator and Prize row -->
+                <div class="mb-2 flex items-center justify-between">
+                  <div class="flex items-center">
+                    <p v-if="getContestStatus(contest.start_time).isLive" class="text-white font-bold flex items-center bg-red-500 px-2 py-1 rounded-full shadow-sm text-xs">
+                      <span class="inline-block h-1.5 w-1.5 rounded-full bg-white mr-1 animate-ping"></span>
+                      LIVE
+                    </p>
+                    <p v-else class="text-orange-600 font-medium flex items-center text-xs">
+                      <font-awesome-icon icon="clock" class="mr-1 text-xs" />
+                      {{ getContestStatus(contest.start_time).text }}
+                    </p>
+                  </div>
+                  
+                  <!-- Prize and FREE badge on the right -->
+                  <div class="flex items-center space-x-2">
+                    <div class="flex items-center bg-gradient-to-r from-yellow-400 to-orange-300 px-2 py-1 rounded-lg shadow-sm">
+                      <font-awesome-icon icon="trophy" class="text-red-600 mr-1 text-xs" />
+                      <span class="text-red-900 font-bold text-md">₹{{ contest.prize_money }}</span>
+                    </div>
+                    <span v-if="contest.entry_fees == 0" class="text-white font-bold px-2 py-1 bg-gradient-to-r from-green-500 to-teal-500 rounded-full shadow-sm text-xs">FREE</span>
+                  </div>
                 </div>
               </div>
+
+              <!-- Middle Section - Flexible -->
+              <div class="flex-grow flex flex-col justify-center space-y-2">
+                <!-- Closing Time with Join Button -->
+                <div class="flex items-center justify-between bg-gray-50">
+                  <div class="flex items-center">
+                    <font-awesome-icon icon="lock" class="text-gray-600 mr-2 text-sm" />
+                    <div class="text-xs text-gray-700 font-medium">
+                      {{ formatDateTime(contest.end_time) }}
+                    </div>
+                  </div>
+                  
+                  <!-- Join Button moved here -->
+                  <div class="ml-2">
+                    <button 
+                      class="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-1.5 px-3 rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 animate-pulse text-xs"
+                      @click="fetchContest(contest.node_id)"
+                    >
+                      <font-awesome-icon icon="play" class="mr-1" />
+                      JOIN NOW
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
             </div>
           </div>
           
@@ -296,6 +326,30 @@ const handleFunds = (fundType) => {
   console.log(fundAction.value);
   router.push('/dashboard/funds');
 }
+
+ const isContestExpired = (endDateTime) => {
+      const endTime = typeof endDateTime === 'string' 
+        ? new Date(endDateTime).getTime() / 1000 
+        : endDateTime;
+      
+      const now = Math.floor(Date.now() / 1000);
+      return endTime <= now;
+    }
+
+  const formatDateTime = (dateTime) => {
+    // Handle both datetime strings and timestamps
+    const date = typeof dateTime === 'string' 
+      ? new Date(dateTime) 
+      : new Date(dateTime * 1000);
+    
+    return date.toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  }
 
 const fetchContest = async(nodeId) => {
   await mainStore.fetchCurrentContest(nodeId)
