@@ -100,6 +100,7 @@ export const useMainStore = defineStore('main', () => {
         banners.value = response.data.data.banners;
         official_notice.value = response.data.data.official_notice;
         official_notice_status.value = response.data.data.official_notice_status;
+        console.log(official_notice_status);
         return {
           success: response.data.success,
           message: response.data.message
