@@ -8,7 +8,6 @@ import { useToast } from "vue-toastification";
 export const useTransactionStore = defineStore('transaction', () => {
     const loading = ref(false);
     const transactions = ref([]);
-    const lifeline_transactions = ref([]);
     const lifeline_histories = ref([]);
     const error = ref(null);
     const showPaymentSuccess = ref(false);
@@ -190,31 +189,6 @@ export const useTransactionStore = defineStore('transaction', () => {
             return { success: false, message: errorMessage };
         }
     }
-    async function getLifelineTransactions(page=1) {
-        try {
-            const params = {page}
-            loading.value = true;
-            const response = await api.get(`/lifeline/transaction/list`, {params});
-            if(page === 1){
-                lifeline_transactions.value = response.data.data.lifeline_transactions;
-            } else {
-                lifeline_transactions.value = [...lifeline_transactions.value, ...response.data.data.lifeline_transactions]
-            }
-
-            loading.value = false;
-            return {
-                success: response.data.success,
-                message: response.data.message,
-                pagination: response.data.data.totalCount > lifeline_transactions.value.length ? true : false
-            }
-        } catch (error) {
-            loading.value = false;
-            console.error("Error Joining Game:", error);
-            const errorMessage = error.response?.data?.message || "An unexpected error occurred";
-
-            return { success: false, message: errorMessage };
-        }
-    }
 
     async function getLifelineHistories(page=1) {
         try {
@@ -246,7 +220,6 @@ export const useTransactionStore = defineStore('transaction', () => {
 
     return {
         getTransactions,
-        getLifelineTransactions,
         getLifelineHistories,
         payWithRazorpay,
         withdrawFunds,
@@ -256,7 +229,6 @@ export const useTransactionStore = defineStore('transaction', () => {
         loading,
         error,
         transactions,
-        lifeline_transactions,
         showPaymentSuccess,
         lifeline_histories
     };

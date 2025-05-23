@@ -223,7 +223,7 @@
                         @click="fetchContest(contest.node_id)"
                       >
                         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 group-hover:animate-pulse"></div>
-                        <font-awesome-icon icon="play" class="mr-2 animate-bounce" />
+                        <font-awesome-icon icon="play" class="mr-2 group-hover:bounce-x" />
                         <span class="relative z-10 tracking-wide">JOIN NOW</span>
                       </button>
                     </div>
@@ -286,11 +286,8 @@ library.add(
   
 const router = useRouter();
 const toast = useToast();
-const config = inject('config');
 
-const menuOpen = ref(false); 
-const currentIndex = ref(0);
-
+const menuOpen = ref(false);
 const mainStore = useMainStore();
 const authStore = useAuthStore();
 const transactionStore = useTransactionStore();
@@ -503,5 +500,20 @@ function getContestStatus(unixTimestamp) {
 }
 .animate-ping {
   animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes bounce-x {
+  0%, 100% {
+    transform: translateX(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateX(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.bounce-x {
+  animation: bounce-x 1s infinite;
 }
 </style>
