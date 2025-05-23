@@ -65,8 +65,8 @@
               {{ index+1 }}
             </td>
             <td class="px-4 py-4 whitespace-nowrap">
-              <span :class="transaction.action === 'deposit' ? 'text-green-600 font-medium' : 'text-red-600 font-medium'">
-                {{ transaction.action === 'deposit' ? 'Deposit' : 'Withdrawal' }}
+              <span :class="getActionClass(transaction.action)">
+                {{ getActionLabel(transaction.action) }}
               </span>
             </td>
             <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
@@ -244,6 +244,34 @@ const formatStatus = (status) => {
       return status.charAt(0).toUpperCase() + status.slice(1);
   }
 };
+
+const getActionClass = (action) => {
+    switch(action) {
+      case 'deposit':
+      case 'referred_reward':
+      case 'quiz_reward':
+        return 'text-green-600 font-medium';
+      case 'withdrawal':
+        return 'text-red-600 font-medium';
+      default:
+        return 'text-gray-600 font-medium';
+    }
+  }
+  
+  const getActionLabel = (action) => {
+    switch(action) {
+      case 'deposit':
+        return 'Deposit';
+      case 'withdrawal':
+        return 'Withdrawal';
+      case 'referred_reward':
+        return 'Referral Reward';
+      case 'quiz_reward':
+        return 'Quiz Reward';
+      default:
+        return action.charAt(0).toUpperCase() + action.slice(1);
+    }
+  }
 
 // Get the appropriate CSS class for the status badge
 const getStatusClass = (status) => {

@@ -140,77 +140,87 @@
           <div v-for="(contest, index) in contests" :key="index"
             class="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl overflow-hidden shadow-md border border-orange-100 hover:shadow-lg transition-shadow">
             <div @click="fetchContest(contest.node_id)" class="flex p-4">
-              <!-- Contest Image -->
-              <div class="w-1/4 flex-shrink-0">
-                <div class="rounded-lg overflow-hidden shadow-md h-full">
-                  <img :src="displayImage(contest.banner_image)" :alt="contest.title" class="w-full h-full object-cover" />
-                </div>
-              </div>
 
               <!-- Contest Details -->
-            <div class="w-3/4 pl-4 flex flex-col h-full">
-              <!-- Top Section -->
-              <div class="flex-shrink-0">
-                <!-- Category Badge -->
-                <div class="text-center mb-2">
-                  <span class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold inline-block shadow-sm">
-                    {{ contest.category.name }}
-                  </span>
-                </div>
+              <div class="w-full pl-4 flex flex-col h-full">
+                <!-- Top Section -->
+                <div class="flex-shrink-0">
+                  <!-- Category Badge -->
+                  <div class="text-center mb-3">
+                    <span class="bg-gradient-to-r from-red-500 via-red-600 to-orange-500 text-white px-4 py-1.5 rounded-full text-xs font-bold inline-block shadow-lg transform hover:scale-105 transition-transform duration-200">
+                      {{ contest.category.name }}
+                    </span>
+                  </div>
 
-                <!-- Title -->
-                <div class="mb-2">
-                  <h3 class="text-sm font-bold text-gray-900 line-clamp-2 leading-tight">{{ contest.title }}</h3>
-                </div>
-                
-                <!-- Time indicator and Prize row -->
-                <div class="mb-2 flex items-center justify-between">
-                  <div class="flex items-center">
-                    <p v-if="getContestStatus(contest.start_time).isLive" class="text-white font-bold flex items-center bg-red-500 px-2 py-1 rounded-full shadow-sm text-xs">
-                      <span class="inline-block h-1.5 w-1.5 rounded-full bg-white mr-1 animate-ping"></span>
-                      LIVE
-                    </p>
-                    <p v-else class="text-orange-600 font-medium flex items-center text-xs">
-                      <font-awesome-icon icon="clock" class="mr-1 text-xs" />
-                      {{ getContestStatus(contest.start_time).text }}
-                    </p>
+                  <!-- Title -->
+                  <div class="mb-3">
+                    <h3 class="text-sm font-bold text-gray-900 line-clamp-2 leading-tight hover:text-blue-600 transition-colors duration-200">
+                      {{ contest.title }}
+                    </h3>
                   </div>
                   
-                  <!-- Prize and FREE badge on the right -->
-                  <div class="flex items-center space-x-2">
-                    <div class="flex items-center bg-gradient-to-r from-yellow-400 to-orange-300 px-2 py-1 rounded-lg shadow-sm">
-                      <font-awesome-icon icon="trophy" class="text-red-600 mr-1 text-xs" />
-                      <span class="text-red-900 font-bold text-md">₹{{ contest.prize_money }}</span>
+                  <!-- Time indicator and Prize row -->
+                  <div class="mb-3 flex items-center justify-between">
+                    <div class="flex items-center">
+                      <p v-if="getContestStatus(contest.start_time).isLive" class="text-white font-bold flex items-center bg-gradient-to-r from-red-500 to-red-600 px-3 py-1.5 rounded-full shadow-lg text-xs border-2 border-red-300">
+                        <span class="inline-block h-2 w-2 rounded-full bg-white mr-2 animate-ping"></span>
+                        <span class="relative z-10">LIVE</span>
+                      </p>
+                      <p v-else class="text-orange-600 flex items-center text-sm font-bold bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200">
+                        <font-awesome-icon icon="clock" class="mr-2 text-sm animate-pulse" />
+                        {{ getContestStatus(contest.start_time).text }}
+                      </p>
                     </div>
-                    <span v-if="contest.entry_fees == 0" class="text-white font-bold px-2 py-1 bg-gradient-to-r from-green-500 to-teal-500 rounded-full shadow-sm text-xs">FREE</span>
+                    
+                    <!-- Prize and FREE badge on the right -->
+                    <div class="flex items-center space-x-3">
+                      <!-- Enhanced Prize Section with #1 Medal Icon -->
+                      <div class="flex items-center bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-400 px-3 py-1.5 rounded-xl shadow-lg border-2 border-yellow-200 transform hover:scale-105 transition-all duration-200">
+                        <div class="relative mr-2">
+                          <font-awesome-icon icon="medal" class="text-amber-800 text-xl drop-shadow-sm" />
+                          <span class="absolute inset-0 flex items-center justify-center text-white font-black text-xs" style="font-size: 8px; top: 1px;">1</span>
+                        </div>
+                        <span class="text-amber-900 font-bold text-base tracking-wide">₹{{ contest.prize_money }}</span>
+                      </div>
+                      
+                      <!-- Enhanced FREE Badge -->
+                      <span v-if="contest.entry_fees == 0" class="text-white font-bold px-3 py-1.5 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 rounded-full shadow-lg text-xs border-2 border-green-300 transform hover:scale-105 transition-all duration-200 animate-pulse">
+                        FREE
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Middle Section - Flexible -->
+                <div class="flex-grow flex flex-col justify-center space-y-3">
+                  <!-- Enhanced Closing Time with Join Button -->
+                  <div class="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100 p-3 rounded-xl border border-gray-200 shadow-sm">
+                    <div class="flex items-center">
+                      <div class="bg-gray-200 p-2 rounded-full mr-3">
+                        <font-awesome-icon icon="lock" class="text-gray-600 text-sm animate-pulse" />
+                      </div>
+                      <div>
+                        <div class="text-xs text-gray-500 font-medium">Closes at</div>
+                        <div class="text-sm text-gray-800 font-bold">
+                          {{ formatDateTime(contest.end_time) }}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Enhanced Join Button -->
+                    <div class="ml-3">
+                      <button 
+                        class="bg-gradient-to-r from-blue-500 via-purple-500 to-purple-600 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg hover:from-blue-600 hover:via-purple-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 text-xs border-2 border-blue-300 relative overflow-hidden group"
+                        @click="fetchContest(contest.node_id)"
+                      >
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 group-hover:animate-pulse"></div>
+                        <font-awesome-icon icon="play" class="mr-2 animate-bounce" />
+                        <span class="relative z-10 tracking-wide">JOIN NOW</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              <!-- Middle Section - Flexible -->
-              <div class="flex-grow flex flex-col justify-center space-y-2">
-                <!-- Closing Time with Join Button -->
-                <div class="flex items-center justify-between bg-gray-50">
-                  <div class="flex items-center">
-                    <font-awesome-icon icon="lock" class="text-gray-600 mr-2 text-sm" />
-                    <div class="text-xs text-gray-700 font-medium">
-                      {{ formatDateTime(contest.end_time) }}
-                    </div>
-                  </div>
-                  
-                  <!-- Join Button moved here -->
-                  <div class="ml-2">
-                    <button 
-                      class="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-1.5 px-3 rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 animate-pulse text-xs"
-                      @click="fetchContest(contest.node_id)"
-                    >
-                      <font-awesome-icon icon="play" class="mr-1" />
-                      JOIN NOW
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
             </div>
           </div>
           
