@@ -11,6 +11,8 @@ export const useMainStore = defineStore('main', () => {
   const howVideos = ref([]);
   const page = ref(1);
   const banners = ref([]);
+  const official_notice = ref("");
+  const official_notice_status = ref(false);
   const recordPerPage = ref(2);
   const hasShownVideo = ref(false);
   const contest = ref(null);
@@ -57,7 +59,7 @@ export const useMainStore = defineStore('main', () => {
           message: response.data.message
         }
     } catch (error) {
-        console.error("Error getting banners:", error);
+        console.error("Error getting quizzes by category:", error);
         const errorMessage = error.response?.data?.message || "An unexpected error occurred";
         return { success: false, message: errorMessage };
     } finally {
@@ -95,7 +97,9 @@ export const useMainStore = defineStore('main', () => {
       try{
         loading.value = true;
         const response = await api.get('/banner/list');
-        banners.value = response.data.data;
+        banners.value = response.data.data.banners;
+        official_notice.value = response.data.data.official_notice;
+        official_notice_status.value = response.data.data.official_notice_status;
         return {
           success: response.data.success,
           message: response.data.message
@@ -204,6 +208,8 @@ export const useMainStore = defineStore('main', () => {
         updateBanner,
         fetchReferredUsers,
         banners,
+        official_notice,
+        official_notice_status,
         prizeContents,
         hasShownVideo,
         variant,

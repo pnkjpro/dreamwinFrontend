@@ -99,6 +99,15 @@
         </div>
       </div>
 
+      <!-- Official Notice -->
+      <div v-if="official_notice_status" class="px-4 mb-4">
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-md">
+          <p class="text-red-900 font-semibold">
+            {{ official_notice }}
+          </p>
+        </div>
+      </div>
+
       <!-- Promotion Cards -->
       <div class="px-4 mb-6">
         <h2 class="text-xl font-bold text-red-900 mb-3 flex items-center">
@@ -279,14 +288,14 @@ const router = useRouter();
 const toast = useToast();
 const config = inject('config');
 
-const menuOpen = ref(false);
+const menuOpen = ref(false); 
 const currentIndex = ref(0);
 
 const mainStore = useMainStore();
 const authStore = useAuthStore();
 const transactionStore = useTransactionStore();
 
-const { contests, categories, banners, loading, totalCount, hasShownVideo } = storeToRefs(mainStore);
+const { contests, categories, banners, loading, official_notice, official_notice_status, totalCount, hasShownVideo } = storeToRefs(mainStore);
 const { user } = storeToRefs(authStore);
 const { fundAction } = storeToRefs(transactionStore);
 
