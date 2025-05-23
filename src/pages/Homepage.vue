@@ -151,25 +151,25 @@
             <div @click="fetchContest(contest.node_id)" class="flex p-4">
 
               <!-- Contest Details -->
-              <div class="w-full pl-4 flex flex-col h-full">
+              <div class="w-full pl-1 flex flex-col h-full">
                 <!-- Top Section -->
                 <div class="flex-shrink-0">
                   <!-- Category Badge -->
-                  <div class="text-center mb-3">
+                  <!-- <div class="text-center mb-1.5">
                     <span class="bg-gradient-to-r from-red-500 via-red-600 to-orange-500 text-white px-4 py-1.5 rounded-full text-xs font-bold inline-block shadow-lg transform hover:scale-105 transition-transform duration-200">
                       {{ contest.category.name }}
                     </span>
-                  </div>
+                  </div> -->
 
                   <!-- Title -->
-                  <div class="mb-3">
+                  <div class="mb-2">
                     <h3 class="text-sm font-bold text-gray-900 line-clamp-2 leading-tight hover:text-blue-600 transition-colors duration-200">
                       {{ contest.title }}
                     </h3>
                   </div>
                   
                   <!-- Time indicator and Prize row -->
-                  <div class="mb-3 flex items-center justify-between">
+                  <div class="mb-1.5 flex items-center justify-between">
                     <div class="flex items-center">
                       <p v-if="getContestStatus(contest.start_time).isLive" class="text-white font-bold flex items-center bg-gradient-to-r from-red-500 to-red-600 px-3 py-1.5 rounded-full shadow-lg text-xs border-2 border-red-300">
                         <span class="inline-block h-2 w-2 rounded-full bg-white mr-2 animate-ping"></span>
@@ -186,7 +186,7 @@
                       <!-- Enhanced Prize Section with #1 Medal Icon -->
                       <div class="flex items-center bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-400 px-3 py-1.5 rounded-xl shadow-lg border-2 border-yellow-200 transform hover:scale-105 transition-all duration-200">
                         <div class="relative mr-2">
-                          <font-awesome-icon icon="medal" class="text-amber-800 text-xl drop-shadow-sm" />
+                          <font-awesome-icon icon="medal" class="text-amber-800 text-base drop-shadow-sm" />
                           <span class="absolute inset-0 flex items-center justify-center text-white font-black text-xs" style="font-size: 8px; top: 1px;">1</span>
                         </div>
                         <span class="text-amber-900 font-bold text-base tracking-wide">₹{{ contest.prize_money }}</span>
@@ -203,23 +203,23 @@
                 <!-- Middle Section - Flexible -->
                 <div class="flex-grow flex flex-col justify-center space-y-3">
                   <!-- Enhanced Closing Time with Join Button -->
-                  <div class="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100 p-3 rounded-xl border border-gray-200 shadow-sm">
+                  <div class="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100 p-1.5 rounded-xl border border-gray-200 shadow-sm">
                     <div class="flex items-center">
                       <div class="bg-gray-200 p-2 rounded-full mr-3">
                         <font-awesome-icon icon="lock" class="text-gray-600 text-sm animate-pulse" />
                       </div>
                       <div>
                         <div class="text-xs text-gray-500 font-medium">Closes at</div>
-                        <div class="text-sm text-gray-800 font-bold">
+                        <div class="text-xs text-gray-800 font-bold">
                           {{ formatDateTime(contest.end_time) }}
                         </div>
                       </div>
                     </div>
                     
                     <!-- Enhanced Join Button -->
-                    <div class="ml-3">
+                    <div class="ml-2">
                       <button 
-                        class="bg-gradient-to-r from-blue-500 via-purple-500 to-purple-600 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg hover:from-blue-600 hover:via-purple-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 text-xs border-2 border-blue-300 relative overflow-hidden group"
+                        class="bg-gradient-to-r from-blue-500 via-purple-500 to-purple-600 text-white font-bold py-2 px-4 rounded-xl shadow-lg hover:from-blue-600 hover:via-purple-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 text-xs border-2 border-blue-300 relative overflow-hidden group"
                         @click="fetchContest(contest.node_id)"
                       >
                         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 group-hover:animate-pulse"></div>
@@ -455,19 +455,17 @@ onMounted(() => {
 });
 // Check contest status
 function getContestStatus(unixTimestamp) {
-  // Make sure the timestamp is being processed correctly
-  // If it's in milliseconds, you don't need fromUnixTime
-  // If it's in seconds (standard Unix timestamp), use fromUnixTime
-  
-  const startTime = fromUnixTime(Number(unixTimestamp))  
-  const isLive = now.value >= startTime;
-  
+  const startTime = fromUnixTime(Number(unixTimestamp));
+  const isLive = Date.now() >= startTime.getTime();
+
   if (isLive) {
     return { isLive: true, text: 'LIVE' };
   } else {
-    return { 
-      isLive: false, 
-      text: formatDistanceToNow(startTime) + ' left'
+    let text = formatDistanceToNow(startTime, { addSuffix: false });
+    text = text.replace(/^about\s/, ''); // Remove 'about ' prefix if present
+    return {
+      isLive: false,
+      text: `${text} left`
     };
   }
 }
