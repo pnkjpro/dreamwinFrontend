@@ -49,28 +49,54 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  async function fetchTransactions(page = 1){
-    try{
-        loading.value = true;
-        const params = { page };
-        const response = await api.get(`/admin/transaction/list/all`, {params});
-        if(page === 1){
-          allTransactions.value = [...response.data.data.transactions]
-        } else {
-          allTransactions.value = [...allTransactions.value, ...response.data.data.transactions];
-        }
-        console.log(response.data.data.totalCount > allTransactions.value.length ? true : false);
-        return {
-            success: response.data.success,
-            message: response.data.message,
-            pagination: response.data.data.totalCount > allTransactions.value.length ? true : false
-        }
+  async function fetchTransactions(page = 1, filters = {}) {
+    try {
+      loading.value = true;
+      
+      // Build parameters
+      const params = { 
+        page,
+        per_page: 30 // Fixed page size as requested
+      };
+      
+      // Add filter parameters if they exist
+      if (filters.search) params.search = filters.search;
+      if (filters.action) params.action = filters.action;
+      if (filters.approved_status) params.approved_status = filters.approved_status;
+      if (filters.date_from) params.date_from = filters.date_from;
+      if (filters.date_to) params.date_to = filters.date_to;
+      
+      const response = await api.get(`/admin/transaction/list/all`, { params });
+      
+      if (page === 1) {
+        // Reset data for first page or when filters change
+        allTransactions.value = [...response.data.data.transactions];
+      } else {
+        // Append data for pagination
+        allTransactions.value = [...allTransactions.value, ...response.data.data.transactions];
+      }
+      
+      const hasMoreData = response.data.data.totalCount > allTransactions.value.length;
+      
+      return {
+        success: response.data.success,
+        message: response.data.message,
+        pagination: hasMoreData,
+        totalCount: response.data.data.totalCount,
+        currentPage: page,
+        transactions: response.data.data.transactions
+      };
     } catch (error) {
-        console.error("Error using Lifeline:", error);
-        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
-        return { success: false, message: errorMessage };
+      console.error("Error fetching transactions:", error);
+      const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+      return { 
+        success: false, 
+        message: errorMessage,
+        pagination: false,
+        totalCount: 0
+      };
     } finally {
-        loading.value = false;
+      loading.value = false;
     }
   }
 
