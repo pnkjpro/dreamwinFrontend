@@ -183,13 +183,16 @@
                     
                     <!-- Prize and FREE badge on the right -->
                     <div class="flex items-center space-x-3">
-                      <!-- Enhanced Prize Section with #1 Medal Icon -->
-                      <div class="flex items-center bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-400 px-3 py-1.5 rounded-xl shadow-lg border-2 border-yellow-200 transform hover:scale-105 transition-all duration-200">
-                        <div class="relative mr-2">
-                          <font-awesome-icon icon="medal" class="text-amber-800 text-base drop-shadow-sm" />
-                          <span class="absolute inset-0 flex items-center justify-center text-white font-black text-xs" style="font-size: 8px; top: 1px;">1</span>
-                        </div>
-                        <span class="text-amber-900 font-bold text-base tracking-wide">₹{{ contest.prize_money }}</span>
+                      <!-- Updated Prize Section with Spinning Rupee Icon -->
+                      <div class="flex items-center">
+                        <img
+                          width="30"
+                          height="30"
+                          :src="'/images/rupee.png'"
+                          alt="Rs"
+                          onerror="this.style.display='none'"
+                        />
+                        <span class="text-gray-800 ml-1 font-bold text-xl tracking-wide">{{ contest.prize_money }}</span>
                       </div>
                       
                       <!-- Enhanced FREE Badge -->
@@ -209,7 +212,7 @@
                         <font-awesome-icon icon="lock" class="text-gray-600 text-sm animate-pulse" />
                       </div>
                       <div>
-                        <div class="text-xs text-gray-500 font-medium">Closes at</div>
+                        <div class="text-xs text-gray-500 font-medium">Entry Closes at</div>
                         <div class="text-xs text-gray-800 font-bold">
                           {{ formatDateTime(contest.end_time) }}
                         </div>
