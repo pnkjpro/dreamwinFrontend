@@ -195,8 +195,24 @@ export const useAdminStore = defineStore('admin', () => {
             message: response.data.message
         }
     } catch (error) {
-        console.error("Error using Lifeline:", error);
+        console.error("Error updating Lifeline:", error);
         return { success: false, message: 'Error updating Lifeline' };
+    } finally {
+        loading.value = false;
+    }
+  }
+
+  async function updateOfficialNotice(payload){
+    try{
+        loading.value = true;
+        const response = await api.post('/admin/variables/update', payload)
+        return {
+            success: response.data.success,
+            message: response.data.message
+        }
+    } catch (error) {
+        console.error("Error updating official notice:", error);
+        return { success: false, message: 'Error updating official notice' };
     } finally {
         loading.value = false;
     }
@@ -329,6 +345,7 @@ export const useAdminStore = defineStore('admin', () => {
     resetLeaderboardState,
     updateLifelineCost,
     updateCategorySorting,
+    updateOfficialNotice,
     showUsersByQuiz,
     showQuizzesByUser,
     showUserList,

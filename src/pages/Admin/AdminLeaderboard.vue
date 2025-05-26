@@ -73,6 +73,8 @@
               <tr>
                 <th>Rank</th>
                 <th>Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
                 <th>Score</th>
                 <th>Duration</th>
                 <th>Reward</th>
@@ -81,7 +83,9 @@
             <tbody>
               <tr v-for="entry in currentLeaderboard" :key="entry.rank">
                 <td class="rank-cell">{{ entry.rank }}</td>
-                <td>{{ entry.name }}</td>
+                <td>{{ entry.user.name }}</td>
+                <td>{{ entry.user.email }}</td>
+                <td>{{ entry.user.mobile }}</td>
                 <td>{{ entry.score }}</td>
                 <td>{{ formatDuration(entry.duration) }}</td>
                 <td>{{ entry.reward || 'None' }}</td>

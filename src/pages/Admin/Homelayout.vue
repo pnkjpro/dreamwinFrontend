@@ -62,6 +62,7 @@ const menuItems = ref([
   { name: 'Quiz Creation', path: '/admin/quiz/create' },
   { name: 'Category Create', path: '/admin/category/create' },
   { name: 'Update Banner', path: '/admin/banner/update' },
+  { name: 'Update Notice', path: '/admin/notice/update' },
   { name: 'Update HowVideo', path: '/admin/howVideo/update' },
   { name: 'Update Lifeline', path: '/admin/lifeline/update' },
   { name: 'Quizzes', path: '/admin/quiz/list'},
