@@ -14,6 +14,98 @@
         </button>
       </div>
 
+      <!-- Search and Filters Section -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Search & Filters</h3>
+        
+        <!-- Search Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Search by Name</label>
+            <input 
+              v-model="searchFilters.name"
+              type="text" 
+              placeholder="Enter name..."
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Search by Email</label>
+            <input 
+              v-model="searchFilters.email"
+              type="email" 
+              placeholder="Enter email..."
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Search by Mobile</label>
+            <input 
+              v-model="searchFilters.mobile"
+              type="text" 
+              placeholder="Enter mobile..."
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Search by UPI ID</label>
+            <input 
+              v-model="searchFilters.upi_id"
+              type="text" 
+              placeholder="Enter UPI ID..."
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+
+        <!-- Filters Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Verification Status</label>
+            <select 
+              v-model="searchFilters.verified_status"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All</option>
+              <option value="verified">Verified</option>
+              <option value="not_verified">Not Verified</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+            <input 
+              v-model="searchFilters.start_date"
+              type="date" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+            <input 
+              v-model="searchFilters.end_date"
+              type="date" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2">
+          <button 
+            @click="applyFilters"
+            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+          >
+            Apply Filters
+          </button>
+          <button 
+            @click="clearFilters"
+            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
+          >
+            Clear Filters
+          </button>
+        </div>
+      </div>
+
       <div v-if="adminStore.loading && !userList.length" class="flex justify-center items-center py-12">
         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
@@ -36,6 +128,8 @@
                 <th class="py-3 px-4 text-left text-gray-600 font-medium">Refer Code</th>
                 <th class="py-3 px-4 text-left text-gray-600 font-medium">Referred By Code</th>
                 <th class="py-3 px-4 text-left text-gray-600 font-medium">Verified Status</th>
+                <th class="py-3 px-4 text-left text-gray-600 font-medium">Created At</th>
+                <th class="py-3 px-4 text-left text-gray-600 font-medium">Referred Users</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -67,7 +161,16 @@
                       </span>
                     </span>
                   </div>
-                </td>             
+                </td>
+                <td class="py-3 px-4 text-gray-800">{{ formatDate(user.created_at) }}</td>
+                <td class="py-3 px-4">
+                  <button 
+                    @click="openReferredUsersModal(user)"
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded text-sm"
+                  >
+                    View ({{ user.referred_users?.length || 0 }})
+                  </button>
+                </td>          
               </tr>
             </tbody>
           </table>
@@ -77,7 +180,7 @@
             Showing <span class="font-medium">{{ userList.length }}</span> users
           </div>
         </div>
-          <!-- Load More Button -->
+        <!-- Load More Button -->
         <div v-if="hasMoreLoad" class="mt-6 text-center">
           <button @click="fetchUserList" 
           class="px-8 py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-full shadow-lg hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all transform hover:scale-105"
@@ -91,8 +194,69 @@
             </span>
             <span v-else class="flex items-center justify-center">
               Load More
-              <font-awesome-icon icon="chevron-down" class="ml-2" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
             </span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Referred Users Modal -->
+    <div v-if="showReferredModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">
+            Referred Users - {{ selectedUser?.name }}
+          </h2>
+          <button 
+            @click="closeReferredUsersModal"
+            class="text-gray-500 hover:text-gray-700"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div v-if="!selectedUser?.referred_users?.length" class="text-center py-8">
+          <div class="text-gray-400 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <p class="text-gray-500 text-lg">No referred users found</p>
+          <p class="text-gray-400 text-sm mt-2">This user hasn't referred anyone yet.</p>
+        </div>
+
+        <div v-else class="overflow-x-auto">
+          <table class="min-w-full bg-white">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="py-3 px-4 text-left text-gray-600 font-medium">ID</th>
+                <th class="py-3 px-4 text-left text-gray-600 font-medium">Name</th>
+                <th class="py-3 px-4 text-left text-gray-600 font-medium">Email</th>
+                <th class="py-3 px-4 text-left text-gray-600 font-medium">Refer Code</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr v-for="refUser in selectedUser.referred_users" :key="refUser.id" class="hover:bg-gray-50">
+                <td class="py-3 px-4 text-gray-800">{{ refUser.id }}</td>
+                <td class="py-3 px-4 text-gray-800">{{ refUser.name }}</td>
+                <td class="py-3 px-4 text-gray-800">{{ refUser.email }}</td>
+                <td class="py-3 px-4 text-gray-800">{{ refUser.refer_code }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button 
+            @click="closeReferredUsersModal"
+            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
+          >
+            Close
           </button>
         </div>
       </div>
@@ -101,7 +265,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, reactive, watch } from 'vue';
 import { useAdminStore } from '@/stores/adminStore';
 import { useToast } from "vue-toastification";
 
@@ -111,28 +275,93 @@ const adminStore = useAdminStore();
 const hasMoreLoad = ref(true);
 const page = ref(1);
 const toast = useToast();
+const showReferredModal = ref(false);
+const selectedUser = ref(null);
+
+// Search and filter state
+const searchFilters = reactive({
+  name: '',
+  email: '',
+  mobile: '',
+  upi_id: '',
+  verified_status: '',
+  start_date: '',
+  end_date: ''
+});
 
 // Computed properties
 const userList = computed(() => adminStore.userList || []);
 
 // Methods
-const fetchUserList = async() => {
-    const result = await adminStore.showUserList(page.value);
-    if(!result.success){
-      toast.error("failed to get users");
-    } else {
-      if(result.pagination){
-        page.value = page.value + 1;
-      } else {
-        hasMoreLoad.value = false;
-      }
+const fetchUserList = async (resetPage = false) => {
+  if (resetPage) {
+    page.value = 1;
+    hasMoreLoad.value = true;
+    adminStore.userList = []; // Clear existing list
+  }
+
+  // Build filters object
+  const filters = {};
+  Object.keys(searchFilters).forEach(key => {
+    if (searchFilters[key]) {
+      filters[key] = searchFilters[key];
     }
-  
+  });
+
+  const result = await adminStore.showUserList(page.value, filters);
+  if (!result.success) {
+    toast.error("Failed to get users");
+  } else {
+    if (result.pagination && result.pagination.has_more) {
+      page.value = page.value + 1;
+    } else {
+      hasMoreLoad.value = false;
+    }
+  }
 };
 
 const refreshUserList = () => {
-  fetchUserList();
+  fetchUserList(true);
 };
+
+const applyFilters = () => {
+  fetchUserList(true);
+};
+
+const clearFilters = () => {
+  Object.keys(searchFilters).forEach(key => {
+    searchFilters[key] = '';
+  });
+  fetchUserList(true);
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+const openReferredUsersModal = (user) => {
+  selectedUser.value = user;
+  showReferredModal.value = true;
+};
+
+const closeReferredUsersModal = () => {
+  showReferredModal.value = false;
+  selectedUser.value = null;
+};
+
+// Watch for changes in search filters with debounce
+let searchTimeout;
+watch(searchFilters, () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    applyFilters();
+  }, 500);
+}, { deep: true });
 
 // Lifecycle hooks
 onMounted(() => {

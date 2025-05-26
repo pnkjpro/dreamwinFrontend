@@ -282,23 +282,34 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  async function showUserList(page = 1){
-    try{
-      loading.value = true;
-      const params = { page }
-      const response = await api.get(`/admin/user/list`, {params});
-      if(page === 1){
-        userList.value = [...response.data.data.users];
-      } else {
-        userList.value = [...userList.value, ...response.data.data.users]
-      }
-      loading.value = false;
-      return {
-          success: response.data.success,
-          message: response.data.message,
-          pagination: response.data.data.totalCount > userList.value.length ? true : false
-      }
-      
+  async function showUserList(page = 1, filters = {}) {
+    try {
+        loading.value = true;
+        const params = { page, per_page: 30, ...filters };
+        const response = await api.get(`/admin/user/list`, { params });
+        
+        if (page === 1) {
+            // Reset the list for new search/filter or refresh
+            userList.value = [...response.data.data.users];
+        } else {
+            // Append to existing list for pagination
+            userList.value = [...userList.value, ...response.data.data.users];
+        }
+        
+        loading.value = false;
+        
+        return {
+            success: response.data.success,
+            message: response.data.message,
+            pagination: {
+                has_more: response.data.data.pagination.has_more,
+                current_page: response.data.data.pagination.current_page,
+                total_pages: response.data.data.pagination.total_pages,
+                total_count: response.data.data.pagination.total,
+                per_page: response.data.data.pagination.per_page
+            }
+        };
+        
     } catch (error) {
         loading.value = false;
         console.error("Error showing user list:", error);
@@ -306,6 +317,7 @@ export const useAdminStore = defineStore('admin', () => {
         return { success: false, message: errorMessage };
     }
   }
+  
   async function showQuizList(page =1, category=''){
     try{
       loading.value = true;
