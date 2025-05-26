@@ -17,6 +17,7 @@ export const useQuizStore = defineStore('playQuiz', () => {
       totalParticipants: 0,
       topPlayers: []
     });
+    const results = ref([]);
     const mainStore = useMainStore();
     const { contest, variant } = storeToRefs(mainStore);
 
@@ -122,11 +123,32 @@ export const useQuizStore = defineStore('playQuiz', () => {
           }
       }
 
+      async function showAnswerKey(nodeId){
+        try{
+          loading.value = true;
+          const response = await api.post('/quiz/user/answerKey', {node_id: nodeId});
+          results.value = {...response.data.data};
+          loading.value = false;
+          return {
+              success: response.data.success,
+              message: response.data.message
+              }
+          } catch (error) {
+              loading.value = false;
+              console.error("Error Responses:", error);
+              const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+
+              return { success: false, message: errorMessage };
+          }
+      }
+
       return {
         playQuiz,
         nextQuestion,
         getUserResponses,
         getLeaderboard,
+        showAnswerKey,
+        results,
         leaderboard,
         responses,
         question,
