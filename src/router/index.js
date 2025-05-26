@@ -91,6 +91,12 @@ const router = createRouter({
           meta: { requiresAuth:true }
         },
         {
+          path: 'answer-key',
+          name: 'MyAnswerKey',
+          component: () => import('@/pages/MyDashboard/MyAnswerKey.vue'),
+          meta: { requiresAuth:true }
+        },
+        {
           path: 'lifeline-history',
           name: 'LifelineHistory',
           component: () => import('@/pages/MyDashboard/LifelineHistory.vue'),
@@ -320,9 +326,9 @@ router.beforeResolve(async (to, from, next) => {
     }
   }
 
-  if (!from.name && to.name !== 'Home' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
-    return next({ name: 'Home' });
-  }
+  // if (!from.name && to.name !== 'Home' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
+  //   return next({ name: 'Home' });
+  // }
   
   
   const isAuthenticated = !!authStore.user;

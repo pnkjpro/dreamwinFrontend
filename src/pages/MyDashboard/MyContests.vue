@@ -15,6 +15,7 @@
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quiz Name</th>
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Answer Key</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
@@ -43,23 +44,30 @@
           </td>
           <td class="px-4 py-4 whitespace-nowrap">
             <!-- Time indicator on its own row -->
-              <!-- Time indicator on its own row -->
-              <div class="mb-2">
-                  <p 
-                  @click="navigateTo(response.node_id, response.quiz_variant_id)"
-                  v-if="getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).isLive" 
-                  class="text-red-500 font-bold flex items-center">
-                    <span class="inline-block h-2 w-2 rounded-full bg-red-500 mr-2"></span>
-                    LIVE
-                  </p>
-                  <p v-else-if="getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text === 'Show Result'" @click="showLeaderBoard(response.node_id)" class="text-blue-500 font-medium">
-                    {{ getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text }}
-                  </p>
-                  <p v-else class="text-blue-500 font-medium">
-                    {{ getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text }}
-                  </p>
-                </div>
+            <div class="mb-2">
+                <p 
+                @click="navigateTo(response.node_id, response.quiz_variant_id)"
+                v-if="getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).isLive" 
+                class="text-red-500 font-bold flex items-center">
+                  <span class="inline-block h-2 w-2 rounded-full bg-red-500 mr-2"></span>
+                  LIVE
+                </p>
+                <p v-else-if="getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text === 'Show Result'" @click="showLeaderBoard(response.node_id)" class="text-blue-500 font-medium">
+                  {{ getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text }}
+                </p>
+                <p v-else class="text-blue-500 font-medium">
+                  {{ getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text }}
+                </p>
+              </div>
           </td>
+          <td 
+          @click="showAnswerKey(response.node_id)"
+          :class="['px-4 py-4 whitespace-nowrap', getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text === 'Show Result' ? 'text-blue-500 font-medium' : 'text-gray-500 font-medium']"
+          :disabled="getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text !== 'Show Result'"
+          >
+            Answer Key
+          </td>
+
         </tr>
       </tbody>
     </table>
@@ -107,6 +115,7 @@
     const toast = useToast();
     const page = ref(1);
     const hasMoreLoad = ref(true);
+    const hasAnswerKey = ref(false);
     
     const quizStore = useQuizStore();
     const authStore = useAuthStore();
@@ -159,6 +168,7 @@ function getContestStatus(startTimestamp, endTimestamp, overTimestamp) {
   const quizOverTime = fromUnixTime(Number(overTimestamp));
 
   if (now >= quizOverTime) {
+    hasAnswerKey.value = true;
     return { isLive: false, text: 'Show Result' }; // Contest has ended
   } else if (now >= startTime) {
     return { isLive: true, text: 'LIVE' }; // Contest is currently live
@@ -176,6 +186,15 @@ const navigateTo = async(nodeId, variantId) => {
 const showLeaderBoard = (nodeId) => {
   quizStore.getLeaderboard(nodeId);
   router.push('/quiz/leaderboard');
+}
+
+const showAnswerKey = async(nodeId) => {
+  const result = await quizStore.showAnswerKey(nodeId);
+  if(!result.success){
+    toast.error('Error loading answer key');
+  } else {
+    router.push('/dashboard/answer-key');
+  }
 }
 
 const navigateToBack = () => {
