@@ -28,6 +28,7 @@ import { useRouter } from 'vue-router';
 
   const router = useRouter();
   const goToHome = () => {
-    router.push('/home');
+    window.location.href = '/home';
+    // router.push('/home');
   }
   </script>

@@ -107,6 +107,7 @@ import { useToast } from 'vue-toastification';
   }
 
 const navigateToHome = () => {
-  router.push('/home');
+  window.location.href = '/home';
+  // router.push('/home');
 }
   </script>
