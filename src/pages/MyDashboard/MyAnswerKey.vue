@@ -40,9 +40,21 @@
                 <h3 class="text-lg font-semibold text-gray-800 flex-1">
                   Question {{ key }}
                 </h3>
-                <div class="ml-4">
+                <div class="ml-4 flex items-center space-x-2">
+                  <!-- Lifeline Badge -->
                   <span 
-                    v-if="question.is_correct" 
+                    v-if="question.lifeline_used" 
+                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800"
+                  >
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{ question.lifeline_type }}
+                  </span>
+                  
+                  <!-- Correct/Incorrect Badge -->
+                  <span 
+                    v-if="question.is_correct === true" 
                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
                   >
                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -51,13 +63,22 @@
                     Correct
                   </span>
                   <span 
-                    v-else 
+                    v-else-if="question.is_correct === false" 
                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"
                   >
                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                     </svg>
                     Incorrect
+                  </span>
+                  <span 
+                    v-else 
+                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-600"
+                  >
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    Skipped
                   </span>
                 </div>
               </div>
@@ -67,6 +88,16 @@
 
             <!-- Options -->
             <div class="p-6">
+              <!-- Skip Question Message -->
+              <div v-if="question.lifeline_type === 'Skip Question'" class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div class="flex items-center">
+                  <svg class="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  <span class="text-yellow-800 font-medium">This question was skipped using a lifeline</span>
+                </div>
+              </div>
+
               <div class="grid gap-3">
                 <div 
                   v-for="option in question.options" 
@@ -79,7 +110,7 @@
                     <div class="flex items-center space-x-2">
                       <!-- Correct Answer Badge -->
                       <span 
-                        v-if="option.id === question.correct_answer_id"
+                        v-if="option.id === question.correct_answer_id && question.correct_answer_id"
                         class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800"
                       >
                         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -90,22 +121,24 @@
                       
                       <!-- Your Answer Badge -->
                       <span 
-                        v-if="option.id === question.user_answer_id"
+                        v-if="option.id === question.user_answer_id && question.user_answer_id"
                         class="inline-flex items-center px-2 py-1 rounded text-xs font-medium"
                         :class="question.is_correct ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'"
                       >
                         Your Answer
                       </span>
-                      
-                      <!-- No Answer Badge -->
-                      <span 
-                        v-if="!question.user_answer_id && option.id === question.correct_answer_id"
-                        class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600"
-                      >
-                        Not Answered
-                      </span>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <!-- No Answer Message for non-skipped questions -->
+              <div v-if="!question.user_answer_id && question.lifeline_type !== 'Skip Question'" class="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 text-gray-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+                  </svg>
+                  <span class="text-gray-600 text-sm">No answer was provided for this question</span>
                 </div>
               </div>
             </div>
@@ -135,12 +168,23 @@ const totalQuestions = computed(() => {
 
 const correctAnswers = computed(() => {
   if (!results.value) return 0
-  return Object.values(results.value).filter(q => q.is_correct).length
+  return Object.values(results.value).filter(q => q.is_correct === true).length
+})
+
+const skippedQuestions = computed(() => {
+  if (!results.value) return 0
+  return Object.values(results.value).filter(q => q.lifeline_type === 'Skip Question').length
+})
+
+const lifelinesUsed = computed(() => {
+  if (!results.value) return 0
+  return Object.values(results.value).filter(q => q.lifeline_used).length
 })
 
 const scorePercentage = computed(() => {
-  if (totalQuestions.value === 0) return 0
-  return (correctAnswers.value / totalQuestions.value) * 100
+  const answeredQuestions = totalQuestions.value - skippedQuestions.value
+  if (answeredQuestions === 0) return 0
+  return (correctAnswers.value / answeredQuestions) * 100
 })
 
 const scoreColor = computed(() => {
@@ -166,25 +210,25 @@ const performanceMessage = computed(() => {
   return 'Keep studying and try again!'
 })
 
-// // Methods
-// const fetchResults = async () => {
-//   const response = await quizStore.showAnswerKey();
-//   if(!response.success){
-//     error.value = true;
-//     toast.error("Failed to load Answer Key!");
-//   }
-// }
-
+// Methods
 const getOptionClasses = (option, question) => {
   const isCorrect = option.id === question.correct_answer_id
   const isUserAnswer = option.id === question.user_answer_id
-  const wasAnsweredCorrectly = question.is_correct && isUserAnswer
   
+  // For skipped questions, highlight only correct answer
+  if (question.lifeline_type === 'Skip Question') {
+    if (isCorrect) {
+      return 'border-green-300 bg-green-50'
+    }
+    return 'border-gray-200 bg-gray-50'
+  }
+  
+  // For answered questions
   if (isCorrect && isUserAnswer) {
     return 'border-green-300 bg-green-50'
   } else if (isCorrect) {
     return 'border-green-300 bg-green-50'
-  } else if (isUserAnswer && !question.is_correct) {
+  } else if (isUserAnswer && question.is_correct === false) {
     return 'border-red-300 bg-red-50'
   } else {
     return 'border-gray-200 bg-gray-50'
@@ -192,10 +236,6 @@ const getOptionClasses = (option, question) => {
 }
 
 // Lifecycle
-// onMounted(() => {
-//   fetchResults()
-// })
-
 onUnmounted(() => {
   results.value = [];
 })
