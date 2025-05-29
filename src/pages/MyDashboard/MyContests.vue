@@ -40,9 +40,14 @@
             {{ response.quiz.title }}
           </td>
           <td 
-          @click="showAnswerKey(response.node_id)"
-          :class="['px-4 py-4 whitespace-nowrap', getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text === 'Show Result' ? 'text-blue-500 font-medium' : 'text-gray-500 font-medium']"
-          :disabled="getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text !== 'Show Result'"
+            @click="showAnswerKey(response.node_id)"
+            :class="[
+              'px-4 py-4 whitespace-nowrap',
+              getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text === 'Show Result' && response.score !== 0 
+                ? 'text-blue-500 font-medium cursor-pointer hover:text-blue-600' 
+                : 'text-gray-400 font-medium cursor-not-allowed opacity-50'
+            ]"
+            :disabled="getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text !== 'Show Result' || response.score === 0"
           >
             Answer Key
           </td>
