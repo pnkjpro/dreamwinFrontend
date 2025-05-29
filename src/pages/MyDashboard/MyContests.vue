@@ -13,9 +13,9 @@
         <tr>
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Node ID</th>
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quiz Name</th>
-          <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-          <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
           <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Answer Key</th>
+          <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
@@ -39,8 +39,12 @@
           <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
             {{ response.quiz.title }}
           </td>
-          <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-            {{ response.score }}
+          <td 
+          @click="showAnswerKey(response.node_id)"
+          :class="['px-4 py-4 whitespace-nowrap', getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text === 'Show Result' ? 'text-blue-500 font-medium' : 'text-gray-500 font-medium']"
+          :disabled="getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text !== 'Show Result'"
+          >
+            Answer Key
           </td>
           <td class="px-4 py-4 whitespace-nowrap">
             <!-- Time indicator on its own row -->
@@ -60,14 +64,9 @@
                 </p>
               </div>
           </td>
-          <td 
-          @click="showAnswerKey(response.node_id)"
-          :class="['px-4 py-4 whitespace-nowrap', getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text === 'Show Result' ? 'text-blue-500 font-medium' : 'text-gray-500 font-medium']"
-          :disabled="getContestStatus(response.quiz.start_time, response.quiz.end_time, response.quiz.quiz_over_at).text !== 'Show Result'"
-          >
-            Answer Key
+          <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
+            {{ response.score }}
           </td>
-
         </tr>
       </tbody>
     </table>
