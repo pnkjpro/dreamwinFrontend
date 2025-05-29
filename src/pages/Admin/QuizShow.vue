@@ -205,13 +205,13 @@
                     </div>
                     <div v-else>--</div>
                   </td>
-                  <!-- <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button @click="showUserResponses(response)" 
                             :disabled="response.status !== 'completed'"
                             class="text-indigo-600 hover:text-indigo-900 disabled:text-gray-400">
                       View Answers
                     </button>
-                  </td> -->
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -233,45 +233,57 @@
                 </button>
               </div>
             </div>
-            <div class="p-6">
-              <div class="mb-4">
-                <span class="font-medium">Score:</span> {{ selectedUser.score }} / {{ usersByquiz.totalQuestion }}
-                ({{ calculatePercentage(selectedUser.score, usersByquiz.totalQuestion) }}%)
-              </div>
-              <div class="mb-4">
-                <span class="font-medium">Time Taken:</span> {{ calculateDuration(selectedUser.started_at, selectedUser.ended_at) }}
-              </div>
-              <div v-if="selectedUser.responseContents" class="space-y-4">
-                <div v-for="(response, index) in selectedUser.responseContents" :key="index" 
-                     class="p-4 border rounded-lg"
-                     :class="{'bg-green-50': response.is_correct, 'bg-red-50': !response.is_correct}">
-                  <div class="flex items-start justify-between">
-                    <div>
-                      <h4 class="font-medium">
-                        Question {{ response.question_id }}: {{ getQuestionText(response.question_id) }}
+            <div class="p-6">            
+              <div class="mb-4">                 
+                <span class="font-medium">Score:</span> {{ selectedUser.score }} / {{ usersByquiz.totalQuestion }}                 
+                ({{ calculatePercentage(selectedUser.score, usersByquiz.totalQuestion) }}%)               
+              </div>               
+              <div class="mb-4">                 
+                <span class="font-medium">Time Taken:</span> {{ calculateDuration(selectedUser.started_at, selectedUser.ended_at) }}               
+              </div>               
+              <div v-if="selectedUser.responseContents" class="space-y-4">                 
+                <div v-for="(response, index) in selectedUser.responseContents" :key="index"                       
+                    class="p-4 border rounded-lg"                      
+                    :class="{'bg-green-50': response.is_correct, 'bg-red-50': !response.is_correct}">                   
+                  <div class="flex items-start justify-between">                     
+                    <div class="flex-1">                       
+                      <h4 class="font-medium">                         
+                        Question {{ response.question_id }}: {{ getQuestionText(response.question_id) }}                       
                       </h4>
-                      <p class="mt-2">
-                        Selected Answer: {{ getOptionText(response.question_id, response.answer_id) }}
-                      </p>
-                      <p v-if="!response.is_correct" class="mt-1 text-red-600">
-                        Correct Answer: {{ getCorrectAnswerText(response.question_id) }}
-                      </p>
-                    </div>
-                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-full"
-                          :class="{'bg-green-100 text-green-800': response.is_correct, 'bg-red-100 text-red-800': !response.is_correct}">
-                      <svg v-if="response.is_correct" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                      </svg>
-                      <svg v-else class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                      </svg>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div v-else class="text-center p-6 text-gray-500">
-                No response data available
-              </div>
+                      
+                      <!-- Lifeline Used Display -->
+                      <div v-if="response.lifeline_used && response.lifeline_used && response.lifeline_used.name" 
+                          class="mt-2 mb-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                          </svg>
+                          Lifeline Used: {{ response.lifeline_used.name }}
+                        </span>
+                      </div>
+                      
+                      <p class="mt-2">                         
+                        Selected Answer: {{ getOptionText(response.question_id, response.answer_id) }}                       
+                      </p>                       
+                      <p v-if="!response.is_correct" class="mt-1 text-red-600">                         
+                        Correct Answer: {{ getCorrectAnswerText(response.question_id) }}                       
+                      </p>                     
+                    </div>                     
+                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-full ml-4"                           
+                          :class="{'bg-green-100 text-green-800': response.is_correct, 'bg-red-100 text-red-800': !response.is_correct}">                       
+                      <svg v-if="response.is_correct" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">                         
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />                       
+                      </svg>                       
+                      <svg v-else class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">                         
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />                       
+                      </svg>                     
+                    </span>                   
+                  </div>                 
+                </div>               
+              </div>               
+              <div v-else class="text-center p-6 text-gray-500">                 
+                No response data available               
+              </div>             
             </div>
           </div>
         </div>
