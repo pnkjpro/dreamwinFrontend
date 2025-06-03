@@ -10,9 +10,9 @@
         
         <div class="content-wrapper">
             <div class="section">
-                <p>Welcome to Himpri – a unique and engaging online gaming platform that empowers users to turn their knowledge into real cash prizes. Founded on the belief that intelligence and awareness should be rewarded, Himpri offers a range of quiz-based games that challenge the mind and offer exciting monetary rewards for top performers.</p>
+                <p>Welcome to Himpri – a unique and engaging online Quiz platform that empowers users to turn their knowledge into real cash prizes. Founded on the belief that intelligence and awareness should be rewarded, Himpri offers a range of quiz-based games that challenge the mind and offer exciting monetary rewards for top performers.</p>
                 
-                <p>At Himpri, we blend learning with entertainment, creating a space where fun meets purpose. Whether you're a student, a quiz enthusiast, or someone who simply enjoys learning new things, our platform gives you a thrilling way to test your skills, compete with others, and win attractive cash prizes—all from the comfort of your mobile or desktop.</p>
+                <p>Operated by Sandilya Technologies, a micro enterprise registered with UDYAM (UDYAM-UP-50-0206842) and GST (09CBAPP0925J1ZL), Headquartered in Indra Nagar, Lucknow, Uttar Pradesh, we operate www.himpri.com, a quiz-based edutainment platform built for students, learners, and knowledge seekers across India.</p>
             </div>
             
             <!-- <div class="section founders-section">

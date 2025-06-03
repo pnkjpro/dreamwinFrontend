@@ -294,7 +294,7 @@
         
         <div class="footer">
             <p>© 2025 Himpri.com - All Rights Reserved</p>
-            <p>For more information, visit <a href="http://www.himpri.com" target="_blank">www.himpri.com</a></p>
+            <p>For more information, visit <a href="http://himpri.com" target="_blank">www.himpri.com</a></p>
         </div>
     </div>
 </template>

@@ -273,6 +273,16 @@ const router = createRouter({
       component: () => import('@/pages/AboutUs.vue')
     },
     {
+      path: '/privacy-policy',
+      name: 'PrivacyPolicy',
+      component: () => import('@/pages/PrivacyPolicy.vue')
+    },
+    {
+      path: '/refund-policy',
+      name: 'RefundPolicy',
+      component: () => import('@/pages/RefundPolicy.vue')
+    },
+    {
       path: '/terms',
       name: 'Terms',
       component: () => import('@/pages/TermsNCondition.vue')

@@ -413,7 +413,9 @@ const menuItems = ref([
   { text: 'Help & FAQs', icon: 'question-circle', url: 'faqs' },
   { text: 'About Us', icon: 'file-alt', url: 'aboutus' },
   { text: 'How to Play', icon: 'gamepad', url: 'how-to-play' },
-  { text: 'Terms & Conditions', icon: 'file-alt', url: 'terms' }
+  { text: 'Terms & Conditions', icon: 'file-alt', url: 'terms' },
+  { text: 'Privacy Policy', icon: 'file-alt', url: 'privacy-policy' },
+  { text: 'Refund Policy', icon: 'file-alt', url: 'refund-policy' }
 ]);
 
 const navigateTo = (url) => {
