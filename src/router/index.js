@@ -175,8 +175,14 @@ const router = createRouter({
     {
       path: '/admin/',
       component: AdminLayout,
-      redirect: '/admin/funds/approval',
+      redirect: '/admin/overview',
       children: [
+        {
+          path: 'overview',
+          name: 'AdminOverview',
+          component: () => import('@/pages/Admin/AdminOverview.vue'),
+          meta: { requiresAdminAuth: true }
+        },
         {
           path: 'funds/approval',
           name: 'FundsApproval',
