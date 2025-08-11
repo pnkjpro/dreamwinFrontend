@@ -110,6 +110,13 @@ const router = createRouter({
         }
       ]
     },
+    // ====================== Expert Videos Route ====================
+    {
+      path: '/expert-videos',
+      name: 'ExpertVideos',
+      component: () => import('@/pages/MyDashboard/ExpertVideos.vue'),
+      meta: { requiresAuth: true }
+    },
     // ====================== Quiz Routes ====================
     {
       path: '/quiz/',

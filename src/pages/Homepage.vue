@@ -90,11 +90,67 @@
         <div class="flex overflow-x-auto p-1 space-x-4 no-scrollbar">
           <div v-for="(category, index) in categories" :key="index" class="flex flex-col items-center">
             <div @click="getQuizzesByCategory(category.id)" 
-                class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-4 border-white shadow-lg hover:shadow-xl transition-transform hover:scale-105"
+                class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 border-4 border-white shadow-lg hover:shadow-xl transition-transform hover:scale-105"
                 :style="`box-shadow: 0 10px 15px -3px rgba(${220 + (index * 5) % 35}, ${(80 + index * 10) % 120}, ${50}, 0.4)`">
               <img :src="displayImage(category.icon)" :alt="category.name" class="w-full h-full object-cover" />
             </div>
             <p class="text-center font-bold text-sm mt-2 max-w-24 text-black-800">{{ category.name }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shortcut Links -->
+      <div class="px-4 mb-6">
+        <h2 class="text-xl font-bold text-red-900 mb-3 flex items-center">
+          <font-awesome-icon icon="lightning-bolt" class="mr-2 text-yellow-500" /> Quick Actions
+        </h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div @click="handleFunds('deposit')" class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+            <div class="flex items-center">
+              <div class="bg-green-500 p-3 rounded-full mr-3">
+                <font-awesome-icon icon="wallet" class="text-white text-lg" />
+              </div>
+              <div>
+                <h3 class="font-bold text-green-800">Wallet</h3>
+                <p class="text-green-600 text-xs">Add money</p>
+              </div>
+            </div>
+          </div>
+          
+          <div @click="navigateTo('dashboard/refernearn')" class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+            <div class="flex items-center">
+              <div class="bg-blue-500 p-3 rounded-full mr-3">
+                <font-awesome-icon icon="user-friends" class="text-white text-lg" />
+              </div>
+              <div>
+                <h3 class="font-bold text-blue-800">Refer & Earn</h3>
+                <p class="text-blue-600 text-xs">Earn rewards</p>
+              </div>
+            </div>
+          </div>
+          
+          <div @click="navigateTo('dashboard/lifeline')" class="bg-gradient-to-r from-purple-50 to-violet-50 p-4 rounded-xl border border-purple-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+            <div class="flex items-center">
+              <div class="bg-purple-500 p-3 rounded-full mr-3">
+                <font-awesome-icon icon="phone" class="text-white text-lg" />
+              </div>
+              <div>
+                <h3 class="font-bold text-purple-800">Lifeline</h3>
+                <p class="text-purple-600 text-xs">Get help</p>
+              </div>
+            </div>
+          </div>
+          
+          <div @click="navigateTo('expert-videos')" class="bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-xl border border-red-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+            <div class="flex items-center">
+              <div class="bg-red-500 p-3 rounded-full mr-3">
+                <font-awesome-icon icon="play-circle" class="text-white text-lg" />
+              </div>
+              <div>
+                <h3 class="font-bold text-red-800">Expert Videos</h3>
+                <p class="text-red-600 text-xs">Learn tips</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -108,30 +164,33 @@
         </div>
       </div>
 
-      <!-- Promotion Cards -->
+      <!-- YouTube Videos Section -->
       <div class="px-4 mb-6">
         <h2 class="text-xl font-bold text-red-900 mb-3 flex items-center">
-          <font-awesome-icon icon="star" class="mr-2 text-yellow-500" /> Featured
+          <font-awesome-icon icon="video" class="mr-2 text-red-500" /> Featured Videos
         </h2>
         <div class="overflow-x-auto flex space-x-4 no-scrollbar">
-          <div v-for="(banner, index) in banners" :key="index" 
-              class="flex-shrink-0 w-64 h-32 rounded-xl overflow-hidden shadow-lg">
-            <div class="relative w-full h-full group">
-              <img :src="displayImage(banner.banner_path)" 
-                  :alt="banner.title" 
-                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-              <div class="absolute inset-0 bg-gradient-to-t from-red-900 via-transparent to-transparent opacity-60"></div>
+          <div v-for="(video, index) in youtubeVideos" :key="index" 
+              class="flex-shrink-0 w-64 rounded-xl overflow-hidden shadow-lg bg-white">
+            <div class="relative">
+              <img :src="video.thumbnail" 
+                  :alt="video.title" 
+                  class="w-full h-36 object-cover" />
+              <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                <div class="bg-red-600 rounded-full p-3 hover:bg-red-700 transition-colors cursor-pointer">
+                  <font-awesome-icon icon="play" class="text-white text-xl" />
+                </div>
+              </div>
+              <div class="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
+                {{ video.duration }}
+              </div>
             </div>
-          </div>
-        </div>
-        
-        <!-- Pagination Dots -->
-        <div class="flex justify-center space-x-2 mt-4">
-          <div v-for="(dot, index) in 3" :key="index" 
-              :class="[
-                'h-2 rounded-full transition-all', 
-                index === 1 ? 'w-8 bg-orange-500' : 'w-2 bg-red-200'
-              ]">
+            <div class="p-3">
+              <h3 class="text-sm font-semibold text-gray-900 line-clamp-2 leading-tight">
+                {{ video.title }}
+              </h3>
+              <p class="text-xs text-gray-600 mt-1">{{ video.views }} views</p>
+            </div>
           </div>
         </div>
       </div>
@@ -274,8 +333,9 @@ import {
   faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, 
   faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt,
   faPlus, faArrowUp, faTrophy, faClock, faChevronDown, faTimes,
-  faLayerGroup, faStar, faPhone,
-  faHistory
+  faLayerGroup, faStar, faPhone, faHistory, 
+  // faLightningBolt,
+  faUserFriends, faPlayCircle, faVideo, faPlay, faLock
 } from '@fortawesome/free-solid-svg-icons';
 import { useToast } from 'vue-toastification';
 
@@ -284,7 +344,9 @@ library.add(
   faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, 
   faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt,
   faPlus, faArrowUp, faTrophy, faClock, faChevronDown, faTimes,
-  faLayerGroup, faStar, faPhone, faHistory
+  faLayerGroup, faStar, faPhone, faHistory, 
+  // faLightningBolt,
+  faUserFriends, faPlayCircle, faVideo, faPlay, faLock
 );
   
 const router = useRouter();
@@ -305,6 +367,45 @@ const hasMoreLoad = computed(()=>{
   }
   return false
 })
+
+// YouTube Videos placeholder data
+const youtubeVideos = ref([
+  {
+    id: 1,
+    title: "How to Win Quiz Contests - Expert Tips and Strategies",
+    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    duration: "12:45",
+    views: "125K"
+  },
+  {
+    id: 2,
+    title: "Top 10 General Knowledge Questions for Quiz Competitions",
+    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    duration: "8:30",
+    views: "89K"
+  },
+  {
+    id: 3,
+    title: "Speed Quiz Techniques - Answer Faster and More Accurately",
+    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    duration: "15:20",
+    views: "203K"
+  },
+  {
+    id: 4,
+    title: "Current Affairs 2024 - Important Questions for Quiz",
+    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    duration: "22:15",
+    views: "67K"
+  },
+  {
+    id: 5,
+    title: "Memory Techniques for Quiz Preparation",
+    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    duration: "18:40",
+    views: "156K"
+  }
+]);
 
 // ================ load intro video =========================
 // Video preloader settings
@@ -481,6 +582,14 @@ function getContestStatus(unixTimestamp) {
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .slide-fade-enter-active {
