@@ -170,7 +170,7 @@
           <font-awesome-icon icon="video" class="mr-2 text-red-500" /> Featured Videos
         </h2>
         <div class="overflow-x-auto flex space-x-4 no-scrollbar">
-          <div v-for="(video, index) in youtubeVideos" :key="index" 
+          <div v-for="(video, index) in featuredVideos" :key="index" 
               class="flex-shrink-0 w-64 rounded-xl overflow-hidden shadow-lg bg-white">
             <div class="relative">
               <img :src="video.thumbnail" 
@@ -357,7 +357,7 @@ const mainStore = useMainStore();
 const authStore = useAuthStore();
 const transactionStore = useTransactionStore();
 
-const { contests, categories, banners, loading, official_notice, official_notice_status, totalCount, hasShownVideo } = storeToRefs(mainStore);
+const { contests, categories, banners, loading, official_notice, official_notice_status, totalCount, hasShownVideo, featuredVideos } = storeToRefs(mainStore);
 const { user } = storeToRefs(authStore);
 const { fundAction } = storeToRefs(transactionStore);
 
@@ -369,43 +369,43 @@ const hasMoreLoad = computed(()=>{
 })
 
 // YouTube Videos placeholder data
-const youtubeVideos = ref([
-  {
-    id: 1,
-    title: "How to Win Quiz Contests - Expert Tips and Strategies",
-    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-    duration: "12:45",
-    views: "125K"
-  },
-  {
-    id: 2,
-    title: "Top 10 General Knowledge Questions for Quiz Competitions",
-    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-    duration: "8:30",
-    views: "89K"
-  },
-  {
-    id: 3,
-    title: "Speed Quiz Techniques - Answer Faster and More Accurately",
-    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-    duration: "15:20",
-    views: "203K"
-  },
-  {
-    id: 4,
-    title: "Current Affairs 2024 - Important Questions for Quiz",
-    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-    duration: "22:15",
-    views: "67K"
-  },
-  {
-    id: 5,
-    title: "Memory Techniques for Quiz Preparation",
-    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-    duration: "18:40",
-    views: "156K"
-  }
-]);
+// const youtubeVideos = ref([
+//   {
+//     id: 1,
+//     title: "How to Win Quiz Contests - Expert Tips and Strategies",
+//     thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+//     duration: "12:45",
+//     views: "125K"
+//   },
+//   {
+//     id: 2,
+//     title: "Top 10 General Knowledge Questions for Quiz Competitions",
+//     thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+//     duration: "8:30",
+//     views: "89K"
+//   },
+//   {
+//     id: 3,
+//     title: "Speed Quiz Techniques - Answer Faster and More Accurately",
+//     thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+//     duration: "15:20",
+//     views: "203K"
+//   },
+//   {
+//     id: 4,
+//     title: "Current Affairs 2024 - Important Questions for Quiz",
+//     thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+//     duration: "22:15",
+//     views: "67K"
+//   },
+//   {
+//     id: 5,
+//     title: "Memory Techniques for Quiz Preparation",
+//     thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+//     duration: "18:40",
+//     views: "156K"
+//   }
+// ]);
 
 // ================ load intro video =========================
 // Video preloader settings
@@ -496,6 +496,7 @@ onMounted(() => {
   mainStore.fetchCategories();
   mainStore.fetchHomeBanners();
   mainStore.fetchHowVideos();
+  mainStore.fetchFeaturedVideos();
 })
 
 onUnmounted(() => {

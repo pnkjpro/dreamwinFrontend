@@ -175,7 +175,7 @@ const router = createRouter({
     {
       path: '/admin/',
       component: AdminLayout,
-      redirect: '/admin/overview',
+      redirect: '/admin/funds/approval',
       children: [
         {
           path: 'overview',
@@ -202,9 +202,9 @@ const router = createRouter({
           meta: { requiresAdminAuth: true }
         },
         {
-          path: 'banner/update',
-          name: 'BannerUpdate',
-          component: () => import('@/pages/Admin/HomeBanner.vue'),
+          path: 'featured/video/update',
+          name: 'FeaturedVideoUpdate',
+          component: () => import('@/pages/Admin/FeaturedVideo.vue'),
           meta: { requiresAdminAuth: true }
         },
         {

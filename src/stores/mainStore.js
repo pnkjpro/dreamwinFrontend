@@ -20,6 +20,7 @@ export const useMainStore = defineStore('main', () => {
   const prizeContents = ref([]);
   const categories = ref([]);  
   const referredUsers = ref([]);
+  const featuredVideos = ref([]);
   const referredMetaData = ref({
     claimedRewards: 0,
     pendingRewards: 0,
@@ -196,7 +197,88 @@ export const useMainStore = defineStore('main', () => {
       }
     }
 
+    async function fetchFeaturedVideos() {
+      try {
+        loading.value = true;
+        const response = await api.get('/featured/videos');
+        loading.value = false;
+
+        if (response.data.success) {
+          featuredVideos.value = response.data.data;
+          console.log("Featured videos fetched:", featuredVideos.value);
+        }
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error fetching featured videos:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function addFeaturedVideo(video) {
+      try {
+        console.log("Adding featured video:", video);
+        loading.value = true;
+        const response = await api.post('/featured/video/add', { video });
+        loading.value = false;
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error adding featured video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function updateFeaturedVideo(videos) {
+      try {
+        console.log("Updating featured videos:", videos);
+        loading.value = true;
+        const response = await api.post('/featured/video/update', videos);
+        loading.value = false;
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error updating featured videos:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function deleteFeaturedVideo(videoId) {
+      try {
+        console.log("Deleting featured video with ID:", videoId);
+        loading.value = true;
+        const response = await api.post('/featured/video/delete', { video_id: videoId });
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error deleting featured video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
     return {
+      //actions
         fetchCurrentContest,
         fetchContests,
         fetchMoreContests,
@@ -208,6 +290,12 @@ export const useMainStore = defineStore('main', () => {
         fetchHowVideos,
         updateBanner,
         fetchReferredUsers,
+        fetchFeaturedVideos,
+        updateFeaturedVideo,
+        addFeaturedVideo,
+        deleteFeaturedVideo,
+
+        //state
         banners,
         official_notice,
         official_notice_status,
@@ -224,6 +312,7 @@ export const useMainStore = defineStore('main', () => {
         contests,
         categories,
         referredUsers,
-        referredMetaData
+        referredMetaData,
+        featuredVideos
     };
 });
