@@ -80,21 +80,9 @@
             <!-- Video Stats -->
             <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
               <span class="flex items-center">
-                <font-awesome-icon icon="eye" class="mr-1" />
-                {{ video.views }} views
-              </span>
-              <span class="flex items-center">
                 <font-awesome-icon icon="calendar" class="mr-1" />
                 {{ formatDate(video.created_at) }}
               </span>
-            </div>
-
-            <!-- Video URL Display -->
-            <div v-if="video.videoUrl" class="mb-4">
-              <p class="text-xs text-gray-500 mb-1">Video URL:</p>
-              <div class="bg-gray-50 p-2 rounded text-xs text-gray-700 break-all">
-                {{ video.videoUrl }}
-              </div>
             </div>
 
             <!-- Action Buttons -->
@@ -104,12 +92,12 @@
                 <font-awesome-icon icon="edit" class="mr-2" />
                 Edit
               </button>
-              <button @click="toggleStatus(video, index)" 
+              <!-- <button @click="toggleStatus(video, index)" 
                       :class="video.is_active ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600'"
                       class="px-4 py-2 text-white rounded-lg transition-colors text-sm font-medium">
                 <font-awesome-icon :icon="video.is_active ? 'pause' : 'play'" class="mr-2" />
                 {{ video.is_active ? 'Deactivate' : 'Activate' }}
-              </button>
+              </button> -->
               <button @click="deleteVideo(index)" 
                       class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors text-sm font-medium">
                 <font-awesome-icon icon="trash" />
@@ -236,18 +224,6 @@
                 required
               />
             </div>
-
-            <!-- Views -->
-            <div class="form-group">
-              <label for="views" class="block mb-2 font-medium text-gray-700">Initial Views</label>
-              <input
-                id="views"
-                v-model="formData.views"
-                type="text"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                placeholder="e.g., 0 or 1.2K"
-              />
-            </div>
           </div>
 
           <!-- Status Toggle -->
@@ -361,10 +337,6 @@
                   <font-awesome-icon icon="clock" class="mr-1" />
                   {{ currentVideo?.duration }}
                 </span>
-                <span class="flex items-center">
-                  <font-awesome-icon icon="eye" class="mr-1" />
-                  {{ currentVideo?.views }} views
-                </span>
               </div>
             </div>
           </div>
@@ -418,7 +390,6 @@ const formData = reactive({
   title: '',
   description: '',
   duration: '',
-  views: '0',
   is_active: true,
   is_premium: true, // Always true for expert videos
   is_featured: false, // Always false for expert videos
@@ -560,7 +531,6 @@ const resetForm = () => {
   formData.title = ''
   formData.description = ''
   formData.duration = ''
-  formData.views = '0'
   formData.is_active = true
   formData.videoFile = null
   formData.thumbnailFile = null
@@ -581,7 +551,6 @@ const editVideo = (video, index) => {
   formData.title = video.title
   formData.description = video.description
   formData.duration = video.duration
-  formData.views = video.views
   formData.is_active = video.is_active
   
   // Set thumbnail preview if exists
@@ -641,7 +610,6 @@ const handleSubmit = async () => {
     payload.append('title', formData.title)
     payload.append('description', formData.description)
     payload.append('duration', formData.duration)
-    payload.append('views', formData.views || '0')
     payload.append('is_active', formData.is_active ? '1' : '0')
     payload.append('is_premium', '1') // Always premium
     payload.append('is_featured', '0') // Never featured

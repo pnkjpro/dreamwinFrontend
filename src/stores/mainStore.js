@@ -364,10 +364,32 @@ export const useMainStore = defineStore('main', () => {
       }
     }
 
-    async function fetchExpertVideos() {
+    async function fetchUserExpertVideos() {
       try {
         loading.value = true;
         const response = await api.get('/expert/video/list');
+        loading.value = false;
+
+        if (response.data.success) {
+          console.log("Expert videos fetched:", response.data.data);
+        }
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error fetching expert videos:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage, data: [] };
+      }
+    }
+
+    async function fetchExpertVideos() {
+      try {
+        loading.value = true;
+        const response = await api.get('/expert/videos');
         loading.value = false;
 
         if (response.data.success) {
@@ -428,6 +450,7 @@ export const useMainStore = defineStore('main', () => {
         deleteExpertVideo,
         toggleExpertVideoStatus,
         fetchExpertVideos,
+        fetchUserExpertVideos,
         purchaseExpertVideo,
 
         //state

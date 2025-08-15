@@ -315,7 +315,7 @@ const onVideoEnded = () => {
 };
 
 const fetchExpertVideos = async () => {
-  const response = await useMainStore().fetchExpertVideos();
+  const response = await useMainStore().fetchUserExpertVideos();
   videos.value = response.data.videos.map(video => ({
     ...video,
     purchased: video.purchased || false, // Ensure purchased is set
