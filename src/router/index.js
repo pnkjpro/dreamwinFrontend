@@ -250,6 +250,12 @@ const router = createRouter({
           meta: { requiresAdminAuth: true }
         },
         {
+          path: 'expert-videos',
+          name: 'AdminExpertVideos',
+          component: () => import('@/pages/Admin/ExpertVideoForm.vue'),
+          meta: { requiresAdminAuth: true }
+        },
+        {
           path: 'quiz/show/:node_id',
           name: 'QuizShow',
           component: () => import('@/pages/Admin/QuizShow.vue'),
@@ -349,9 +355,9 @@ router.beforeResolve(async (to, from, next) => {
     }
   }
 
-  if (!from.name && to.name !== 'Home' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
-    return next({ name: 'Home' });
-  }
+  // if (!from.name && to.name !== 'Home' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
+  //   return next({ name: 'Home' });
+  // }
   
   
   const isAuthenticated = !!authStore.user;

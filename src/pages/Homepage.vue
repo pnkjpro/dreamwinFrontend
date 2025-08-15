@@ -171,22 +171,28 @@
         </h2>
         <div class="overflow-x-auto flex space-x-4 no-scrollbar">
           <div v-for="(video, index) in featuredVideos" :key="index" 
-              class="flex-shrink-0 w-64 rounded-xl overflow-hidden shadow-lg bg-white">
+              @click="handleVideoClick(video)"
+              class="flex-shrink-0 w-64 rounded-xl overflow-hidden shadow-lg bg-white cursor-pointer hover:shadow-xl transition-all transform hover:scale-105 hover:bg-gray-50">
             <div class="relative">
               <img :src="video.thumbnail" 
                   :alt="video.title" 
-                  class="w-full h-36 object-cover" />
-              <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                <div class="bg-red-600 rounded-full p-3 hover:bg-red-700 transition-colors cursor-pointer">
+                  class="w-full h-36 object-cover transition-all hover:brightness-110" />
+              <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center hover:bg-opacity-40 transition-all">
+                <div class="bg-red-600 rounded-full p-3 hover:bg-red-700 transition-colors transform hover:scale-110">
                   <font-awesome-icon icon="play" class="text-white text-xl" />
                 </div>
               </div>
               <div class="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
                 {{ video.duration }}
               </div>
+              <!-- YouTube indicator -->
+              <div class="absolute bottom-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded flex items-center">
+                <font-awesome-icon icon="video" class="mr-1" />
+                YouTube
+              </div>
             </div>
             <div class="p-3">
-              <h3 class="text-sm font-semibold text-gray-900 line-clamp-2 leading-tight">
+              <h3 class="text-sm font-semibold text-gray-900 line-clamp-2 leading-tight hover:text-red-600 transition-colors">
                 {{ video.title }}
               </h3>
               <p class="text-xs text-gray-600 mt-1">{{ video.views }} views</p>
@@ -368,45 +374,6 @@ const hasMoreLoad = computed(()=>{
   return false
 })
 
-// YouTube Videos placeholder data
-// const youtubeVideos = ref([
-//   {
-//     id: 1,
-//     title: "How to Win Quiz Contests - Expert Tips and Strategies",
-//     thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-//     duration: "12:45",
-//     views: "125K"
-//   },
-//   {
-//     id: 2,
-//     title: "Top 10 General Knowledge Questions for Quiz Competitions",
-//     thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-//     duration: "8:30",
-//     views: "89K"
-//   },
-//   {
-//     id: 3,
-//     title: "Speed Quiz Techniques - Answer Faster and More Accurately",
-//     thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-//     duration: "15:20",
-//     views: "203K"
-//   },
-//   {
-//     id: 4,
-//     title: "Current Affairs 2024 - Important Questions for Quiz",
-//     thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-//     duration: "22:15",
-//     views: "67K"
-//   },
-//   {
-//     id: 5,
-//     title: "Memory Techniques for Quiz Preparation",
-//     thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-//     duration: "18:40",
-//     views: "156K"
-//   }
-// ]);
-
 // ================ load intro video =========================
 // Video preloader settings
 const showPreloader = ref(false);
@@ -445,6 +412,15 @@ const handleFunds = (fundType) => {
   console.log(fundType);
   console.log(fundAction.value);
   router.push('/dashboard/funds');
+}
+
+const handleVideoClick = (video) => {
+  if (video.youtubeUrl || video.url) {
+    const youtubeUrl = video.youtubeUrl || video.url;
+    window.open(youtubeUrl, '_blank');
+  } else {
+    console.log('No YouTube URL found for video:', video);
+  }
 }
 
  const isContestExpired = (endDateTime) => {
@@ -496,7 +472,14 @@ onMounted(() => {
   mainStore.fetchCategories();
   mainStore.fetchHomeBanners();
   mainStore.fetchHowVideos();
-  mainStore.fetchFeaturedVideos();
+  mainStore.fetchFeaturedVideos().then(() => {
+    console.log('Featured Videos loaded:', featuredVideos.value);
+    // Log each video's structure for debugging
+    featuredVideos.value.forEach((video, index) => {
+      console.log(`Video ${index + 1}:`, video);
+      console.log(`YouTube URL for video ${index + 1}:`, video.youtubeUrl);
+    });
+  });
 })
 
 onUnmounted(() => {

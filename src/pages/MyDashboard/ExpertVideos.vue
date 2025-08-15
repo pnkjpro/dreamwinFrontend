@@ -186,7 +186,7 @@
               
               <!-- Action Button -->
               <div class="mt-3">
-                <button v-if="video.isUnlocked" 
+                <button v-if="video.purchased" 
                         @click="playVideo(video)"
                         class="w-full py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 transition-colors flex items-center justify-center">
                   <font-awesome-icon icon="play" class="mr-2" />
@@ -226,6 +226,7 @@ import {
   faShoppingCart, faVideoSlash
 } from '@fortawesome/free-solid-svg-icons';
 import { useToast } from 'vue-toastification';
+import { useMainStore } from '@/stores/mainStore';
 
 // Add icons to library
 library.add(faArrowLeft, faPlay, faTimes, faLock, faUnlock, faShoppingCart, faVideoSlash);
@@ -243,139 +244,18 @@ const purchasing = ref(false);
 const videoPlayer = ref(null);
 
 // Mock video data - replace with actual data from your API
-const videos = ref([
-  {
-    id: 1,
-    title: "Quiz Mastery: Advanced Strategies for Competitive Exams",
-    description: "Learn advanced techniques to excel in competitive quiz competitions. Master time management and strategic thinking.",
-    thumbnail: "/images/fallbackImage.png",
-    videoUrl: "/videos/expert1.mp4", // Replace with actual video path
-    duration: "15:30",
-    category: "Strategy",
-    difficulty: "Advanced",
-    price: 299,
-    isUnlocked: true
-  },
-  {
-    id: 2,
-    title: "Current Affairs 2024: Essential Topics for Quiz Success",
-    description: "Comprehensive coverage of current affairs that frequently appear in quiz competitions.",
-    thumbnail: "/images/fallbackImage.png",
-    videoUrl: "/videos/expert2.mp4",
-    duration: "22:45",
-    category: "Current Affairs",
-    difficulty: "Intermediate",
-    price: 199,
-    isUnlocked: true
-  },
-  {
-    id: 3,
-    title: "Memory Techniques: Remember Facts Like a Pro",
-    description: "Proven memory techniques used by quiz champions to retain vast amounts of information.",
-    thumbnail: "/images/fallbackImage.png",
-    videoUrl: "/videos/expert3.mp4",
-    duration: "18:20",
-    category: "Memory",
-    difficulty: "Beginner",
-    price: 249,
-    isUnlocked: false
-  },
-  {
-    id: 4,
-    title: "Science & Technology: Key Concepts for Modern Quizzes",
-    description: "Stay updated with the latest in science and technology for competitive quizzing.",
-    thumbnail: "/images/fallbackImage.png",
-    videoUrl: "/videos/expert4.mp4",
-    duration: "25:10",
-    category: "Science",
-    difficulty: "Advanced",
-    price: 349,
-    isUnlocked: false
-  },
-  {
-    id: 5,
-    title: "History & Geography: Mastering the Classics",
-    description: "Essential historical events and geographical facts every quiz enthusiast should know.",
-    thumbnail: "/images/fallbackImage.png",
-    videoUrl: "/videos/expert5.mp4",
-    duration: "20:15",
-    category: "History",
-    difficulty: "Intermediate",
-    price: 279,
-    isUnlocked: false
-  },
-  {
-    id: 6,
-    title: "Sports Quiz Mastery: Stats, Records & Trivia",
-    description: "Comprehensive sports knowledge covering major events, records, and interesting trivia.",
-    thumbnail: "/images/fallbackImage.png",
-    videoUrl: "/videos/expert6.mp4",
-    duration: "16:40",
-    category: "Sports",
-    difficulty: "Intermediate",
-    price: 229,
-    isUnlocked: true
-  },
-  {
-    id: 7,
-    title: "Literature & Arts: Cultural Quiz Essentials",
-    description: "Explore the world of literature, arts, and culture for well-rounded quiz preparation.",
-    thumbnail: "/images/fallbackImage.png",
-    videoUrl: "/videos/expert7.mp4",
-    duration: "19:30",
-    category: "Literature",
-    difficulty: "Advanced",
-    price: 299,
-    isUnlocked: false
-  },
-  {
-    id: 8,
-    title: "Quick Calculation Tricks for Quiz Competitions",
-    description: "Mathematical shortcuts and calculation tricks to solve numerical problems faster.",
-    thumbnail: "/images/fallbackImage.png",
-    videoUrl: "/videos/expert8.mp4",
-    duration: "14:25",
-    category: "Mathematics",
-    difficulty: "Intermediate",
-    price: 199,
-    isUnlocked: false
-  },
-  {
-    id: 9,
-    title: "Psychology of Quiz Success: Mental Preparation",
-    description: "Mental strategies, stress management, and confidence building for quiz competitions.",
-    thumbnail: "/images/fallbackImage.png",
-    videoUrl: "/videos/expert9.mp4",
-    duration: "17:50",
-    category: "Psychology",
-    difficulty: "Beginner",
-    price: 179,
-    isUnlocked: false
-  },
-  {
-    id: 10,
-    title: "Final Preparation: Last-Minute Tips & Revision",
-    description: "Last-minute preparation strategies and quick revision techniques for quiz competitions.",
-    thumbnail: "/images/fallbackImage.png",
-    videoUrl: "/videos/expert10.mp4",
-    duration: "12:15",
-    category: "Preparation",
-    difficulty: "Beginner",
-    price: 149,
-    isUnlocked: false
-  }
-]);
+const videos = ref([]);
 
 // Computed properties
 const filteredVideos = computed(() => {
   if (activeFilter.value === 'all') return videos.value;
-  if (activeFilter.value === 'unlocked') return videos.value.filter(v => v.isUnlocked);
-  if (activeFilter.value === 'locked') return videos.value.filter(v => !v.isUnlocked);
+  if (activeFilter.value === 'unlocked') return videos.value.filter(v => v.purchased);
+  if (activeFilter.value === 'locked') return videos.value.filter(v => !v.purchased);
   return videos.value;
 });
 
-const unlockedCount = computed(() => videos.value.filter(v => v.isUnlocked).length);
-const lockedCount = computed(() => videos.value.filter(v => !v.isUnlocked).length);
+const unlockedCount = computed(() => videos.value.filter(v => v.purchased).length);
+const lockedCount = computed(() => videos.value.filter(v => !v.purchased).length);
 
 // Methods
 const goBack = () => {
@@ -383,7 +263,7 @@ const goBack = () => {
 };
 
 const playVideo = (video) => {
-  if (!video.isUnlocked) {
+  if (!video.purchased) {
     showPurchase(video);
     return;
   }
@@ -413,25 +293,15 @@ const purchaseVideo = async () => {
   purchasing.value = true;
   
   try {
-    // Simulate purchase API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Unlock the video
-    const videoIndex = videos.value.findIndex(v => v.id === selectedVideo.value.id);
-    if (videoIndex !== -1) {
-      videos.value[videoIndex].isUnlocked = true;
-    }
-    
+    const result = await useMainStore().purchaseExpertVideo(selectedVideo.value.id);
     toast.success('Video purchased successfully!');
     closePurchaseModal();
-    
-    // Optionally play the video immediately
-    playVideo(selectedVideo.value);
     
   } catch (error) {
     toast.error('Purchase failed. Please try again.');
   } finally {
     purchasing.value = false;
+    fetchExpertVideos(); // Refresh the video list after purchase
   }
 };
 
@@ -444,10 +314,18 @@ const onVideoEnded = () => {
   // You can add logic here for tracking video completion
 };
 
+const fetchExpertVideos = async () => {
+  const response = await useMainStore().fetchExpertVideos();
+  videos.value = response.data.videos.map(video => ({
+    ...video,
+    purchased: video.purchased || false, // Ensure purchased is set
+    videoUrl: video.videoUrl || '/videos/fallback.mp4', // Fallback URL if not provided
+    thumbnail: video.thumbnail || '/images/fallbackImage.png' // Fallback thumbnail
+  }));
+};
+
 onMounted(() => {
-  // Load user's purchased videos from API
-  // This would typically be an API call to get the user's purchased videos
-  console.log('Expert Videos page loaded');
+  fetchExpertVideos();
 });
 </script>
 

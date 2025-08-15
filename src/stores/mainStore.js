@@ -277,6 +277,135 @@ export const useMainStore = defineStore('main', () => {
       }
     }
 
+    async function createExpertVideo(formData) {
+      try {
+        loading.value = true;
+        const response = await api.post('/expert/video/create', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        loading.value = false;
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error creating expert video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        const errors = error.response?.data?.errors || null;
+        return { success: false, message: errorMessage, errors };
+      }
+    }
+
+    async function updateExpertVideo(videoId, formData) {
+      try {
+        console.log("Updating expert video:", videoId);
+        loading.value = true;
+        const response = await api.post(`/expert/video/update`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error updating expert video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        const errors = error.response?.data?.errors || null;
+        return { success: false, message: errorMessage, errors };
+      }
+    }
+
+    async function deleteExpertVideo(videoId) {
+      try {
+        console.log("Deleting expert video with ID:", videoId);
+        loading.value = true;
+        const response = await api.post('/expert/video/delete', { video_id: videoId });
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error deleting expert video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function toggleExpertVideoStatus(videoId) {
+      try {
+        console.log("Toggling expert video status:", videoId);
+        loading.value = true;
+        const response = await api.post('/expert/video/toggle-status', { video_id: videoId });
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error toggling expert video status:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function fetchExpertVideos() {
+      try {
+        loading.value = true;
+        const response = await api.get('/expert/video/list');
+        loading.value = false;
+
+        if (response.data.success) {
+          console.log("Expert videos fetched:", response.data.data);
+        }
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error fetching expert videos:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage, data: [] };
+      }
+    }
+
+    async function purchaseExpertVideo(videoId) {
+      try {
+        console.log("Purchasing expert video:", videoId);
+        loading.value = true;
+        const response = await api.post('/expert/video/purchase', { video_id: videoId });
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error purchasing expert video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
     return {
       //actions
         fetchCurrentContest,
@@ -294,6 +423,12 @@ export const useMainStore = defineStore('main', () => {
         updateFeaturedVideo,
         addFeaturedVideo,
         deleteFeaturedVideo,
+        createExpertVideo,
+        updateExpertVideo,
+        deleteExpertVideo,
+        toggleExpertVideoStatus,
+        fetchExpertVideos,
+        purchaseExpertVideo,
 
         //state
         banners,

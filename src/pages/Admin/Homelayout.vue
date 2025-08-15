@@ -237,7 +237,8 @@ const menuGroups = ref([
     items: [
       { name: 'Quiz Creation', path: '/admin/quiz/create', icon: 'plus' },
       { name: 'Category Create', path: '/admin/category/create', icon: 'plus' },
-      { name: 'Quiz List', path: '/admin/quiz/list', icon: 'list' }
+      { name: 'Quiz List', path: '/admin/quiz/list', icon: 'list' },
+      { name: 'Expert Videos', path: '/admin/expert-videos', icon: 'video' }
     ]
   },
   {
@@ -348,6 +349,7 @@ const getPageDescription = () => {
     '/admin/quiz/create': 'Create new quiz competitions',
     '/admin/category/create': 'Add new quiz categories',
     '/admin/quiz/list': 'Manage existing quizzes',
+    '/admin/expert-videos': 'Upload and manage premium expert videos',
     '/admin/banner/update': 'Update homepage banner content',
     '/admin/notice/update': 'Manage system notices and announcements',
     '/admin/howVideo/update': 'Update instructional videos',
