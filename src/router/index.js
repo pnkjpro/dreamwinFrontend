@@ -18,8 +18,10 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '',
-      redirect: '/auth/'
+      path: '/',
+      name: 'LandingPage',
+      component: () => import('@/pages/LandingPage.vue'),
+      meta: { showChatbot: true }
     },
     // =============== Authentication Routes ================
     {
@@ -355,9 +357,9 @@ router.beforeResolve(async (to, from, next) => {
     }
   }
 
-  // if (!from.name && to.name !== 'Home' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
-  //   return next({ name: 'Home' });
-  // }
+  if (!from.name && to.name !== 'Home' && to.name !== 'LandingPage' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
+    return next({ name: 'Home' });
+  }
   
   
   const isAuthenticated = !!authStore.user;
