@@ -455,7 +455,7 @@ export const useMainStore = defineStore('main', () => {
     async function fetchWinners() {
       try {
         loading.value = true;
-        const response = await api.get('/admin/winners');
+        const response = await api.get('/admin/winner');
         loading.value = false;
 
         if (response.data.success) {
@@ -479,7 +479,7 @@ export const useMainStore = defineStore('main', () => {
       try {
         console.log("Adding winner:", formData);
         loading.value = true;
-        const response = await api.post('/admin/winner', formData, {
+        const response = await api.post('/admin/winner/add', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -502,7 +502,7 @@ export const useMainStore = defineStore('main', () => {
       try {
         console.log("Updating winner:", uid, formData);
         loading.value = true;
-        const response = await api.put(`/admin/winner/${uid}`, formData, {
+        const response = await api.post(`/admin/winner/update/${uid}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -525,7 +525,7 @@ export const useMainStore = defineStore('main', () => {
       try {
         console.log("Deleting winner with UID:", uid);
         loading.value = true;
-        const response = await api.delete(`/admin/winner/${uid}`);
+        const response = await api.delete(`/admin/winner/delete/${uid}`);
         loading.value = false;
 
         return {

@@ -509,7 +509,7 @@
         <div v-if="!loadingWinners && recentWinners.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
           <div v-for="winner in recentWinners" :key="winner.id" class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
             <img 
-              :src="getFallbackImage(winner.id)" 
+              :src="winner.avatar" 
               :alt="winner.name"
               class="w-full h-48 object-cover"
             >
@@ -1062,63 +1062,9 @@ const fetchRecentWinners = async () => {
       recentWinners.value = result.data || []
     } else {
       console.error('Failed to fetch winners:', result.message)
-      // Fallback data for demo
-      recentWinners.value = [
-        {
-          id: 1,
-          name: 'Rahul K.',
-          amount: 25000,
-          contest: 'Science Quiz',
-          date: new Date(),
-          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=880&q=80'
-        },
-        {
-          id: 2,
-          name: 'Priya M.',
-          amount: 18500,
-          contest: 'GK Challenge',
-          date: new Date(),
-          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80'
-        },
-        {
-          id: 3,
-          name: 'Amit S.',
-          amount: 32000,
-          contest: 'Math Masters',
-          date: new Date(),
-          avatar: 'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1467&q=80'
-        }
-      ]
     }
   } catch (error) {
     console.error('Error fetching recent winners:', error)
-    // Fallback data for demo
-    recentWinners.value = [
-      {
-        id: 1,
-        name: 'Rahul K.',
-        amount: 25000,
-        contest: 'Science Quiz',
-        date: new Date(),
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=880&q=80'
-      },
-      {
-        id: 2,
-        name: 'Priya M.',
-        amount: 18500,
-        contest: 'GK Challenge',
-        date: new Date(),
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80'
-      },
-      {
-        id: 3,
-        name: 'Amit S.',
-        amount: 32000,
-        contest: 'Math Masters',
-        date: new Date(),
-        avatar: 'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1467&q=80'
-      }
-    ]
   } finally {
     loadingWinners.value = false
   }
