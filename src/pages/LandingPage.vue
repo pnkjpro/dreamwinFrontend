@@ -82,7 +82,7 @@
           <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden relative">
             <div class="absolute inset-0 bg-gradient-to-b from-red-100/0 to-red-200/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <img 
-              src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80" 
+              src="/public/images/students.jpg" 
               alt="Students"
               class="w-full h-48 object-cover border-b-4 border-red-600"
             >
@@ -95,7 +95,7 @@
           <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden relative">
             <div class="absolute inset-0 bg-gradient-to-b from-red-100/0 to-red-200/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <img 
-              src="https://images.unsplash.com/photo-1592078615290-033ee584e267?ixlib=rb-4.0.3&auto=format&fit=crop&w=1528&q=80" 
+              src="/public/images/housewife.jpg" 
               alt="Housewives"
               class="w-full h-48 object-cover border-b-4 border-red-600"
             >
@@ -108,7 +108,7 @@
           <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden relative">
             <div class="absolute inset-0 bg-gradient-to-b from-red-100/0 to-red-200/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <img 
-              src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80" 
+              src="/public/images/political.jpg" 
               alt="Politics Enthusiasts"
               class="w-full h-48 object-cover border-b-4 border-red-600"
             >
@@ -121,7 +121,7 @@
           <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden relative">
             <div class="absolute inset-0 bg-gradient-to-b from-red-100/0 to-red-200/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <img 
-              src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1605&q=80" 
+              src="/public/images/cricket.jpg" 
               alt="Sports Fans"
               class="w-full h-48 object-cover border-b-4 border-red-600"
             >
@@ -159,6 +159,7 @@
               <i class="fas fa-landmark"></i>
             </div>
             <h3 class="text-gray-800 mb-4 font-semibold">Government Exams</h3>
+            <span class="absolute top-3 right-3 bg-yellow-400 text-white text-xs px-3 py-1 rounded-full font-semibold">Coming Soon</span>
           </div>
           
           <div class="group bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 text-center">
@@ -166,6 +167,7 @@
               <i class="fas fa-flask"></i>
             </div>
             <h3 class="text-gray-800 mb-4 font-semibold">JEE/NEET</h3>
+            <span class="absolute top-3 right-3 bg-yellow-400 text-white text-xs px-3 py-1 rounded-full font-semibold">Coming Soon</span>
           </div>
           
           <div class="group bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 text-center relative">
@@ -181,6 +183,7 @@
               <i class="fas fa-history"></i>
             </div>
             <h3 class="text-gray-800 mb-4 font-semibold">Historical Events</h3>
+            <span class="absolute top-3 right-3 bg-yellow-400 text-white text-xs px-3 py-1 rounded-full font-semibold">Coming Soon</span>
           </div>
           
           <div class="group bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 text-center">
@@ -188,6 +191,7 @@
               <i class="fas fa-running"></i>
             </div>
             <h3 class="text-gray-800 mb-4 font-semibold">Sports Updates</h3>
+            <span class="absolute top-3 right-3 bg-yellow-400 text-white text-xs px-3 py-1 rounded-full font-semibold">Coming Soon</span>
           </div>
           
           <div class="group bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 text-center relative">
@@ -472,7 +476,7 @@
         <div v-if="!loadingWinners && recentWinners.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
           <div v-for="winner in recentWinners" :key="winner.id" class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
             <img 
-              :src="winner.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=880&q=80'" 
+              :src="getFallbackImage(winner.id)" 
               :alt="winner.name"
               class="w-full h-48 object-cover"
             >
@@ -840,13 +844,18 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/plugins/axios'
+import { useMainStore } from '@/stores/mainStore'
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
+const mainStore = useMainStore()
 const showBackToTop = ref(false)
 const currentSlide = ref(0)
 const recentWinners = ref([])
 const loadingWinners = ref(true)
 const activeFaq = ref(null)
+
+const { howVideos } = storeToRefs(mainStore)
 
 // Animated counter values
 const animatedUserCount = ref(0)
@@ -861,12 +870,26 @@ const targetWinnersCount = 500
 // Animation state
 const hasAnimated = ref(false)
 
+const baseUrl = import.meta.env.VITE_FRONT_URL
 const heroImages = [
-  'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80',
-  'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
-  'https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=1469&q=80',
-  'https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1374&q=80'
+  `/public/images/nn1.jpg`,
+  `/public/images/nn2.jpg`,
+  `/public/images/nn3.jpg`,
+  `/public/images/nn4.jpg`
 ]
+
+const fallbackImages = [
+  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=880&q=80", // man smiling
+  "https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=880&q=80", // woman portrait
+  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=880&q=80", // man with glasses
+  "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=880&q=80", // young woman
+  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=880&q=80", // laughing girl
+  "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?auto=format&fit=crop&w=880&q=80"  // man in hoodie
+]
+
+const getFallbackImage = (index) => {
+  return fallbackImages[index % fallbackImages.length]
+}
 
 const goToLogin = () => {
   router.push('/auth/login')
@@ -1001,7 +1024,7 @@ const setupStatsAnimation = () => {
 const fetchRecentWinners = async () => {
   try {
     loadingWinners.value = true
-    const response = await api.get('/api/recent/winners')
+    const response = await api.get('/recent/winners')
     recentWinners.value = response.data.data || []
   } catch (error) {
     console.error('Error fetching recent winners:', error)
@@ -1052,6 +1075,7 @@ const toggleFaq = (index) => {
 onMounted(() => {
   createFloatingCoins()
   fetchRecentWinners()
+  mainStore.fetchHowVideos();
   
   // Auto-slide functionality
   const slideInterval = setInterval(nextSlide, 5000)
