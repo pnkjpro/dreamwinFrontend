@@ -83,6 +83,10 @@
                 <font-awesome-icon icon="calendar" class="mr-1" />
                 {{ formatDate(video.created_at) }}
               </span>
+              <span v-if="video.pdf_attachment" class="flex items-center text-blue-600">
+                <font-awesome-icon icon="file-pdf" class="mr-1" />
+                PDF
+              </span>
             </div>
 
             <!-- Action Buttons -->
@@ -91,6 +95,10 @@
                       class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium">
                 <font-awesome-icon icon="edit" class="mr-2" />
                 Edit
+              </button>
+              <button v-if="video.pdf_attachment" @click="downloadPdf(video)" 
+                      class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
+                <font-awesome-icon icon="file-pdf" />
               </button>
               <!-- <button @click="toggleStatus(video, index)" 
                       :class="video.is_active ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600'"
@@ -181,6 +189,35 @@
                     </button>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PDF Attachment Section -->
+          <div class="form-group">
+            <label class="block mb-2 font-medium text-gray-700">PDF Attachment (Optional)</label>
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors">
+              <input
+                type="file"
+                ref="pdfFileInput"
+                @change="handlePdfUpload"
+                accept=".pdf"
+                class="hidden"
+              />
+              
+              <div v-if="!formData.pdfFile" @click="$refs.pdfFileInput.click()" class="cursor-pointer">
+                <font-awesome-icon icon="file-pdf" class="text-4xl text-gray-400 mb-2" />
+                <p class="text-gray-600 mb-1">Click to upload PDF file</p>
+                <p class="text-xs text-gray-500">PDF format only (Max: 10MB)</p>
+              </div>
+              
+              <div v-else class="text-green-600">
+                <font-awesome-icon icon="check-circle" class="text-2xl mb-2" />
+                <p class="font-medium">{{ formData.pdfFile.name }}</p>
+                <p class="text-xs text-gray-500">{{ formatFileSize(formData.pdfFile.size) }}</p>
+                <button @click="clearPdfFile" type="button" class="mt-2 text-red-500 hover:text-red-700 text-sm">
+                  Remove File
+                </button>
               </div>
             </div>
           </div>
@@ -355,14 +392,14 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { 
   faPlus, faPlay, faEdit, faTrash, faTimes, faVideo, faCrown,
   faEye, faCalendar, faPause, faCloudUploadAlt, faImage,
-  faCheckCircle, faClock, faExclamationTriangle
+  faCheckCircle, faClock, faExclamationTriangle, faFilePdf, faDownload
 } from '@fortawesome/free-solid-svg-icons'
 
 // Add icons to library
 library.add(
   faPlus, faPlay, faEdit, faTrash, faTimes, faVideo, faCrown,
   faEye, faCalendar, faPause, faCloudUploadAlt, faImage,
-  faCheckCircle, faClock, faExclamationTriangle
+  faCheckCircle, faClock, faExclamationTriangle, faFilePdf, faDownload
 )
 
 // Get the main store
@@ -394,7 +431,8 @@ const formData = reactive({
   is_premium: true, // Always true for expert videos
   is_featured: false, // Always false for expert videos
   videoFile: null,
-  thumbnailFile: null
+  thumbnailFile: null,
+  pdfFile: null
 })
 
 // File previews
@@ -442,6 +480,26 @@ const handleThumbnailUpload = (event) => {
   }
 }
 
+// Handle PDF upload
+const handlePdfUpload = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    // Check file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('PDF file size must be less than 10MB')
+      return
+    }
+    
+    // Check file type
+    if (file.type !== 'application/pdf') {
+      toast.error('Please upload a valid PDF file')
+      return
+    }
+    
+    formData.pdfFile = file
+  }
+}
+
 // Clear video file
 const clearVideoFile = () => {
   formData.videoFile = null
@@ -454,6 +512,13 @@ const clearThumbnail = () => {
   formData.thumbnailFile = null
   thumbnailPreview.value = null
   const fileInput = document.querySelector('input[type="file"][accept="image/*"]')
+  if (fileInput) fileInput.value = ''
+}
+
+// Clear PDF file
+const clearPdfFile = () => {
+  formData.pdfFile = null
+  const fileInput = document.querySelector('input[type="file"][accept=".pdf"]')
   if (fileInput) fileInput.value = ''
 }
 
@@ -478,6 +543,20 @@ const getVideoUrl = (videoPath) => {
   if (!videoPath) return null
   if (videoPath.startsWith('http')) return videoPath
   return `${import.meta.env.VITE_BASE_API}/storage/${videoPath}`
+}
+
+// Download PDF function
+const downloadPdf = (video) => {
+  if (video.pdf_attachment) {
+    const pdfUrl = displayImage(video.pdf_attachment)
+    const link = document.createElement('a')
+    link.href = pdfUrl
+    link.download = `${video.title}_attachment.pdf`
+    link.target = '_blank'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 }
 
 // Play video function
@@ -534,6 +613,7 @@ const resetForm = () => {
   formData.is_active = true
   formData.videoFile = null
   formData.thumbnailFile = null
+  formData.pdfFile = null
   thumbnailPreview.value = null
 }
 
@@ -621,6 +701,10 @@ const handleSubmit = async () => {
     
     if (formData.thumbnailFile) {
       payload.append('thumbnail', formData.thumbnailFile)
+    }
+    
+    if (formData.pdfFile) {
+      payload.append('pdf_attachment', formData.pdfFile)
     }
     
     let result;

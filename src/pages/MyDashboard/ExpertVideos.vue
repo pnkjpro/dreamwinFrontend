@@ -5,7 +5,7 @@
       <button @click="goBack" class="p-3 rounded-full bg-red-500 hover:bg-red-400 transition-colors shadow-md">
         <font-awesome-icon icon="arrow-left" class="text-xl text-white" />
       </button>
-      <h1 class="text-xl font-bold">Expert Videos</h1>
+      <h1 class="text-xl font-bold">Expert Content</h1>
       <div class="w-12"></div> <!-- Spacer for centering -->
     </header>
 
@@ -36,6 +36,40 @@
           <div class="flex items-center text-xs text-gray-500">
             <span class="mr-4">Duration: {{ currentVideo.duration }}</span>
             <span>Category: {{ currentVideo.category }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PDF Viewer Modal -->
+    <div v-if="showPdfViewer" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl overflow-hidden max-w-4xl w-full max-h-full">
+        <div class="flex justify-between items-center p-4 bg-gradient-to-r from-red-600 to-orange-600 text-white">
+          <h3 class="text-lg font-bold">{{ currentPdf.title }} - PDF Document</h3>
+          <div class="flex space-x-2">
+            <a :href="currentPdf.pdfUrl" 
+               :download="`${currentPdf.title}.pdf`"
+               class="p-2 hover:bg-red-500 rounded-full transition-colors"
+               title="Download PDF">
+              <font-awesome-icon icon="download" class="text-lg" />
+            </a>
+            <button @click="closePdfViewer" class="p-2 hover:bg-red-500 rounded-full transition-colors">
+              <font-awesome-icon icon="times" class="text-xl" />
+            </button>
+          </div>
+        </div>
+        <div class="relative h-96 md:h-[600px]">
+          <iframe 
+            :src="currentPdf.pdfUrl" 
+            class="w-full h-full border-none"
+            title="PDF Viewer">
+          </iframe>
+        </div>
+        <div class="p-4">
+          <p class="text-gray-700 text-sm mb-2">{{ currentPdf.description }}</p>
+          <div class="flex items-center text-xs text-gray-500">
+            <span class="mr-4">Category: {{ currentPdf.category }}</span>
+            <span>PDF Document</span>
           </div>
         </div>
       </div>
@@ -113,7 +147,7 @@
                     ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white' 
                     : 'text-gray-600 hover:bg-gray-100'
                 ]">
-          All Videos
+          All Content
         </button>
         <button @click="activeFilter = 'unlocked'" 
                 :class="[
@@ -155,7 +189,7 @@
               </div>
               
               <!-- Play Button for unlocked videos -->
-              <div v-else 
+              <div v-else-if="video.videoUrl"
                    @click="playVideo(video)"
                    class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center cursor-pointer hover:bg-opacity-50 transition-all">
                 <div class="bg-red-600 rounded-full p-3 hover:bg-red-700 transition-colors">
@@ -163,8 +197,29 @@
                 </div>
               </div>
               
-              <!-- Duration Badge -->
-              <div class="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
+              <!-- PDF Button for PDF-only content -->
+              <div v-else-if="video.pdfUrl"
+                   @click="viewPdf(video)"
+                   class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center cursor-pointer hover:bg-opacity-50 transition-all">
+                <div class="bg-blue-600 rounded-full p-3 hover:bg-blue-700 transition-colors">
+                  <font-awesome-icon icon="file-pdf" class="text-white text-xl" />
+                </div>
+              </div>
+              
+              <!-- Content Type Badge -->
+              <div class="absolute top-2 left-2 flex flex-col space-y-1">
+                <span v-if="video.videoUrl" class="bg-red-600 text-white text-xs px-2 py-1 rounded-full">
+                  <font-awesome-icon icon="play" class="mr-1" />
+                  Video
+                </span>
+                <span v-if="video.pdfUrl" class="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+                  <font-awesome-icon icon="file-pdf" class="mr-1" />
+                  PDF
+                </span>
+              </div>
+              
+              <!-- Duration Badge (only for videos) -->
+              <div v-if="video.videoUrl && video.duration" class="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
                 {{ video.duration }}
               </div>
             </div>
@@ -180,18 +235,47 @@
                 </p>
                 <div class="flex items-center text-xs text-gray-500">
                   <span class="bg-gray-100 px-2 py-1 rounded-full mr-2">{{ video.category }}</span>
-                  <span>{{ video.difficulty }}</span>
+                  <span v-if="video.videoUrl && video.pdfUrl" class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">
+                    Video + PDF
+                  </span>
+                  <span v-else-if="video.videoUrl" class="bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs">
+                    Video Only
+                  </span>
+                  <span v-else-if="video.pdfUrl" class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs">
+                    PDF Only
+                  </span>
                 </div>
               </div>
               
               <!-- Action Button -->
               <div class="mt-3">
-                <button v-if="video.purchased" 
-                        @click="playVideo(video)"
-                        class="w-full py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 transition-colors flex items-center justify-center">
-                  <font-awesome-icon icon="play" class="mr-2" />
-                  Watch Now
-                </button>
+                <div v-if="video.purchased" class="space-y-2">
+                  <!-- Video Button -->
+                  <button v-if="video.videoUrl" 
+                          @click="playVideo(video)"
+                          class="w-full py-2 bg-gradient-to-r from-red-500 to-orange-600 text-white rounded-lg font-medium hover:from-red-600 hover:to-orange-700 transition-colors flex items-center justify-center">
+                    <font-awesome-icon icon="play" class="mr-2" />
+                    Watch Video
+                  </button>
+                  
+                  <!-- PDF Button -->
+                  <button v-if="video.pdfUrl" 
+                          @click="viewPdf(video)"
+                          class="w-full py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-indigo-700 transition-colors flex items-center justify-center">
+                    <font-awesome-icon icon="file-pdf" class="mr-2" />
+                    View PDF
+                  </button>
+                  
+                  <!-- Download PDF Button (if both video and PDF exist) -->
+                  <a v-if="video.pdfUrl && video.videoUrl" 
+                     :href="video.pdfUrl" 
+                     :download="`${video.title}.pdf`"
+                     class="w-full py-1 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center text-sm">
+                    <font-awesome-icon icon="download" class="mr-2" />
+                    Download PDF
+                  </a>
+                </div>
+                
                 <button v-else 
                         @click="showPurchase(video)"
                         class="w-full py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-medium hover:from-orange-600 hover:to-red-600 transition-colors flex items-center justify-center">
@@ -209,8 +293,8 @@
         <div class="bg-gray-100 rounded-full p-6 w-24 h-24 mx-auto mb-4">
           <font-awesome-icon icon="video-slash" class="text-gray-400 text-4xl" />
         </div>
-        <h3 class="text-xl font-bold text-gray-700 mb-2">No Videos Found</h3>
-        <p class="text-gray-500">No videos match the current filter</p>
+        <h3 class="text-xl font-bold text-gray-700 mb-2">No Content Found</h3>
+        <p class="text-gray-500">No videos or PDFs match the current filter</p>
       </div>
     </div>
   </div>
@@ -223,13 +307,13 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { 
   faArrowLeft, faPlay, faTimes, faLock, faUnlock, 
-  faShoppingCart, faVideoSlash
+  faShoppingCart, faVideoSlash, faFilePdf, faDownload, faEye
 } from '@fortawesome/free-solid-svg-icons';
 import { useToast } from 'vue-toastification';
 import { useMainStore } from '@/stores/mainStore';
 
 // Add icons to library
-library.add(faArrowLeft, faPlay, faTimes, faLock, faUnlock, faShoppingCart, faVideoSlash);
+library.add(faArrowLeft, faPlay, faTimes, faLock, faUnlock, faShoppingCart, faVideoSlash, faFilePdf, faDownload, faEye);
 
 const router = useRouter();
 const toast = useToast();
@@ -238,7 +322,9 @@ const toast = useToast();
 const activeFilter = ref('all');
 const showVideoPlayer = ref(false);
 const showPurchaseModal = ref(false);
+const showPdfViewer = ref(false);
 const currentVideo = ref(null);
+const currentPdf = ref(null);
 const selectedVideo = ref(null);
 const purchasing = ref(false);
 const videoPlayer = ref(null);
@@ -267,8 +353,25 @@ const playVideo = (video) => {
     showPurchase(video);
     return;
   }
+  if (!video.videoUrl) {
+    toast.error('Video not available for this content');
+    return;
+  }
   currentVideo.value = video;
   showVideoPlayer.value = true;
+};
+
+const viewPdf = (video) => {
+  if (!video.purchased) {
+    showPurchase(video);
+    return;
+  }
+  if (!video.pdfUrl) {
+    toast.error('PDF not available for this content');
+    return;
+  }
+  currentPdf.value = video;
+  showPdfViewer.value = true;
 };
 
 const closeVideoPlayer = () => {
@@ -277,6 +380,11 @@ const closeVideoPlayer = () => {
     videoPlayer.value.pause();
   }
   currentVideo.value = null;
+};
+
+const closePdfViewer = () => {
+  showPdfViewer.value = false;
+  currentPdf.value = null;
 };
 
 const showPurchase = (video) => {
@@ -319,13 +427,34 @@ const fetchExpertVideos = async () => {
   videos.value = response.data.videos.map(video => ({
     ...video,
     purchased: video.purchased || false, // Ensure purchased is set
-    videoUrl: video.videoUrl || '/videos/fallback.mp4', // Fallback URL if not provided
+    videoUrl: video.videoUrl || null, // Set to null if not available
+    pdfUrl: video.pdfUrl || null, // Handle PDF URL
     thumbnail: video.thumbnail || '/images/fallbackImage.png' // Fallback thumbnail
   }));
 };
 
 onMounted(() => {
   fetchExpertVideos();
+  
+  // Add keyboard event listener for ESC key
+  const handleKeydown = (event) => {
+    if (event.key === 'Escape') {
+      if (showVideoPlayer.value) {
+        closeVideoPlayer();
+      } else if (showPdfViewer.value) {
+        closePdfViewer();
+      } else if (showPurchaseModal.value) {
+        closePurchaseModal();
+      }
+    }
+  };
+  
+  document.addEventListener('keydown', handleKeydown);
+  
+  // Cleanup on unmount
+  return () => {
+    document.removeEventListener('keydown', handleKeydown);
+  };
 });
 </script>
 
