@@ -13,6 +13,7 @@ export const useMainStore = defineStore('main', () => {
   const banners = ref([]);
   const official_notice = ref("");
   const official_notice_status = ref(false);
+  const notice_updated_at = ref(null);
   const recordPerPage = ref(2);
   const hasShownVideo = ref(false);
   const contest = ref(null);
@@ -102,6 +103,7 @@ export const useMainStore = defineStore('main', () => {
         banners.value = response.data.data.banners;
         official_notice.value = response.data.data.official_notice;
         official_notice_status.value = response.data.data.official_notice_status;
+        notice_updated_at.value = response.data.data.notice_updated_at;
         console.log(official_notice_status);
         return {
           success: response.data.success,
@@ -574,6 +576,7 @@ export const useMainStore = defineStore('main', () => {
         banners,
         official_notice,
         official_notice_status,
+        notice_updated_at,
         prizeContents,
         hasShownVideo,
         variant,

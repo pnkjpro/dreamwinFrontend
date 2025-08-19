@@ -18,8 +18,13 @@
     <div v-else class="min-h-screen bg-gradient-to-b from-orange-50 via-red-50 to-orange-50">
       <!-- Header -->
       <header class="flex justify-between items-center p-4 bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg">
-        <button @click="toggleMenu" class="p-3 rounded-full bg-red-500 hover:bg-red-400 transition-colors shadow-md">
+        <button @click="toggleMenu" class="p-3 rounded-full bg-red-500 hover:bg-red-400 transition-colors shadow-md relative">
           <font-awesome-icon icon="bars" class="text-2xl text-white" />
+          <!-- Notice notification bubble -->
+          <span v-if="hasNewNotice" class="absolute -top-1 -right-1 flex h-4 w-4">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-4 w-4 bg-yellow-500"></span>
+          </span>
         </button>
         <div class="flex items-center">
           <div class="relative">
@@ -65,7 +70,22 @@
             </div>
           </div>
           
-          <ul class="text-white space-y-2 mb-8">
+          <ul class="text-white space-y-2 mb-6">
+            <!-- Official Notice Section -->
+            <li v-if="official_notice_status && official_notice" 
+                @click="showNoticeDialog = true" 
+                class="flex items-center justify-between cursor-pointer p-3 rounded-lg bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 transition-colors border border-yellow-400 shadow-md">
+              <div class="flex items-center">
+                <font-awesome-icon icon="bell" class="mr-3 text-yellow-200 animate-pulse" />
+                <span class="font-semibold">Official Notice</span>
+              </div>
+              <div class="flex items-center">
+                <span v-if="hasNewNotice" class="bg-yellow-400 text-yellow-900 text-xs px-2 py-1 rounded-full font-bold mr-2">NEW</span>
+                <font-awesome-icon icon="chevron-right" class="text-yellow-200" />
+              </div>
+            </li>
+            
+            <!-- Regular Menu Items -->
             <li v-for="(item, index) in menuItems" :key="index" @click="navigateTo(item.url)" 
                 class="flex items-center cursor-pointer p-3 rounded-lg hover:bg-red-600 transition-colors">
               <font-awesome-icon :icon="item.icon" class="mr-3 text-orange-300" />
@@ -80,6 +100,47 @@
             <span v-else>Logout</span>
           </button>
         </aside>
+      </Transition>
+
+      <!-- Notice Dialog -->
+      <Transition name="dialog-fade">
+        <div v-if="showNoticeDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
+          <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden">
+            <!-- Dialog Header -->
+            <div class="bg-gradient-to-r from-orange-600 to-red-600 text-white p-4 flex items-center justify-between">
+              <div class="flex items-center">
+                <font-awesome-icon icon="bell" class="mr-2 text-yellow-200" />
+                <h3 class="text-lg font-bold">Official Notice</h3>
+              </div>
+              <button @click="showNoticeDialog = false" class="text-white hover:text-orange-200 bg-red-600 p-1 rounded-full">
+                <font-awesome-icon icon="times" class="text-lg" />
+              </button>
+            </div>
+            
+            <!-- Dialog Content -->
+            <div class="p-6 overflow-y-auto max-h-[60vh]">
+              <div class="prose prose-sm max-w-none">
+                <p class="text-gray-700 leading-relaxed whitespace-pre-wrap">{{ official_notice }}</p>
+              </div>
+              
+              <!-- Notice Date -->
+              <div class="mt-4 pt-4 border-t border-gray-200">
+                <p class="text-xs text-gray-500 flex items-center">
+                  <font-awesome-icon icon="clock" class="mr-1" />
+                  Updated: {{ formatNoticeDate(notice_updated_at) }}
+                </p>
+              </div>
+            </div>
+            
+            <!-- Dialog Footer -->
+            <div class="bg-gray-50 px-6 py-3 flex justify-end">
+              <button @click="showNoticeDialog = false" 
+                      class="px-6 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 transition-colors font-medium">
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
       </Transition>
 
       <!-- Category Cards -->
@@ -152,15 +213,6 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Official Notice -->
-      <div v-if="official_notice_status" class="px-4 mb-4">
-        <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-md">
-          <p class="text-red-900 font-semibold">
-            {{ official_notice }}
-          </p>
         </div>
       </div>
 
@@ -341,7 +393,7 @@ import {
   faPlus, faArrowUp, faTrophy, faClock, faChevronDown, faTimes,
   faLayerGroup, faStar, faPhone, faHistory, 
   // faLightningBolt,
-  faUserFriends, faPlayCircle, faVideo, faPlay, faLock
+  faUserFriends, faPlayCircle, faVideo, faPlay, faLock, faBell
 } from '@fortawesome/free-solid-svg-icons';
 import { useToast } from 'vue-toastification';
 
@@ -352,18 +404,19 @@ library.add(
   faPlus, faArrowUp, faTrophy, faClock, faChevronDown, faTimes,
   faLayerGroup, faStar, faPhone, faHistory, 
   // faLightningBolt,
-  faUserFriends, faPlayCircle, faVideo, faPlay, faLock
+  faUserFriends, faPlayCircle, faVideo, faPlay, faLock, faBell
 );
   
 const router = useRouter();
 const toast = useToast();
 
 const menuOpen = ref(false);
+const showNoticeDialog = ref(false);
 const mainStore = useMainStore();
 const authStore = useAuthStore();
 const transactionStore = useTransactionStore();
 
-const { contests, categories, banners, loading, official_notice, official_notice_status, totalCount, hasShownVideo, featuredVideos } = storeToRefs(mainStore);
+const { contests, categories, banners, loading, official_notice, official_notice_status, notice_updated_at, totalCount, hasShownVideo, featuredVideos } = storeToRefs(mainStore);
 const { user } = storeToRefs(authStore);
 const { fundAction } = storeToRefs(transactionStore);
 
@@ -373,6 +426,19 @@ const hasMoreLoad = computed(()=>{
   }
   return false
 })
+
+// Check if there's a new notice (within 24 hours)
+const hasNewNotice = computed(() => {
+  if (!official_notice_status.value || !notice_updated_at.value) {
+    return false;
+  }
+  
+  const noticeDate = new Date(notice_updated_at.value);
+  const now = new Date();
+  const hoursDiff = (now - noticeDate) / (1000 * 60 * 60);
+  
+  return hoursDiff <= 24;
+});
 
 // ================ load intro video =========================
 // Video preloader settings
@@ -521,6 +587,20 @@ const displayImage = (imagePath) => {
   return path;
 }
 
+const formatNoticeDate = (dateTime) => {
+  if (!dateTime) return 'Unknown';
+  
+  const date = new Date(dateTime);
+  return date.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+}
+
 // ======================== Date n Time Handle ====================
 // Update current time every minute
 const now = ref(new Date());
@@ -582,6 +662,20 @@ function getContestStatus(unixTimestamp) {
 .slide-fade-leave-to {
   transform: translateX(-100%);
   opacity: 0;
+}
+
+.dialog-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.dialog-fade-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.dialog-fade-enter-from,
+.dialog-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
 }
 
 @keyframes ping {
