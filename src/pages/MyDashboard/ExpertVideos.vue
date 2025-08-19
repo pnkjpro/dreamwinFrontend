@@ -234,7 +234,7 @@
                   {{ video.description }}
                 </p>
                 <div class="flex items-center text-xs text-gray-500">
-                  <span class="bg-gray-100 px-2 py-1 rounded-full mr-2">{{ video.category }}</span>
+                  <!-- <span class="bg-gray-100 px-2 py-1 rounded-full mr-2">{{ video.category }}</span> -->
                   <span v-if="video.videoUrl && video.pdfUrl" class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">
                     Video + PDF
                   </span>
