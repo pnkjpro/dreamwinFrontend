@@ -162,53 +162,53 @@
 
       <!-- Shortcut Links -->
       <div class="px-4 mb-6">
-        <h2 class="text-xl font-bold text-red-900 mb-3 flex items-center">
+        <h2 class="text-lg font-bold text-red-900 mb-2 flex items-center">
           <font-awesome-icon icon="lightning-bolt" class="mr-2 text-yellow-500" /> Quick Actions
         </h2>
-        <div class="grid grid-cols-2 gap-4">
-          <div @click="handleFunds('deposit')" class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+        <div class="grid grid-cols-2 gap-3">
+          <div @click="handleFunds('deposit')" class="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg border border-green-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
             <div class="flex items-center">
-              <div class="bg-green-500 p-3 rounded-full mr-3">
-                <font-awesome-icon icon="wallet" class="text-white text-lg" />
+              <div class="bg-green-500 p-2 rounded-full mr-2">
+                <font-awesome-icon icon="wallet" class="text-white text-sm" />
               </div>
               <div>
-                <h3 class="font-bold text-green-800">Wallet</h3>
+                <h3 class="font-semibold text-green-800 text-sm">Wallet</h3>
                 <p class="text-green-600 text-xs">Add money</p>
               </div>
             </div>
           </div>
           
-          <div @click="navigateTo('dashboard/refernearn')" class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+          <div @click="navigateTo('dashboard/refernearn')" class="bg-gradient-to-r from-blue-50 to-cyan-50 p-3 rounded-lg border border-blue-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
             <div class="flex items-center">
-              <div class="bg-blue-500 p-3 rounded-full mr-3">
-                <font-awesome-icon icon="user-friends" class="text-white text-lg" />
+              <div class="bg-blue-500 p-2 rounded-full mr-2">
+                <font-awesome-icon icon="user-friends" class="text-white text-sm" />
               </div>
               <div>
-                <h3 class="font-bold text-blue-800">Refer & Earn</h3>
+                <h3 class="font-semibold text-blue-800 text-sm">Refer & Earn</h3>
                 <p class="text-blue-600 text-xs">Earn rewards</p>
               </div>
             </div>
           </div>
           
-          <div @click="navigateTo('dashboard/lifeline')" class="bg-gradient-to-r from-purple-50 to-violet-50 p-4 rounded-xl border border-purple-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+          <div @click="navigateTo('dashboard/lifeline')" class="bg-gradient-to-r from-purple-50 to-violet-50 p-3 rounded-lg border border-purple-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
             <div class="flex items-center">
-              <div class="bg-purple-500 p-3 rounded-full mr-3">
-                <font-awesome-icon icon="phone" class="text-white text-lg" />
+              <div class="bg-purple-500 p-2 rounded-full mr-2">
+                <font-awesome-icon icon="phone" class="text-white text-sm" />
               </div>
               <div>
-                <h3 class="font-bold text-purple-800">Lifeline</h3>
+                <h3 class="font-semibold text-purple-800 text-sm">Lifeline</h3>
                 <p class="text-purple-600 text-xs">Get help</p>
               </div>
             </div>
           </div>
           
-          <div @click="navigateTo('expert-videos')" class="bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-xl border border-red-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+          <div @click="navigateTo('expert-videos')" class="bg-gradient-to-r from-red-50 to-orange-50 p-3 rounded-lg border border-red-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
             <div class="flex items-center">
-              <div class="bg-red-500 p-3 rounded-full mr-3">
-                <font-awesome-icon icon="play-circle" class="text-white text-lg" />
+              <div class="bg-red-500 p-2 rounded-full mr-2">
+                <font-awesome-icon icon="play-circle" class="text-white text-sm" />
               </div>
               <div>
-                <h3 class="font-bold text-red-800">Expert Videos</h3>
+                <h3 class="font-semibold text-red-800 text-sm">Expert Videos</h3>
                 <p class="text-red-600 text-xs">Learn tips</p>
               </div>
             </div>
