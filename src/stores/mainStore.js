@@ -21,6 +21,7 @@ export const useMainStore = defineStore('main', () => {
   const categories = ref([]);  
   const referredUsers = ref([]);
   const featuredVideos = ref([]);
+  const recentWinners = ref([]);
   const referredMetaData = ref({
     claimedRewards: 0,
     pendingRewards: 0,
@@ -428,6 +429,117 @@ export const useMainStore = defineStore('main', () => {
       }
     }
 
+    async function fetchRecentWinners() {
+      try {
+        loading.value = true;
+        const response = await api.get('/recent/winners');
+        loading.value = false;
+
+        if (response.data.success) {
+          recentWinners.value = response.data.data;
+          console.log("Recent winners fetched:", recentWinners.value);
+        }
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error fetching recent winners:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage, data: [] };
+      }
+    }
+
+    async function fetchWinners() {
+      try {
+        loading.value = true;
+        const response = await api.get('/admin/winners');
+        loading.value = false;
+
+        if (response.data.success) {
+          recentWinners.value = response.data.data;
+          console.log("Recent winners fetched:", recentWinners.value);
+        }
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error fetching recent winners:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage, data: [] };
+      }
+    }
+    
+    async function addWinner(formData) {
+      try {
+        console.log("Adding winner:", formData);
+        loading.value = true;
+        const response = await api.post('/admin/winner', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        loading.value = false;
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error adding winner:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function updateWinner(uid, formData) {
+      try {
+        console.log("Updating winner:", uid, formData);
+        loading.value = true;
+        const response = await api.put(`/admin/winner/${uid}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        loading.value = false;
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error updating winner:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function deleteWinner(uid) {
+      try {
+        console.log("Deleting winner with UID:", uid);
+        loading.value = true;
+        const response = await api.delete(`/admin/winner/${uid}`);
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error deleting winner:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
     return {
       //actions
         fetchCurrentContest,
@@ -452,6 +564,11 @@ export const useMainStore = defineStore('main', () => {
         fetchExpertVideos,
         fetchUserExpertVideos,
         purchaseExpertVideo,
+        fetchRecentWinners,
+        fetchWinners,
+        addWinner,
+        updateWinner,
+        deleteWinner,
 
         //state
         banners,
@@ -471,6 +588,7 @@ export const useMainStore = defineStore('main', () => {
         categories,
         referredUsers,
         referredMetaData,
-        featuredVideos
+        featuredVideos,
+        recentWinners
     };
 });

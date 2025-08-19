@@ -258,6 +258,12 @@ const router = createRouter({
           meta: { requiresAdminAuth: true }
         },
         {
+          path: 'winners/manage',
+          name: 'WinnersManagement',
+          component: () => import('@/pages/Admin/WinnersForm.vue'),
+          meta: { requiresAdminAuth: true }
+        },
+        {
           path: 'quiz/show/:node_id',
           name: 'QuizShow',
           component: () => import('@/pages/Admin/QuizShow.vue'),

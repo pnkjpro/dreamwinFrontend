@@ -370,7 +370,29 @@
           Watch these videos to understand the platform better
         </p>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+        <!-- Show videos from howVideos store if available -->
+        <div v-if="howVideos && howVideos.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+          <div v-for="video in howVideos.slice(0, 6)" :key="video.id" class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+            <div class="relative">
+              <!-- YouTube Video Embed -->
+              <iframe 
+                class="w-full h-48"
+                :src="`https://www.youtube.com/embed/${video.youtube_id}`" 
+                :title="video.title"
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+              </iframe>
+            </div>
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ video.title }}</h3>
+              <p class="text-gray-600 text-sm">{{ video.description }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fallback content if no videos available -->
+        <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
           <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden relative cursor-pointer">
             <div class="relative">
               <img 
@@ -427,6 +449,17 @@
               <h3 class="text-lg font-semibold text-gray-800">Expert strategies to maximize earnings</h3>
             </div>
           </div>
+        </div>
+
+        <!-- Show More Button if there are more than 6 videos -->
+        <div v-if="howVideos && howVideos.length > 6" class="mt-8">
+          <router-link 
+            to="/how-to-play" 
+            class="inline-flex items-center bg-red-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transform hover:-translate-y-1 transition-all duration-300"
+          >
+            <span class="mr-2">View All Videos</span>
+            <i class="fas fa-arrow-right"></i>
+          </router-link>
         </div>
       </div>
     </section>
@@ -1024,8 +1057,39 @@ const setupStatsAnimation = () => {
 const fetchRecentWinners = async () => {
   try {
     loadingWinners.value = true
-    const response = await api.get('/recent/winners')
-    recentWinners.value = response.data.data || []
+    const result = await mainStore.fetchRecentWinners()
+    if (result.success) {
+      recentWinners.value = result.data || []
+    } else {
+      console.error('Failed to fetch winners:', result.message)
+      // Fallback data for demo
+      recentWinners.value = [
+        {
+          id: 1,
+          name: 'Rahul K.',
+          amount: 25000,
+          contest: 'Science Quiz',
+          date: new Date(),
+          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=880&q=80'
+        },
+        {
+          id: 2,
+          name: 'Priya M.',
+          amount: 18500,
+          contest: 'GK Challenge',
+          date: new Date(),
+          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80'
+        },
+        {
+          id: 3,
+          name: 'Amit S.',
+          amount: 32000,
+          contest: 'Math Masters',
+          date: new Date(),
+          avatar: 'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1467&q=80'
+        }
+      ]
+    }
   } catch (error) {
     console.error('Error fetching recent winners:', error)
     // Fallback data for demo

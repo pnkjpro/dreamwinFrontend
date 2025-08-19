@@ -251,7 +251,8 @@ const menuGroups = ref([
       { name: 'Update Featured Video', path: '/admin/featured/video/update', icon: 'home' },
       { name: 'Update Notice', path: '/admin/notice/update', icon: 'edit' },
       { name: 'Update How Video', path: '/admin/howVideo/update', icon: 'video' },
-      { name: 'Update Lifeline', path: '/admin/lifeline/update', icon: 'phone' }
+      { name: 'Update Lifeline', path: '/admin/lifeline/update', icon: 'phone' },
+      { name: 'Manage Winners', path: '/admin/winners/manage', icon: 'trophy' }
     ]
   },
   {
