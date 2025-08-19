@@ -306,13 +306,13 @@
             <p class="text-gray-600">Review how you've used your lifelines in previous contests to improve.</p>
           </div>
           
-          <div class="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+          <!-- <div class="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
             <div class="text-4xl text-red-600 mb-6">
               <i class="fas fa-question-circle"></i>
             </div>
             <h3 class="text-xl font-semibold text-gray-800 mb-4">Help & FAQ</h3>
             <p class="text-gray-600">Find answers to common questions about the platform and contests.</p>
-          </div>
+          </div> -->
           
           <!-- Third Row -->
           <div class="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
@@ -340,13 +340,13 @@
           </div>
           
           <!-- Fourth Row -->
-          <div class="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+          <!-- <div class="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
             <div class="text-4xl text-red-600 mb-6">
               <i class="fas fa-file-contract"></i>
             </div>
             <h3 class="text-xl font-semibold text-gray-800 mb-4">Terms & Policies</h3>
             <p class="text-gray-600">Read our terms, conditions, refund and privacy policies for transparency.</p>
-          </div>
+          </div> -->
           
           <div class="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 md:col-span-2 lg:col-span-1">
             <div class="text-4xl text-red-600 mb-6">
@@ -767,21 +767,21 @@
             </h3>
             <p class="text-gray-300 leading-relaxed">Learn, Play & Earn Real Cash Rewards. Join the largest community of knowledge seekers and winners.</p>
             <div class="flex space-x-4 mt-6">
-              <a href="#" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1">
+              <!-- <a href="#" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1">
                 <i class="fab fa-facebook-f"></i>
               </a>
               <a href="#" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1">
                 <i class="fab fa-twitter"></i>
-              </a>
-              <a href="#" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1">
+              </a> -->
+              <a href="https://www.instagram.com/himpri2025/profilecard/?igsh=MWQ3endteXIyczQ2Ng==" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1">
                 <i class="fab fa-instagram"></i>
               </a>
-              <a href="#" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1">
+              <a href="https://www.youtube.com/@himpriofficial" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1">
                 <i class="fab fa-youtube"></i>
               </a>
-              <a href="#" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1">
+              <!-- <a href="#" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1">
                 <i class="fab fa-telegram-plane"></i>
-              </a>
+              </a> -->
             </div>
           </div>
           
