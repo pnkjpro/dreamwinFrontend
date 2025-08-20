@@ -22,12 +22,46 @@ export const useAdminStore = defineStore('admin', () => {
             message: response.data.message
         }
     } catch (error) {
-        console.error("Error using Lifeline:", error);
+        console.error("Error creating category:", error);
         const errorMessage = error.response?.data?.message || "An unexpected error occurred";
         return { success: false, message: errorMessage };
     } finally {
         loading.value = false;
         
+    }
+  }
+
+  async function updateCategory(categoryId, formData){
+    try{
+        loading.value = true;
+        const response = await api.post(`/admin/category/update/${categoryId}`, formData);
+        return {
+            success: response.data.success,
+            message: response.data.message
+        }
+    } catch (error) {
+        console.error("Error updating category:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+    } finally {
+        loading.value = false;
+    }
+  }
+
+  async function deleteCategory(categoryId){
+    try{
+        loading.value = true;
+        const response = await api.delete(`/admin/category/delete/${categoryId}`);
+        return {
+            success: response.data.success,
+            message: response.data.message
+        }
+    } catch (error) {
+        console.error("Error deleting category:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+    } finally {
+        loading.value = false;
     }
   }
 
@@ -204,7 +238,7 @@ export const useAdminStore = defineStore('admin', () => {
   const updateCategorySorting = async (categories) => {
     loading.value = true;
     try {
-      const response = await api.post('/admin/categories/update-order', { categories });
+      const response = await api.post('/admin/category/update-order', { categories });
       loading.value = false;
       return response.data;
     } catch (error) {
@@ -311,6 +345,8 @@ export const useAdminStore = defineStore('admin', () => {
 
   return {
     createCategory,
+    updateCategory,
+    deleteCategory,
     createQuiz,
     fetchTransactions,
     statusApproval,
