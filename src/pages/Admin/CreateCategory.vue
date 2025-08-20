@@ -60,13 +60,37 @@
               <label for="icon" class="block text-sm font-medium text-gray-700 mb-2">
                 Category Icon
               </label>
-              <div class="space-y-2">
+              <div class="space-y-3">
+                <!-- Current Icon Display (when editing) -->
+                <div v-if="isEditing && currentCategoryIcon" class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Current Icon</label>
+                  <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0">
+                      <img 
+                        :src="currentCategoryIcon" 
+                        :alt="category.name"
+                        class="w-16 h-16 object-cover rounded-lg border border-gray-300"
+                        @error="handleImageError"
+                      />
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-sm text-gray-600">
+                        Current icon for <span class="font-medium">{{ category.name }}</span>
+                      </p>
+                      <p class="text-xs text-gray-500 mt-1">
+                        Upload a new icon below to replace this one
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- File Upload -->
                 <div class="flex items-center space-x-3">
                   <label class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                     </svg>
-                    Choose File
+                    {{ isEditing ? 'Choose New Icon' : 'Choose File' }}
                     <input 
                       id="icon"
                       type="file"
@@ -79,6 +103,33 @@
                     {{ category.icon || 'No file chosen' }}
                   </span>
                 </div>
+                
+                <!-- Icon Preview (for new uploads) -->
+                <div v-if="iconPreview" class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <label class="block text-sm font-medium text-blue-700 mb-2">New Icon Preview</label>
+                  <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0">
+                      <img 
+                        :src="iconPreview" 
+                        :alt="'Preview of ' + category.name"
+                        class="w-16 h-16 object-cover rounded-lg border border-blue-300"
+                      />
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-sm text-blue-700">
+                        New icon ready to upload
+                      </p>
+                      <button 
+                        @click="clearIconPreview"
+                        type="button"
+                        class="text-xs text-blue-600 hover:text-blue-800 underline mt-1"
+                      >
+                        Remove preview
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
                 <p class="text-xs text-blue-600">
                   <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -123,12 +174,34 @@
               class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div class="flex items-center space-x-3">
-                <span class="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-                  {{ index + 1 }}
-                </span>
-                <div>
-                  <h3 class="font-medium text-gray-900">{{ cat.name }}</h3>
-                  <p class="text-sm text-gray-500" v-if="cat.description">{{ cat.description }}</p>
+                <div class="flex items-center space-x-3">
+                  <!-- Category Icon -->
+                  <div class="flex-shrink-0">
+                    <img 
+                      v-if="cat.icon" 
+                      :src="cat.icon" 
+                      :alt="cat.name"
+                      class="w-10 h-10 object-cover rounded-lg border border-gray-300"
+                      @error="(e) => e.target.style.display = 'none'"
+                    />
+                    <div 
+                      v-else
+                      class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center"
+                    >
+                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <!-- Category Index and Info -->
+                  <span class="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+                    {{ index + 1 }}
+                  </span>
+                  <div>
+                    <h3 class="font-medium text-gray-900">{{ cat.name }}</h3>
+                    <p class="text-sm text-gray-500" v-if="cat.description">{{ cat.description }}</p>
+                  </div>
                 </div>
               </div>
               
@@ -257,15 +330,27 @@ const initialCategory = {
 }
 
 const category = ref({...initialCategory});
+const originalCategory = ref({...initialCategory}); // Store original values for comparison
 const isEditing = ref(false);
 const editingCategoryId = ref(null);
 const showDeleteModal = ref(false);
 const categoryToDelete = ref(null);
+const iconPreview = ref(null);
+const currentCategoryIcon = ref(null);
 
 const resetForm = () => {
   Object.assign(category.value, JSON.parse(JSON.stringify(initialCategory)));
+  Object.assign(originalCategory.value, JSON.parse(JSON.stringify(initialCategory)));
   isEditing.value = false;
   editingCategoryId.value = null;
+  iconPreview.value = null;
+  currentCategoryIcon.value = null;
+  
+  // Reset file input
+  const fileInput = document.getElementById('icon');
+  if (fileInput) {
+    fileInput.value = '';
+  }
 }
 
 const cancelEdit = () => {
@@ -316,6 +401,14 @@ const updateSorting = async () => {
 // =================== CRUD Operations ==================
 
 const editCategory = (cat) => {
+  // Store original values for comparison
+  originalCategory.value = {
+    name: cat.name,
+    description: cat.description || '',
+    icon: cat.icon || '',
+    display_order: cat.display_order || 1
+  };
+  
   category.value = {
     name: cat.name,
     description: cat.description || '',
@@ -324,6 +417,14 @@ const editCategory = (cat) => {
   };
   isEditing.value = true;
   editingCategoryId.value = cat.id;
+  currentCategoryIcon.value = cat.icon || null;
+  iconPreview.value = null;
+  
+  // Reset file input
+  const fileInput = document.getElementById('icon');
+  if (fileInput) {
+    fileInput.value = '';
+  }
   
   // Scroll to form
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -366,16 +467,64 @@ const handleIconUpload = (event) => {
     
     category.value.iconFile = file;
     category.value.icon = file.name;
+    
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      iconPreview.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
   }
+}
+
+const clearIconPreview = () => {
+  iconPreview.value = null;
+  category.value.iconFile = null;
+  category.value.icon = '';
+  
+  // Reset file input
+  const fileInput = document.getElementById('icon');
+  if (fileInput) {
+    fileInput.value = '';
+  }
+}
+
+const handleImageError = (event) => {
+  // Hide broken image
+  event.target.style.display = 'none';
 }
 
 const handleSubmit = async () => {
   const formData = new FormData();
-  formData.append('name', category.value.name);
-  formData.append('description', category.value.description);
   
-  if (category.value.iconFile) {
-    formData.append('icon', category.value.iconFile);
+  if (isEditing.value) {
+    // For editing, only send changed fields
+    if (originalCategory.value.name !== category.value.name) {
+      formData.append('name', category.value.name);
+    }
+    
+    if (originalCategory.value.description !== category.value.description) {
+      formData.append('description', category.value.description);
+    }
+    
+    // Always send icon if a new file is selected
+    if (category.value.iconFile) {
+      formData.append('icon', category.value.iconFile);
+    }
+    
+    // Check if we have any changes to send
+    if (!formData.has('name') && !formData.has('description') && !formData.has('icon')) {
+      toast.info('No changes detected');
+      return;
+    }
+  } else {
+    // For creating, send all required fields
+    formData.append('name', category.value.name);
+    formData.append('description', category.value.description);
+    
+    if (category.value.iconFile) {
+      formData.append('icon', category.value.iconFile);
+    }
   }
 
   let result;
