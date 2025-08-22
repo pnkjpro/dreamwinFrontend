@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Himpri - Learn, Play & Earn Real Cash Rewards</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #DA1E37; /* Vibrant red */
+            --primary-light: #ff4757; /* Lighter red */
+            --secondary: #121212; /* Dark background */
+            --accent: #FFFFFF; /* White */
+            --light: #F1F1F1; /* Light gray */
+            --dark: #2d3436; /* Dark text */
+            --success: #00b894; /* Green for success */
+            --warning: #fdcb6e; /* Yellow for warnings */
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 5%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo i {
+            color: var(--accent);
+        }
+        
+        .auth-buttons button {
+            margin-left: 1rem;
+            padding: 0.6rem 1.8rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+        
+        .login-btn {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .login-btn:hover {
+            background: rgba(255,255,255,0.9);
+            transform: translateY(-2px);
+        }
+        
+        .register-btn {
+            background: var(--accent);
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        .register-btn:hover {
+            background: rgba(255,255,255,0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 5rem 5% 4rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80') center/cover;
+            opacity: 0.15;
+            z-index: 0;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fadeInUp 1s ease;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            margin: 0 auto 2.5rem;
+            opacity: 0.9;
+            max-width: 700px;
+        }
+        
+        .cta-button {
+            background: var(--accent);
+            color: var(--primary);
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0));
+            transform: translateY(-100%);
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .cta-button:hover::after {
+            transform: translateY(0);
+        }
+        
+        /* Floating coins animation */
+        .floating-coins {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .coin {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23fdcb6e"><path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8s3.59-8,8-8s8,3.59,8,8 S16.41,20,12,20z M12,10c-1.1,0-2,0.9-2,2s0.9,2,2,2s2-0.9,2-2S13.1,10,12,10z"/></svg>') no-repeat center center;
+            opacity: 0.7;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Audience Section */
+        .audience-section {
+            padding: 5rem 5%;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .audience-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+        
+        .audience-card {
+            width: 280px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: var(--transition);
+            background: white;
+            position: relative;
+        }
+        
+        .audience-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(218,30,55,0.1), rgba(218,30,55,0.3));
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .audience-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        }
+        
+        .audience-card:hover::before {
+            opacity: 1;
+        }
+        
+        .audience-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+        
+        .audience-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .audience-info {
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .audience-info h3 {
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+        
+        .audience-info p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* Learn & Win Section */
+        .learn-win-section {
+            padding: 5rem 5%;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        
+        .categories-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        
+        .category-card {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            min-width: 200px;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-card::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: var(--transition);
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .category-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .category-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .category-card h3 {
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+        
+        .coming-soon-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        /* How to Play Section */
+        .how-to-play {
+            padding: 5rem 5%;
+            text-align: center;
+            background-color: white;
+        }
+        
+        .steps-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+        
+        .step:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        }
+        
+        .step:hover::after {
+            transform: scaleX(1);
+        }
+        
+        .step-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .step:hover .step-icon {
+            transform: rotate(10deg) scale(1.1);
+        }
+        
+        .step h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-size: 1.4rem;
+        }
+        
+        .step p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        /* Video Section */
+        .video-section {
+            padding: 5rem 5%;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        
+        .video-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+        
+        .video-thumbnail {
+            width: 350px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            background: white;
+            position: relative;
+        }
+        
+        .video-thumbnail::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .video-thumbnail:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .video-thumbnail:hover::before {
+            opacity: 1;
+        }
+        
+        .video-thumbnail img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 4px solid var(--primary);
+        }
+        
+        .video-play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 3rem;
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 2;
+        }
+        
+        .video-thumbnail:hover .video-play-icon {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        
+        .video-thumbnail p {
+            padding: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            padding: 5rem 5%;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), #c21834);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') center/cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat {
+            flex: 1;
+            min-width: 200px;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            transition: var(--transition);
+        }
+        
+        .stat:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+        
+        .stat p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        /* Winners Section */
+        .winners-section {
+            padding: 5rem 5%;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .winners-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+        
+        .winner-card {
+            width: 300px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: var(--transition);
+            background: white;
+        }
+        
+        .winner-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        }
+        
+        .winner-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .winner-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .winner-info {
+            padding: 1.5rem;
+            background: white;
+            text-align: left;
+        }
+        
+        .winner-info h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .winner-info p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .winner-info a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s;
+        }
+        
+        .winner-info a:hover {
+            color: #b31830;
+        }
+        
+        /* About Section */
+        .about-section {
+            padding: 5rem 5%;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        
+        .about-section p {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* Features Section */
+        .features-section {
+            padding: 5rem 5%;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .features-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 0;
+            background: var(--primary);
+            transition: height 0.4s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        }
+        
+        .feature-card:hover::before {
+            height: 100%;
+        }
+        
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .feature-card h3 i {
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover h3 i {
+            transform: rotate(15deg) scale(1.2);
+        }
+        
+        .feature-card p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        /* Testimonials Section */
+        .testimonials-section {
+            padding: 5rem 5%;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        
+        .testimonials-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .testimonial-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: var(--transition);
+            max-width: 350px;
+            position: relative;
+            text-align: left;
+        }
+        
+        .testimonial-card::before {
+            content: "\201C";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 5rem;
+            color: rgba(218,30,55,0.1);
+            font-family: Georgia, serif;
+            line-height: 1;
+            z-index: 0;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        }
+        
+        .testimonial-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .testimonial-author img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+        }
+        
+        .author-info h4 {
+            color: var(--primary);
+            margin-bottom: 0.2rem;
+        }
+        
+        .author-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            padding: 5rem 5%;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 3rem auto 0;
+        }
+        
+        .faq-item {
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            background: white;
+            transition: var(--transition);
+        }
+        
+        .faq-item:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .faq-question {
+            padding: 1.5rem;
+            background: white;
+            color: var(--dark);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .faq-question:hover {
+            color: var(--primary);
+        }
+        
+        .faq-question i {
+            transition: var(--transition);
+        }
+        
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            background: white;
+            color: #666;
+            line-height: 1.7;
+        }
+        
+        .faq-item.active .faq-question {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+        
+        .faq-item.active .faq-answer {
+            padding: 1.5rem;
+            max-height: 500px;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 5%;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80') center/cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .cta-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--secondary);
+            color: white;
+            padding: 4rem 5% 2rem;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+            gap: 2rem;
+            text-align: left;
+        }
+        
+        .footer-column {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-column h3 {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-column h3::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-block;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 999;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background: var(--primary-light);
+            transform: translateY(-5px);
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .auth-buttons {
+                display: flex;
+                gap: 1rem;
+            }
+            
+            .auth-buttons button {
+                margin: 0;
+                width: 120px;
+            }
+            
+            .hero {
+                padding: 4rem 5% 3rem;
+                min-height: auto;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .step, .audience-card {
+                max-width: 100%;
+            }
+            
+            .video-thumbnail {
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            .stat-number {
+                font-size: 2.8rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .cta-button {
+                padding: 0.8rem 2rem;
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .stat {
+                min-width: 150px;
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <i class="fas fa-crown"></i> Himpri
+            </div>
+            <div class="auth-buttons">
+                <button class="login-btn">Login</button>
+                <button class="register-btn">Register</button>
+            </div>
+        </div>
+    </header>
+    
+    <section class="hero">
+        <div class="floating-coins" id="floatingCoins"></div>
+        <div class="hero-content">
+            <h1>Start Learning & Earning Today!</h1>
+            <p>Join thousands of users who are enhancing their knowledge while earning real cash rewards. Test your skills, challenge others, and win big!</p>
+            <button class="cta-button">Get Started Now</button>
+        </div>
+    </section>
+    
+    <!-- Audience Section -->
+    <section class="audience-section">
+        <h2 class="section-title">Who Can Join Himpri?</h2>
+        <p class="section-subtitle">Everyone can learn, play and earn on our platform!</p>
+        
+        <div class="audience-container">
+            <div class="audience-card">
+                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Students">
+                <div class="audience-info">
+                    <h3>Students</h3>
+                    <p>Give mock tests, learn through study material, and win real cash while preparing for exams.</p>
+                </div>
+            </div>
+            
+            <div class="audience-card">
+                <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80" alt="Housewives">
+                <div class="audience-info">
+                    <h3>Housewives</h3>
+                    <p>Join entertainment contests like Bollywood quizzes, cooking challenges, and more fun categories.</p>
+                </div>
+            </div>
+            
+            <div class="audience-card">
+                <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Politics Enthusiasts">
+                <div class="audience-info">
+                    <h3>Politics Enthusiasts</h3>
+                    <p>Test your knowledge with political quizzes about current affairs, history, and governance.</p>
+                </div>
+            </div>
+            
+            <div class="audience-card">
+                <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1605&q=80" alt="Sports Fans">
+                <div class="audience-info">
+                    <h3>Sports Fans</h3>
+                    <p>IPL cricket lovers can join sports contests and predict match outcomes to win big.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Learn & Win Section -->
+    <section class="learn-win-section">
+        <h2 class="section-title">Learn Here & Get Chance to Win Real Cash</h2>
+        <p class="section-subtitle">Prepare for exams while earning money with our specialized learning contests</p>
+        
+        <div class="categories-container">
+            <div class="category-card">
+                <div class="category-icon"><i class="fas fa-graduation-cap"></i></div>
+                <h3>K12 Exams</h3>
+                <span class="coming-soon-badge">Coming Soon</span>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon"><i class="fas fa-landmark"></i></div>
+                <h3>Government Exams</h3>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon"><i class="fas fa-flask"></i></div>
+                <h3>JEE/NEET</h3>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon"><i class="fas fa-bullhorn"></i></div>
+                <h3>Political Updates</h3>
+                <span class="coming-soon-badge">Coming Soon</span>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon"><i class="fas fa-history"></i></div>
+                <h3>Historical Events</h3>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon"><i class="fas fa-running"></i></div>
+                <h3>Sports Updates</h3>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon"><i class="fas fa-film"></i></div>
+                <h3>Entertainment Updates</h3>
+                <span class="coming-soon-badge">Coming Soon</span>
+            </div>
+        </div>
+    </section>
+    
+    <section class="how-to-play">
+        <h2 class="section-title">How to Play</h2>
+        <p class="section-subtitle">Follow these simple steps to start earning with your knowledge</p>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-icon"><i class="fas fa-trophy"></i></div>
+                <h3>Select a Contest</h3>
+                <p>Choose from various contests based on your knowledge and interest areas.</p>
+            </div>
+            <div class="step">
+                <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+                <h3>Join the Contest</h3>
+                <p>Register for the contest with a small entry fee to compete for cash prizes.</p>
+            </div>
+            <div class="step">
+                <div class="step-icon"><i class="fas fa-book-open"></i></div>
+                <h3>Use Lifeline & Study Material</h3>
+                <p>Access our study materials and use lifelines during the contest for help.</p>
+            </div>
+            <div class="step">
+                <div class="step-icon"><i class="fas fa-medal"></i></div>
+                <h3>Win Cash & Check Leaderboard</h3>
+                <p>Answer correctly to win cash prizes and see your position on the leaderboard.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="video-section">
+        <h2 class="section-title">Learn How It Works</h2>
+        <p class="section-subtitle">Watch these videos to understand the platform better</p>
+        <div class="video-container">
+            <div class="video-thumbnail">
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="How to Play">
+                <i class="fas fa-play-circle video-play-icon"></i>
+                <p>Step-by-step guide to start earning</p>
+            </div>
+            <div class="video-thumbnail">
+                <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80" alt="Winner Testimonials">
+                <i class="fas fa-play-circle video-play-icon"></i>
+                <p>Hear from our recent winners</p>
+            </div>
+            <div class="video-thumbnail">
+                <img src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Tips and Tricks">
+                <i class="fas fa-play-circle video-play-icon"></i>
+                <p>Expert strategies to maximize earnings</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="stats-section">
+        <h2 class="section-title">Our Growing Community</h2>
+        <p class="section-subtitle">Join our thriving community of knowledge seekers and winners</p>
+        <div class="stats-container">
+            <div class="stat">
+                <div class="stat-number" id="user-count">50,000+</div>
+                <p>Active Users</p>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="winnings-count">₹10,00,000+</div>
+                <p>Total Winnings</p>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="winners-count">500+</div>
+                <p>Daily Winners</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="winners-section">
+        <h2 class="section-title">Recent Winners</h2>
+        <p class="section-subtitle">Meet some of our recent winners who transformed knowledge into earnings</p>
+        <div class="winners-container">
+            <div class="winner-card">
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80" alt="Winner 1">
+                <div class="winner-info">
+                    <h3>Rahul K.</h3>
+                    <p>Won ₹25,000 in Science Quiz</p>
+                    <a href="#"><i class="fab fa-youtube"></i> Watch Video</a>
+                </div>
+            </div>
+            <div class="winner-card">
+                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Winner 2">
+                <div class="winner-info">
+                    <h3>Priya M.</h3>
+                    <p>Won ₹18,500 in GK Challenge</p>
+                    <a href="#"><i class="fab fa-instagram"></i> See Post</a>
+                </div>
+            </div>
+            <div class="winner-card">
+                <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1467&q=80" alt="Winner 3">
+                <div class="winner-info">
+                    <h3>Amit S.</h3>
+                    <p>Won ₹32,000 in Math Masters</p>
+                    <a href="#"><i class="fab fa-youtube"></i> Watch Video</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <h2 class="section-title">What Our Users Say</h2>
+        <p class="section-subtitle">Hear from our community members about their experiences</p>
+        <div class="testimonials-container">
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p class="testimonial-text">Himpri has completely changed how I view learning. I was able to earn ₹15,000 last month just by participating in quizzes about topics I already knew. The platform is so easy to use!</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Neha Sharma">
+                        <div class="author-info">
+                            <h4>Neha Sharma</h4>
+                            <p>College Student</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p class="testimonial-text">As a housewife, I never thought I could earn money from my knowledge of cooking and Bollywood. Himpri proved me wrong! I've won multiple contests and the withdrawal process is seamless.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Priya Patel">
+                        <div class="author-info">
+                            <h4>Priya Patel</h4>
+                            <p>Home Chef</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p class="testimonial-text">The cricket quizzes on Himpri are amazing! I've been able to turn my passion for IPL into earnings. The contests are fair and the competition keeps me engaged. Highly recommended!</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Rahul Verma">
+                        <div class="author-info">
+                            <h4>Rahul Verma</h4>
+                            <p>Cricket Enthusiast</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="about-section">
+        <h2 class="section-title">About Us</h2>
+        <p>Himpri is an innovative platform that combines learning with earning opportunities. Our mission is to make education rewarding by allowing users to test their knowledge and win cash prizes. With a wide range of contests across various subjects, we provide a fun and engaging way to learn while earning real money. Founded in 2020, we've already helped thousands of users monetize their knowledge and skills.</p>
+    </section>
+    
+    <section class="features-section">
+        <h2 class="section-title">Our Features</h2>
+        <p class="section-subtitle">Discover what makes Himpri the best platform for knowledge-based earnings</p>
+        <div class="features-container">
+            <div class="feature-card">
+                <h3><i class="fas fa-user-friends"></i> Refer & Earn</h3>
+                <p>Invite friends and earn bonuses when they join and participate in contests.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-life-ring"></i> My Lifeline</h3>
+                <p>Access special helps during contests to boost your performance and win more.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-rupee-sign"></i> My Transactions</h3>
+                <p>Track all your deposits, winnings, and withdrawals in one secure place.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-trophy"></i> My Contests</h3>
+                <p>View your current, upcoming, and past contest participation history.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-history"></i> Lifeline History</h3>
+                <p>Review how you've used your lifelines in previous contests to improve.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-question-circle"></i> Help & FAQ</h3>
+                <p>Find answers to common questions about the platform and contests.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-book"></i> Study Materials</h3>
+                <p>Access comprehensive study materials categorized by subject and exam type.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-video"></i> Learning Videos</h3>
+                <p>Watch educational videos to prepare for contests and improve knowledge.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-play-circle"></i> How to Play Videos</h3>
+                <p>Visual guides to help you understand the platform and features better.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-file-alt"></i> Terms & Policies</h3>
+                <p>Read our terms, conditions, refund and privacy policies for transparency.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-robot"></i> Chat Bot Support</h3>
+                <p>Get instant help with our 24/7 AI-powered chat support system.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-subtitle">Find answers to common questions about Himpri</p>
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question">
+                    How do I join a contest on Himpri?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Joining a contest is simple! First, create your account, then browse through available contests. Select one that interests you, pay the entry fee (if applicable), and you're ready to participate at the scheduled time.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    How do I withdraw my winnings?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    You can withdraw your winnings through various methods including UPI, Bank Transfer, and digital wallets. Go to the 'My Transactions' section, click on 'Withdraw', enter the amount and your preferred withdrawal method. Most withdrawals are processed within 24 hours.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    Are there any free contests?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes! We regularly host free contests with smaller prize pools. These are great for newcomers to get familiar with how our platform works without any financial commitment.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    What happens if I disconnect during a contest?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Our system is designed to handle temporary disconnections. If you get disconnected, you can rejoin the contest as long as it's still ongoing. Your progress will be saved for the questions you've already answered.
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Ready to Start Earning With Your Knowledge?</h2>
+            <p>Join Himpri today and turn what you know into real cash rewards. The more you know, the more you can earn!</p>
+            <button class="cta-button">Register Now - It's Free!</button>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">How to Play</a></li>
+                    <li><a href="#">Contests</a></li>
+                    <li><a href="#">Leaderboard</a></li>
+                    <li><a href="#">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Legal</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Refund Policy</a></li>
+                    <li><a href="#">Responsible Gaming</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Connect With Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-telegram-plane"></i></a>
+                </div>
+                <p style="margin-top: 1.5rem; color: #ddd; text-align: left;">
+                    <i class="fas fa-envelope"></i> support@himpri.com<br>
+                    <i class="fas fa-phone"></i> +91 9876543210
+                </p>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2023 Himpri.com. All Rights Reserved.
+        </div>
+    </footer>
+    
+    <!-- Back to Top Button -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    
+    <script>
+        // Create floating coins
+        function createCoins() {
+            const container = document.getElementById('floatingCoins');
+            const coinCount = 15;
+            
+            for (let i = 0; i < coinCount; i++) {
+                const coin = document.createElement('div');
+                coin.className = 'coin';
+                
+                // Random position
+                coin.style.left = `${Math.random() * 100}%`;
+                coin.style.top = `${Math.random() * 100}%`;
+                
+                // Random size
+                const size = 20 + Math.random() * 20;
+                coin.style.width = `${size}px`;
+                coin.style.height = `${size}px`;
+                
+                // Random animation duration
+                const duration = 10 + Math.random() * 20;
+                coin.style.animationDuration = `${duration}s`;
+                
+                // Random delay
+                coin.style.animationDelay = `${Math.random() * 5}s`;
+                
+                container.appendChild(coin);
+            }
+        }
+        
+        // Animated counters
+        function animateValue(id, start, end, duration) {
+            let obj = document.getElementById(id);
+            let range = end - start;
+            let current = start;
+            let increment = end > start ? 1 : -1;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            let timer = setInterval(function() {
+                current += increment;
+                if (id.includes('winnings')) {
+                    obj.innerHTML = '₹' + current.toLocaleString('en-IN') + "+";
+                } else {
+                    obj.innerHTML = current.toLocaleString('en-IN') + "+";
+                }
+                if (current == end) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
+        
+        // Back to top button
+        function handleBackToTop() {
+            const backToTop = document.getElementById('backToTop');
+            
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            });
+            
+            backToTop.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+        
+        // FAQ accordion
+        function setupFAQ() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                
+                question.addEventListener('click', () => {
+                    // Close all other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current item
+                    item.classList.toggle('active');
+                });
+            });
+        }
+        
+        // Initialize everything when page loads
+        window.onload = function() {
+            createCoins();
+            animateValue("user-count", 0, 50000, 2000);
+            animateValue("winnings-count", 0, 1000000, 2000);
+            animateValue("winners-count", 0, 500, 1500);
+            handleBackToTop();
+            setupFAQ();
+            
+            // Add smooth scrolling to all links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // Add click handlers to CTA buttons
+            const ctaButtons = document.querySelectorAll('.cta-button, .register-btn');
+            ctaButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    alert('Registration form will appear here!');
+                });
+            });
+            
+            // Add click handler to login button
+            document.querySelector('.login-btn').addEventListener('click', () => {
+                alert('Login form will appear here!');
+            });
+            
+            // Add click handlers to video thumbnails
+            const videoThumbnails = document.querySelectorAll('.video-thumbnail');
+            videoThumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', () => {
+                    alert('Video player will open here!');
+                });
+            });
+        };
+    </script>
+</body>
+</html>

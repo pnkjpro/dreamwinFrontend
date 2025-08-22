@@ -18,8 +18,10 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '',
-      redirect: '/auth/'
+      path: '/',
+      name: 'LandingPage',
+      component: () => import('@/pages/LandingPage.vue'),
+      meta: { showChatbot: true }
     },
     // =============== Authentication Routes ================
     {
@@ -110,6 +112,13 @@ const router = createRouter({
         }
       ]
     },
+    // ====================== Expert Videos Route ====================
+    {
+      path: '/expert-videos',
+      name: 'ExpertVideos',
+      component: () => import('@/pages/MyDashboard/ExpertVideos.vue'),
+      meta: { requiresAuth: true }
+    },
     // ====================== Quiz Routes ====================
     {
       path: '/quiz/',
@@ -171,6 +180,12 @@ const router = createRouter({
       redirect: '/admin/funds/approval',
       children: [
         {
+          path: 'overview',
+          name: 'AdminOverview',
+          component: () => import('@/pages/Admin/AdminOverview.vue'),
+          meta: { requiresAdminAuth: true }
+        },
+        {
           path: 'funds/approval',
           name: 'FundsApproval',
           component: () => import('@/pages/Admin/FundApproval.vue'),
@@ -189,9 +204,9 @@ const router = createRouter({
           meta: { requiresAdminAuth: true }
         },
         {
-          path: 'banner/update',
-          name: 'BannerUpdate',
-          component: () => import('@/pages/Admin/HomeBanner.vue'),
+          path: 'featured/video/update',
+          name: 'FeaturedVideoUpdate',
+          component: () => import('@/pages/Admin/FeaturedVideo.vue'),
           meta: { requiresAdminAuth: true }
         },
         {
@@ -234,6 +249,18 @@ const router = createRouter({
           path: 'quiz/list',
           name: 'QuizList',
           component: () => import('@/pages/Admin/QuizList.vue'),
+          meta: { requiresAdminAuth: true }
+        },
+        {
+          path: 'expert-videos',
+          name: 'AdminExpertVideos',
+          component: () => import('@/pages/Admin/ExpertVideoForm.vue'),
+          meta: { requiresAdminAuth: true }
+        },
+        {
+          path: 'winners/manage',
+          name: 'WinnersManagement',
+          component: () => import('@/pages/Admin/WinnersForm.vue'),
           meta: { requiresAdminAuth: true }
         },
         {
@@ -336,7 +363,7 @@ router.beforeResolve(async (to, from, next) => {
     }
   }
 
-  if (!from.name && to.name !== 'Home' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
+  if (!from.name && to.name !== 'Home' && to.name !== 'LandingPage' && to.name !== 'Login' && !to.meta.requiresAdminAuth) {
     return next({ name: 'Home' });
   }
   

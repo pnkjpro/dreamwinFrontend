@@ -18,8 +18,13 @@
     <div v-else class="min-h-screen bg-gradient-to-b from-orange-50 via-red-50 to-orange-50">
       <!-- Header -->
       <header class="flex justify-between items-center p-4 bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg">
-        <button @click="toggleMenu" class="p-3 rounded-full bg-red-500 hover:bg-red-400 transition-colors shadow-md">
+        <button @click="toggleMenu" class="p-3 rounded-full bg-red-500 hover:bg-red-400 transition-colors shadow-md relative">
           <font-awesome-icon icon="bars" class="text-2xl text-white" />
+          <!-- Notice notification bubble -->
+          <span v-if="hasNewNotice" class="absolute -top-1 -right-1 flex h-4 w-4">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-4 w-4 bg-yellow-500"></span>
+          </span>
         </button>
         <div class="flex items-center">
           <div class="relative">
@@ -65,7 +70,22 @@
             </div>
           </div>
           
-          <ul class="text-white space-y-2 mb-8">
+          <ul class="text-white space-y-2 mb-6">
+            <!-- Official Notice Section -->
+            <li v-if="official_notice_status && official_notice" 
+                @click="showNoticeDialog = true" 
+                class="flex items-center justify-between cursor-pointer p-3 rounded-lg bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 transition-colors border border-yellow-400 shadow-md">
+              <div class="flex items-center">
+                <font-awesome-icon icon="bell" class="mr-3 text-yellow-200 animate-pulse" />
+                <span class="font-semibold">Official Notice</span>
+              </div>
+              <div class="flex items-center">
+                <span v-if="hasNewNotice" class="bg-yellow-400 text-yellow-900 text-xs px-2 py-1 rounded-full font-bold mr-2">NEW</span>
+                <font-awesome-icon icon="chevron-right" class="text-yellow-200" />
+              </div>
+            </li>
+            
+            <!-- Regular Menu Items -->
             <li v-for="(item, index) in menuItems" :key="index" @click="navigateTo(item.url)" 
                 class="flex items-center cursor-pointer p-3 rounded-lg hover:bg-red-600 transition-colors">
               <font-awesome-icon :icon="item.icon" class="mr-3 text-orange-300" />
@@ -82,6 +102,47 @@
         </aside>
       </Transition>
 
+      <!-- Notice Dialog -->
+      <Transition name="dialog-fade">
+        <div v-if="showNoticeDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
+          <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden">
+            <!-- Dialog Header -->
+            <div class="bg-gradient-to-r from-orange-600 to-red-600 text-white p-4 flex items-center justify-between">
+              <div class="flex items-center">
+                <font-awesome-icon icon="bell" class="mr-2 text-yellow-200" />
+                <h3 class="text-lg font-bold">Official Notice</h3>
+              </div>
+              <button @click="showNoticeDialog = false" class="text-white hover:text-orange-200 bg-red-600 p-1 rounded-full">
+                <font-awesome-icon icon="times" class="text-lg" />
+              </button>
+            </div>
+            
+            <!-- Dialog Content -->
+            <div class="p-6 overflow-y-auto max-h-[60vh]">
+              <div class="prose prose-sm max-w-none">
+                <p class="text-gray-700 leading-relaxed whitespace-pre-wrap">{{ official_notice }}</p>
+              </div>
+              
+              <!-- Notice Date -->
+              <div class="mt-4 pt-4 border-t border-gray-200">
+                <p class="text-xs text-gray-500 flex items-center">
+                  <font-awesome-icon icon="clock" class="mr-1" />
+                  Updated: {{ formatNoticeDate(notice_updated_at) }}
+                </p>
+              </div>
+            </div>
+            
+            <!-- Dialog Footer -->
+            <div class="bg-gray-50 px-6 py-3 flex justify-end">
+              <button @click="showNoticeDialog = false" 
+                      class="px-6 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 transition-colors font-medium">
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+
       <!-- Category Cards -->
       <div class="p-4">
         <h2 class="text-xl font-bold text-red-900 mb-3 flex items-center">
@@ -90,7 +151,7 @@
         <div class="flex overflow-x-auto p-1 space-x-4 no-scrollbar">
           <div v-for="(category, index) in categories" :key="index" class="flex flex-col items-center">
             <div @click="getQuizzesByCategory(category.id)" 
-                class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-4 border-white shadow-lg hover:shadow-xl transition-transform hover:scale-105"
+                class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 border-4 border-white shadow-lg hover:shadow-xl transition-transform hover:scale-105"
                 :style="`box-shadow: 0 10px 15px -3px rgba(${220 + (index * 5) % 35}, ${(80 + index * 10) % 120}, ${50}, 0.4)`">
               <img :src="displayImage(category.icon)" :alt="category.name" class="w-full h-full object-cover" />
             </div>
@@ -99,39 +160,95 @@
         </div>
       </div>
 
-      <!-- Official Notice -->
-      <div v-if="official_notice_status" class="px-4 mb-4">
-        <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-md">
-          <p class="text-red-900 font-semibold">
-            {{ official_notice }}
-          </p>
-        </div>
-      </div>
-
-      <!-- Promotion Cards -->
+      <!-- Shortcut Links -->
       <div class="px-4 mb-6">
-        <h2 class="text-xl font-bold text-red-900 mb-3 flex items-center">
-          <font-awesome-icon icon="star" class="mr-2 text-yellow-500" /> Featured
+        <h2 class="text-lg font-bold text-red-900 mb-2 flex items-center">
+          <font-awesome-icon icon="lightning-bolt" class="mr-2 text-yellow-500" /> Quick Actions
         </h2>
-        <div class="overflow-x-auto flex space-x-4 no-scrollbar">
-          <div v-for="(banner, index) in banners" :key="index" 
-              class="flex-shrink-0 w-64 h-32 rounded-xl overflow-hidden shadow-lg">
-            <div class="relative w-full h-full group">
-              <img :src="displayImage(banner.banner_path)" 
-                  :alt="banner.title" 
-                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-              <div class="absolute inset-0 bg-gradient-to-t from-red-900 via-transparent to-transparent opacity-60"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div @click="handleFunds('deposit')" class="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg border border-green-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+            <div class="flex items-center">
+              <div class="bg-green-500 p-2 rounded-full mr-2">
+                <font-awesome-icon icon="wallet" class="text-white text-sm" />
+              </div>
+              <div>
+                <h3 class="font-semibold text-green-800 text-sm">Wallet</h3>
+                <p class="text-green-600 text-xs">Add money</p>
+              </div>
+            </div>
+          </div>
+          
+          <div @click="navigateTo('dashboard/refernearn')" class="bg-gradient-to-r from-blue-50 to-cyan-50 p-3 rounded-lg border border-blue-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+            <div class="flex items-center">
+              <div class="bg-blue-500 p-2 rounded-full mr-2">
+                <font-awesome-icon icon="user-friends" class="text-white text-sm" />
+              </div>
+              <div>
+                <h3 class="font-semibold text-blue-800 text-sm">Refer & Earn</h3>
+                <p class="text-blue-600 text-xs">Earn rewards</p>
+              </div>
+            </div>
+          </div>
+          
+          <div @click="navigateTo('dashboard/lifeline')" class="bg-gradient-to-r from-purple-50 to-violet-50 p-3 rounded-lg border border-purple-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+            <div class="flex items-center">
+              <div class="bg-purple-500 p-2 rounded-full mr-2">
+                <font-awesome-icon icon="phone" class="text-white text-sm" />
+              </div>
+              <div>
+                <h3 class="font-semibold text-purple-800 text-sm">Lifeline</h3>
+                <p class="text-purple-600 text-xs">Get help</p>
+              </div>
+            </div>
+          </div>
+          
+          <div @click="navigateTo('expert-videos')" class="bg-gradient-to-r from-red-50 to-orange-50 p-3 rounded-lg border border-red-200 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+            <div class="flex items-center">
+              <div class="bg-red-500 p-2 rounded-full mr-2">
+                <font-awesome-icon icon="play-circle" class="text-white text-sm" />
+              </div>
+              <div>
+                <h3 class="font-semibold text-red-800 text-sm">Expert Videos</h3>
+                <p class="text-red-600 text-xs">Learn tips</p>
+              </div>
             </div>
           </div>
         </div>
-        
-        <!-- Pagination Dots -->
-        <div class="flex justify-center space-x-2 mt-4">
-          <div v-for="(dot, index) in 3" :key="index" 
-              :class="[
-                'h-2 rounded-full transition-all', 
-                index === 1 ? 'w-8 bg-orange-500' : 'w-2 bg-red-200'
-              ]">
+      </div>
+
+      <!-- YouTube Videos Section -->
+      <div class="px-4 mb-6">
+        <h2 class="text-xl font-bold text-red-900 mb-3 flex items-center">
+          <font-awesome-icon icon="video" class="mr-2 text-red-500" /> Featured Videos
+        </h2>
+        <div class="overflow-x-auto flex space-x-4 no-scrollbar">
+          <div v-for="(video, index) in featuredVideos" :key="index" 
+              @click="handleVideoClick(video)"
+              class="flex-shrink-0 w-64 rounded-xl overflow-hidden shadow-lg bg-white cursor-pointer hover:shadow-xl transition-all transform hover:scale-105 hover:bg-gray-50">
+            <div class="relative">
+              <img :src="video.thumbnail" 
+                  :alt="video.title" 
+                  class="w-full h-36 object-cover transition-all hover:brightness-110" />
+              <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center hover:bg-opacity-40 transition-all">
+                <div class="bg-red-600 rounded-full p-3 hover:bg-red-700 transition-colors transform hover:scale-110">
+                  <font-awesome-icon icon="play" class="text-white text-xl" />
+                </div>
+              </div>
+              <div class="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
+                {{ video.duration }}
+              </div>
+              <!-- YouTube indicator -->
+              <div class="absolute bottom-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded flex items-center">
+                <font-awesome-icon icon="video" class="mr-1" />
+                YouTube
+              </div>
+            </div>
+            <div class="p-3">
+              <h3 class="text-sm font-semibold text-gray-900 line-clamp-2 leading-tight hover:text-red-600 transition-colors">
+                {{ video.title }}
+              </h3>
+              <p class="text-xs text-gray-600 mt-1">{{ video.views }} views</p>
+            </div>
           </div>
         </div>
       </div>
@@ -274,8 +391,9 @@ import {
   faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, 
   faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt,
   faPlus, faArrowUp, faTrophy, faClock, faChevronDown, faTimes,
-  faLayerGroup, faStar, faPhone,
-  faHistory
+  faLayerGroup, faStar, faPhone, faHistory, 
+  // faLightningBolt,
+  faUserFriends, faPlayCircle, faVideo, faPlay, faLock, faBell
 } from '@fortawesome/free-solid-svg-icons';
 import { useToast } from 'vue-toastification';
 
@@ -284,18 +402,21 @@ library.add(
   faBars, faWallet, faCashRegister, faChevronLeft, faChevronRight, 
   faUser, faQuestionCircle, faGamepad, faFileAlt, faSignOutAlt,
   faPlus, faArrowUp, faTrophy, faClock, faChevronDown, faTimes,
-  faLayerGroup, faStar, faPhone, faHistory
+  faLayerGroup, faStar, faPhone, faHistory, 
+  // faLightningBolt,
+  faUserFriends, faPlayCircle, faVideo, faPlay, faLock, faBell
 );
   
 const router = useRouter();
 const toast = useToast();
 
 const menuOpen = ref(false);
+const showNoticeDialog = ref(false);
 const mainStore = useMainStore();
 const authStore = useAuthStore();
 const transactionStore = useTransactionStore();
 
-const { contests, categories, banners, loading, official_notice, official_notice_status, totalCount, hasShownVideo } = storeToRefs(mainStore);
+const { contests, categories, banners, loading, official_notice, official_notice_status, notice_updated_at, totalCount, hasShownVideo, featuredVideos } = storeToRefs(mainStore);
 const { user } = storeToRefs(authStore);
 const { fundAction } = storeToRefs(transactionStore);
 
@@ -305,6 +426,19 @@ const hasMoreLoad = computed(()=>{
   }
   return false
 })
+
+// Check if there's a new notice (within 24 hours)
+const hasNewNotice = computed(() => {
+  if (!official_notice_status.value || !notice_updated_at.value) {
+    return false;
+  }
+  
+  const noticeDate = new Date(notice_updated_at.value);
+  const now = new Date();
+  const hoursDiff = (now - noticeDate) / (1000 * 60 * 60);
+  
+  return hoursDiff <= 24;
+});
 
 // ================ load intro video =========================
 // Video preloader settings
@@ -344,6 +478,15 @@ const handleFunds = (fundType) => {
   console.log(fundType);
   console.log(fundAction.value);
   router.push('/dashboard/funds');
+}
+
+const handleVideoClick = (video) => {
+  if (video.youtubeUrl || video.url) {
+    const youtubeUrl = video.youtubeUrl || video.url;
+    window.open(youtubeUrl, '_blank');
+  } else {
+    console.log('No YouTube URL found for video:', video);
+  }
 }
 
  const isContestExpired = (endDateTime) => {
@@ -395,6 +538,14 @@ onMounted(() => {
   mainStore.fetchCategories();
   mainStore.fetchHomeBanners();
   mainStore.fetchHowVideos();
+  mainStore.fetchFeaturedVideos().then(() => {
+    console.log('Featured Videos loaded:', featuredVideos.value);
+    // Log each video's structure for debugging
+    featuredVideos.value.forEach((video, index) => {
+      console.log(`Video ${index + 1}:`, video);
+      console.log(`YouTube URL for video ${index + 1}:`, video.youtubeUrl);
+    });
+  });
 })
 
 onUnmounted(() => {
@@ -409,13 +560,7 @@ const menuItems = ref([
   { text: 'My Lifelines', icon: 'phone', url: 'dashboard/lifeline'},
   { text: 'My Transactions', icon: 'cash-register', url: 'dashboard/transactions'},
   { text: 'My Contests', icon: 'gamepad', url: 'dashboard/my-contests'},
-  { text: 'Lifeline History', icon: 'history', url: 'dashboard/lifeline-history'},
-  { text: 'Help & FAQs', icon: 'question-circle', url: 'faqs' },
-  { text: 'About Us', icon: 'file-alt', url: 'aboutus' },
-  { text: 'How to Play', icon: 'gamepad', url: 'how-to-play' },
-  { text: 'Terms & Conditions', icon: 'file-alt', url: 'terms' },
-  { text: 'Privacy Policy', icon: 'file-alt', url: 'privacy-policy' },
-  { text: 'Refund Policy', icon: 'file-alt', url: 'refund-policy' }
+  { text: 'Lifeline History', icon: 'history', url: 'dashboard/lifeline-history'}
 ]);
 
 const navigateTo = (url) => {
@@ -440,6 +585,20 @@ const displayImage = (imagePath) => {
     path = `${import.meta.env.VITE_BASE_API}/storage/${imagePath}`
   }
   return path;
+}
+
+const formatNoticeDate = (dateTime) => {
+  if (!dateTime) return 'Unknown';
+  
+  const date = new Date(dateTime);
+  return date.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
 }
 
 // ======================== Date n Time Handle ====================
@@ -483,6 +642,14 @@ function getContestStatus(unixTimestamp) {
   display: none;
 }
 
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .slide-fade-enter-active {
   transition: all 0.3s ease-out;
 }
@@ -495,6 +662,20 @@ function getContestStatus(unixTimestamp) {
 .slide-fade-leave-to {
   transform: translateX(-100%);
   opacity: 0;
+}
+
+.dialog-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.dialog-fade-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.dialog-fade-enter-from,
+.dialog-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
 }
 
 @keyframes ping {

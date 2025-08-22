@@ -13,6 +13,7 @@ export const useMainStore = defineStore('main', () => {
   const banners = ref([]);
   const official_notice = ref("");
   const official_notice_status = ref(false);
+  const notice_updated_at = ref(null);
   const recordPerPage = ref(2);
   const hasShownVideo = ref(false);
   const contest = ref(null);
@@ -20,6 +21,8 @@ export const useMainStore = defineStore('main', () => {
   const prizeContents = ref([]);
   const categories = ref([]);  
   const referredUsers = ref([]);
+  const featuredVideos = ref([]);
+  const recentWinners = ref([]);
   const referredMetaData = ref({
     claimedRewards: 0,
     pendingRewards: 0,
@@ -100,6 +103,7 @@ export const useMainStore = defineStore('main', () => {
         banners.value = response.data.data.banners;
         official_notice.value = response.data.data.official_notice;
         official_notice_status.value = response.data.data.official_notice_status;
+        notice_updated_at.value = response.data.data.notice_updated_at;
         console.log(official_notice_status);
         return {
           success: response.data.success,
@@ -196,7 +200,350 @@ export const useMainStore = defineStore('main', () => {
       }
     }
 
+    async function fetchFeaturedVideos() {
+      try {
+        loading.value = true;
+        const response = await api.get('/featured/videos');
+        loading.value = false;
+
+        if (response.data.success) {
+          featuredVideos.value = response.data.data;
+          console.log("Featured videos fetched:", featuredVideos.value);
+        }
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error fetching featured videos:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function addFeaturedVideo(video) {
+      try {
+        console.log("Adding featured video:", video);
+        loading.value = true;
+        const response = await api.post('/featured/video/add', { video });
+        loading.value = false;
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error adding featured video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function updateFeaturedVideo(videos) {
+      try {
+        console.log("Updating featured videos:", videos);
+        loading.value = true;
+        const response = await api.post('/featured/video/update', videos);
+        loading.value = false;
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error updating featured videos:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function deleteFeaturedVideo(videoId) {
+      try {
+        console.log("Deleting featured video with ID:", videoId);
+        loading.value = true;
+        const response = await api.post('/featured/video/delete', { video_id: videoId });
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error deleting featured video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function createExpertVideo(formData) {
+      try {
+        loading.value = true;
+        const response = await api.post('/expert/video/create', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        loading.value = false;
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error creating expert video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        const errors = error.response?.data?.errors || null;
+        return { success: false, message: errorMessage, errors };
+      }
+    }
+
+    async function updateExpertVideo(videoId, formData) {
+      try {
+        console.log("Updating expert video:", videoId);
+        loading.value = true;
+        const response = await api.post(`/expert/video/update`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error updating expert video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        const errors = error.response?.data?.errors || null;
+        return { success: false, message: errorMessage, errors };
+      }
+    }
+
+    async function deleteExpertVideo(videoId) {
+      try {
+        console.log("Deleting expert video with ID:", videoId);
+        loading.value = true;
+        const response = await api.post('/expert/video/delete', { video_id: videoId });
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error deleting expert video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function toggleExpertVideoStatus(videoId) {
+      try {
+        console.log("Toggling expert video status:", videoId);
+        loading.value = true;
+        const response = await api.post('/expert/video/toggle-status', { video_id: videoId });
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error toggling expert video status:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function fetchUserExpertVideos() {
+      try {
+        loading.value = true;
+        const response = await api.get('/expert/video/list');
+        loading.value = false;
+
+        if (response.data.success) {
+          console.log("Expert videos fetched:", response.data.data);
+        }
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error fetching expert videos:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage, data: [] };
+      }
+    }
+
+    async function fetchExpertVideos() {
+      try {
+        loading.value = true;
+        const response = await api.get('/expert/videos');
+        loading.value = false;
+
+        if (response.data.success) {
+          console.log("Expert videos fetched:", response.data.data);
+        }
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error fetching expert videos:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage, data: [] };
+      }
+    }
+
+    async function purchaseExpertVideo(videoId) {
+      try {
+        console.log("Purchasing expert video:", videoId);
+        loading.value = true;
+        const response = await api.post('/expert/video/purchase', { video_id: videoId });
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error purchasing expert video:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function fetchRecentWinners() {
+      try {
+        loading.value = true;
+        const response = await api.get('/recent/winners');
+        loading.value = false;
+
+        if (response.data.success) {
+          recentWinners.value = response.data.data;
+          console.log("Recent winners fetched:", recentWinners.value);
+        }
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error fetching recent winners:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage, data: [] };
+      }
+    }
+
+    async function fetchWinners() {
+      try {
+        loading.value = true;
+        const response = await api.get('/admin/winner');
+        loading.value = false;
+
+        if (response.data.success) {
+          recentWinners.value = response.data.data;
+          console.log("Recent winners fetched:", recentWinners.value);
+        }
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error fetching recent winners:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage, data: [] };
+      }
+    }
+    
+    async function addWinner(formData) {
+      try {
+        console.log("Adding winner:", formData);
+        loading.value = true;
+        const response = await api.post('/admin/winner/add', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        loading.value = false;
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error adding winner:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function updateWinner(uid, formData) {
+      try {
+        console.log("Updating winner:", uid, formData);
+        loading.value = true;
+        const response = await api.post(`/admin/winner/update/${uid}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        loading.value = false;
+        return {
+          success: response.data.success,
+          message: response.data.message,
+          data: response.data.data
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error updating winner:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
+    async function deleteWinner(uid) {
+      try {
+        console.log("Deleting winner with UID:", uid);
+        loading.value = true;
+        const response = await api.delete(`/admin/winner/delete/${uid}`);
+        loading.value = false;
+
+        return {
+          success: response.data.success,
+          message: response.data.message
+        };
+      } catch (error) {
+        loading.value = false;
+        console.error("Error deleting winner:", error);
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+        return { success: false, message: errorMessage };
+      }
+    }
+
     return {
+      //actions
         fetchCurrentContest,
         fetchContests,
         fetchMoreContests,
@@ -208,9 +555,28 @@ export const useMainStore = defineStore('main', () => {
         fetchHowVideos,
         updateBanner,
         fetchReferredUsers,
+        fetchFeaturedVideos,
+        updateFeaturedVideo,
+        addFeaturedVideo,
+        deleteFeaturedVideo,
+        createExpertVideo,
+        updateExpertVideo,
+        deleteExpertVideo,
+        toggleExpertVideoStatus,
+        fetchExpertVideos,
+        fetchUserExpertVideos,
+        purchaseExpertVideo,
+        fetchRecentWinners,
+        fetchWinners,
+        addWinner,
+        updateWinner,
+        deleteWinner,
+
+        //state
         banners,
         official_notice,
         official_notice_status,
+        notice_updated_at,
         prizeContents,
         hasShownVideo,
         variant,
@@ -224,6 +590,8 @@ export const useMainStore = defineStore('main', () => {
         contests,
         categories,
         referredUsers,
-        referredMetaData
+        referredMetaData,
+        featuredVideos,
+        recentWinners
     };
 });
