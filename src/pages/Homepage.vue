@@ -153,7 +153,7 @@
             <div @click="getQuizzesByCategory(category.id)" 
                 class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 border-4 border-white shadow-lg hover:shadow-xl transition-transform hover:scale-105"
                 :style="`box-shadow: 0 10px 15px -3px rgba(${220 + (index * 5) % 35}, ${(80 + index * 10) % 120}, ${50}, 0.4)`">
-              <img :src="displayImage(category.icon)" :alt="category.name" class="w-full h-full object-cover" />
+              <img :src="category.icon" :alt="category.name" class="w-full h-full object-cover" />
             </div>
             <p class="text-center font-bold text-sm mt-2 max-w-24 text-black-800">{{ category.name }}</p>
           </div>

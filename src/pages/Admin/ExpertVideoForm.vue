@@ -83,10 +83,15 @@
                 <font-awesome-icon icon="calendar" class="mr-1" />
                 {{ formatDate(video.created_at) }}
               </span>
-              <span v-if="video.pdf_attachment" class="flex items-center text-blue-600">
-                <font-awesome-icon icon="file-pdf" class="mr-1" />
-                PDF
-              </span>
+              <div class="flex items-center space-x-2">
+                <span v-if="video.price" class="flex items-center text-green-600 font-medium">
+                  ₹{{ video.price }}
+                </span>
+                <span v-if="video.pdf_attachment" class="flex items-center text-blue-600">
+                  <font-awesome-icon icon="file-pdf" class="mr-1" />
+                  PDF
+                </span>
+              </div>
             </div>
 
             <!-- Action Buttons -->
@@ -247,7 +252,7 @@
             ></textarea>
           </div>
 
-          <!-- Duration and Views Row -->
+          <!-- Duration and Price Row -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Duration -->
             <div class="form-group">
@@ -258,6 +263,21 @@
                 type="text"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 placeholder="e.g., 15:30"
+                required
+              />
+            </div>
+
+            <!-- Price -->
+            <div class="form-group">
+              <label for="price" class="block mb-2 font-medium text-gray-700">Price (₹) *</label>
+              <input
+                id="price"
+                v-model="formData.price"
+                type="number"
+                min="0"
+                step="0.01"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                placeholder="e.g., 99.00"
                 required
               />
             </div>
@@ -427,6 +447,7 @@ const formData = reactive({
   title: '',
   description: '',
   duration: '',
+  price: 0,
   is_active: true,
   is_premium: true, // Always true for expert videos
   is_featured: false, // Always false for expert videos
@@ -610,6 +631,7 @@ const resetForm = () => {
   formData.title = ''
   formData.description = ''
   formData.duration = ''
+  formData.price = 0
   formData.is_active = true
   formData.videoFile = null
   formData.thumbnailFile = null
@@ -631,6 +653,7 @@ const editVideo = (video, index) => {
   formData.title = video.title
   formData.description = video.description
   formData.duration = video.duration
+  formData.price = video.price || 0
   formData.is_active = video.is_active
   
   // Set thumbnail preview if exists
@@ -690,6 +713,7 @@ const handleSubmit = async () => {
     payload.append('title', formData.title)
     payload.append('description', formData.description)
     payload.append('duration', formData.duration)
+    payload.append('price', formData.price)
     payload.append('is_active', formData.is_active ? '1' : '0')
     payload.append('is_premium', '1') // Always premium
     payload.append('is_featured', '0') // Never featured

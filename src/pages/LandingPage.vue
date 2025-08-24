@@ -34,7 +34,6 @@
             :class="['absolute inset-0 bg-cover bg-center transition-opacity duration-1000', { 'opacity-100': currentSlide === index, 'opacity-0': currentSlide !== index }]"
             :style="{ backgroundImage: `url(${image})` }"
           >
-            <div class="absolute inset-0 bg-gradient-to-r from-red-600/80 to-gray-900/60"></div>
           </div>
         </div>
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3 z-10">
@@ -45,25 +44,6 @@
             @click="goToSlide(index)"
           ></span>
         </div>
-      </div>
-      
-      <!-- Floating coins -->
-      <div class="absolute inset-0 pointer-events-none z-10" ref="floatingCoins"></div>
-      
-      <div class="relative z-20 text-center text-white max-w-4xl mx-auto px-6 animate-fade-in-up">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">
-          Start Learning & Earning Today!
-        </h1>
-        <p class="text-lg sm:text-xl lg:text-2xl mb-8 opacity-90 max-w-3xl mx-auto">
-          Join thousands of users who are enhancing their knowledge while earning real cash rewards. Test your skills, challenge others, and win big!
-        </p>
-        <button 
-          @click="goToRegister"
-          class="bg-white text-red-600 px-6 sm:px-8 py-3 sm:py-4 rounded-full text-lg sm:text-xl font-bold hover:bg-gray-100 transform hover:-translate-y-2 transition-all duration-300 shadow-xl relative overflow-hidden group"
-        >
-          <span class="relative z-10">Get Started Now</span>
-          <div class="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent transform -translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-        </button>
       </div>
     </section>
 
@@ -847,7 +827,7 @@
             <div class="space-y-3 text-gray-300">
               <div class="flex items-center space-x-3">
                 <i class="fas fa-envelope w-4 text-red-600"></i>
-                <span>support@himpri.com</span>
+                <span>info@himpri.com</span>
               </div>
               <div class="flex items-center space-x-3">
                 <i class="fas fa-phone w-4 text-red-600"></i>
@@ -858,7 +838,7 @@
         </div>
         
         <div class="pt-8 border-t border-gray-800 text-center">
-          <p class="text-gray-400 text-sm">&copy; 2023 Himpri.com. All Rights Reserved.</p>
+          <p class="text-gray-400 text-sm">&copy; 2025 Himpri.com. All Rights Reserved.</p>
         </div>
       </div>
     </footer>
@@ -903,12 +883,12 @@ const targetWinnersCount = 500
 // Animation state
 const hasAnimated = ref(false)
 
-const baseUrl = import.meta.env.VITE_FRONT_URL
+const baseUrl = import.meta.env.VITE_BASE_API
 const heroImages = [
-  `/public/images/nn1.jpg`,
-  `/public/images/nn2.jpg`,
-  `/public/images/nn3.jpg`,
-  `/public/images/nn4.jpg`
+  `${baseUrl}/public/images/nn1.jpg`,
+  `${baseUrl}/public/images/nn2.jpg`,
+  `${baseUrl}/public/images/nn3.jpg`,
+  `${baseUrl}/public/images/nn4.jpg`
 ]
 
 const fallbackImages = [
