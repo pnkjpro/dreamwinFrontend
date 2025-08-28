@@ -25,13 +25,13 @@
     </header>
 
     <!-- Hero Section with Image Slider -->
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section class="relative min-h-screen sm:min-h-screen flex items-center justify-center overflow-hidden">
       <div class="absolute inset-0 z-0">
         <div class="relative w-full h-full">
           <div 
             v-for="(image, index) in heroImages" 
             :key="index"
-            :class="['absolute inset-0 bg-cover bg-center transition-opacity duration-1000', { 'opacity-100': currentSlide === index, 'opacity-0': currentSlide !== index }]"
+            :class="['absolute inset-0 transition-opacity duration-1000 bg-cover bg-center sm:bg-cover', { 'opacity-100': currentSlide === index, 'opacity-0': currentSlide !== index }]"
             :style="{ backgroundImage: `url(${image})` }"
           >
           </div>
@@ -831,7 +831,7 @@
               </div>
               <div class="flex items-center space-x-3">
                 <i class="fas fa-phone w-4 text-red-600"></i>
-                <span>+91 9876543210</span>
+                <span>+91 8896926565</span>
               </div>
             </div>
           </div>
@@ -854,7 +854,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/plugins/axios'
 import { useMainStore } from '@/stores/mainStore'
@@ -867,6 +867,9 @@ const currentSlide = ref(0)
 const recentWinners = ref([])
 const loadingWinners = ref(true)
 const activeFaq = ref(null)
+
+// Reactive window width for responsive images
+const windowWidth = ref(window.innerWidth)
 
 const { howVideos } = storeToRefs(mainStore)
 
@@ -884,12 +887,34 @@ const targetWinnersCount = 500
 const hasAnimated = ref(false)
 
 const baseUrl = import.meta.env.VITE_BASE_API
-const heroImages = [
+
+// Desktop banner images
+const heroImagesDesktop = [
   `${baseUrl}/public/images/nn1.jpg`,
   `${baseUrl}/public/images/nn2.jpg`,
   `${baseUrl}/public/images/nn3.jpg`,
   `${baseUrl}/public/images/nn4.jpg`
 ]
+
+// Mobile banner images
+const heroImagesMobile = [
+  `${baseUrl}/public/images/mb1.jpg`,
+  `${baseUrl}/public/images/mb2.jpg`,
+  `${baseUrl}/public/images/mb3.jpg`,
+  `${baseUrl}/public/images/mb4.jpg`
+]
+
+// Reactive computed property to switch between desktop and mobile images
+const heroImages = computed(() => {
+  return windowWidth.value <= 768 ? heroImagesMobile : heroImagesDesktop
+})
+
+// Watch for changes in heroImages and reset currentSlide if it's out of bounds
+watch(heroImages, (newImages) => {
+  if (currentSlide.value >= newImages.length) {
+    currentSlide.value = 0
+  }
+}, { immediate: true })
 
 const fallbackImages = [
   "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=880&q=80", // man smiling
@@ -917,7 +942,8 @@ const goToSlide = (index) => {
 }
 
 const nextSlide = () => {
-  currentSlide.value = (currentSlide.value + 1) % heroImages.length
+  const currentImages = heroImages.value
+  currentSlide.value = (currentSlide.value + 1) % currentImages.length
 }
 
 const scrollToTop = () => {
@@ -1073,6 +1099,12 @@ onMounted(() => {
   // Scroll event listener
   window.addEventListener('scroll', handleScroll)
   
+  // Window resize listener for responsive images
+  const handleResize = () => {
+    windowWidth.value = window.innerWidth
+  }
+  window.addEventListener('resize', handleResize)
+  
   // Setup stats animation observer
   const statsObserver = setupStatsAnimation()
   
@@ -1080,6 +1112,7 @@ onMounted(() => {
   onUnmounted(() => {
     clearInterval(slideInterval)
     window.removeEventListener('scroll', handleScroll)
+    window.removeEventListener('resize', handleResize)
     if (statsObserver) {
       statsObserver.disconnect()
     }
@@ -1138,5 +1171,25 @@ onMounted(() => {
 /* Smooth transitions for hover effects */
 .group:hover .group-hover\:text-red-600 {
   color: #dc2626;
+}
+
+/* Mobile responsive hero section */
+@media (max-width: 768px) {
+  .min-h-screen {
+    min-height: 60vh;
+  }
+  
+  /* Ensure mobile banner images fit well */
+  .bg-cover {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+}
+
+@media (max-width: 640px) {
+  .min-h-screen {
+    min-height: 50vh;
+  }
 }
 </style>
